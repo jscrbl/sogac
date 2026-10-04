@@ -494,8 +494,6 @@ protected function casts(): array
 }
 
 
-
-
 Vínculo Fortify y Modelo Persona: La tabla users contiene una clave foránea entera persona_id (foreignId('persona_id')->constrained('persona')) para enlazar las credenciales del sistema directamente con el registro civil del docente, alumno o personal administrativo, sin redundancias demográficas.
 Gestión de Permisos (RBAC): Las nuevas tablas del Módulo 19 interactúan directamente con middleware en Laravel para bloquear llamadas API no autorizadas, delegando también los roles serializados a Vue 3 para ocultar/mostrar elementos de la UI dinámicamente según el usuario logueado.
 Gestión Transaccional en Servicios: Operaciones complejas como la generación y cierre de actas (acta_calificacion), inscripciones masivas (inscripcion_detalle) y aprobación de admisiones se encapsulan en clases de acción bajo transacciones DB::transaction() para asegurar consistencia ACID ante caídas de red o excepciones.

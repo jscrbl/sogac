@@ -1,0 +1,2127 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Asignación por Grupos y Auditoría de Cobertura — SOGAC</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0b0f17; 
+      --bg-surface: #141b2d; 
+      --bg-surface-hover: #1e293b; 
+      --bg-card: rgba(30, 41, 59, 0.7);
+      --border-color: rgba(255, 255, 255, 0.08); 
+      --border-active: rgba(99, 102, 241, 0.4);
+      --text-primary: #f8fafc; 
+      --text-secondary: #94a3b8; 
+      --text-muted: #64748b;
+      --accent-indigo: #6366f1; 
+      --accent-cyan: #06b6d4; 
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b; 
+      --accent-rose: #f43f5e; 
+      --accent-purple: #8b5cf6;
+      --accent-gradient: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
+      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+      --radius-sm: 8px; 
+      --radius-md: 12px; 
+      --radius-lg: 16px;
+    }
+    [data-theme="light"] {
+      --bg-primary: #f8fafc; 
+      --bg-surface: #ffffff; 
+      --bg-surface-hover: #f1f5f9; 
+      --bg-card: rgba(255, 255, 255, 0.9);
+      --border-color: rgba(0, 0, 0, 0.08); 
+      --border-active: rgba(99, 102, 241, 0.5);
+      --text-primary: #0f172a; 
+      --text-secondary: #475569; 
+      --text-muted: #64748b;
+      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+    body { 
+      background-color: var(--bg-primary); 
+      color: var(--text-primary); 
+      min-height: 100vh; 
+      line-height: 1.6; 
+      padding-bottom: 80px; 
+      transition: background-color 0.3s, color 0.3s; 
+    }
+    h1, h2, h3, h4 { font-family: 'Outfit', sans-serif; }
+    
+    /* Header */
+    header { 
+      background: rgba(11, 15, 23, 0.9); 
+      backdrop-filter: blur(16px); 
+      border-bottom: 1px solid var(--border-color); 
+      position: sticky; 
+      top: 0; 
+      z-index: 100; 
+      padding: 16px 32px; 
+    }
+    [data-theme="light"] header { background: rgba(248, 250, 252, 0.9); }
+    .header-container { 
+      max-width: 1500px; 
+      margin: 0 auto; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+    }
+    .logo-group { display: flex; align-items: center; gap: 14px; }
+    .logo-badge { 
+      background: var(--accent-gradient); 
+      color: #fff; 
+      font-weight: 800; 
+      font-size: 13px; 
+      padding: 6px 14px; 
+      border-radius: 20px; 
+      letter-spacing: 0.5px;
+    }
+    .header-title { font-size: 20px; font-weight: 700; color: var(--text-primary); }
+    
+    .btn { 
+      background: var(--bg-surface); 
+      color: var(--text-primary); 
+      border: 1px solid var(--border-color); 
+      padding: 8px 16px; 
+      border-radius: var(--radius-sm); 
+      font-weight: 600; 
+      font-size: 13px; 
+      cursor: pointer; 
+      transition: all 0.2s ease; 
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn:hover { background: var(--bg-surface-hover); border-color: var(--border-active); }
+
+    .container { max-width: 1500px; margin: 32px auto; padding: 0 32px; }
+    
+    /* Hero Banner */
+    .hero-banner { 
+      background: var(--bg-surface); 
+      border: 1px solid var(--border-color); 
+      border-radius: var(--radius-lg); 
+      padding: 32px; 
+      margin-bottom: 32px; 
+      box-shadow: var(--shadow-lg); 
+      position: relative; 
+      overflow: hidden; 
+    }
+    .hero-banner::before { 
+      content: ''; 
+      position: absolute; 
+      top: 0; left: 0; right: 0; 
+      height: 4px; 
+      background: var(--accent-gradient); 
+    }
+    .hero-title { font-size: 28px; font-weight: 800; margin-bottom: 8px; }
+    .hero-desc { color: var(--text-secondary); font-size: 15px; max-width: 1100px; }
+    
+    /* Metrics */
+    .metrics-grid { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+      gap: 16px; 
+      margin-top: 24px; 
+    }
+    .metric-card { 
+      background: var(--bg-card); 
+      border: 1px solid var(--border-color); 
+      border-radius: var(--radius-md); 
+      padding: 20px; 
+    }
+    .metric-val { font-size: 32px; font-weight: 800; color: var(--text-primary); font-family: 'Outfit', sans-serif; }
+    .metric-lbl { font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-top: 4px; }
+    .metric-sub { font-size: 11px; color: var(--accent-emerald); font-weight: 700; margin-top: 6px; }
+
+    /* Controls Bar */
+    .controls-bar { 
+      background: var(--bg-surface); 
+      border: 1px solid var(--border-color); 
+      border-radius: var(--radius-md); 
+      padding: 16px; 
+      margin-bottom: 32px; 
+      display: flex; 
+      flex-wrap: wrap; 
+      gap: 16px; 
+      align-items: center; 
+      justify-content: space-between; 
+      position: sticky; 
+      top: 73px; 
+      z-index: 90; 
+    }
+    .search-box { flex: 1; min-width: 300px; position: relative; }
+    .search-box input { 
+      width: 100%; 
+      background: var(--bg-primary); 
+      border: 1px solid var(--border-color); 
+      color: var(--text-primary); 
+      padding: 10px 16px 10px 40px; 
+      border-radius: var(--radius-sm); 
+      font-size: 14px; 
+      outline: none; 
+    }
+    .search-box input:focus { border-color: var(--accent-indigo); }
+    .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 14px; }
+
+    .filter-group { display: flex; gap: 8px; flex-wrap: wrap; }
+    .filter-btn {
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 20px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-primary);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .filter-btn.active, .filter-btn:hover {
+      background: var(--accent-indigo);
+      color: #fff;
+      border-color: var(--accent-indigo);
+    }
+
+    /* Cards / Groups */
+    .group-card { 
+      background: var(--bg-surface); 
+      border: 1px solid var(--border-color); 
+      border-radius: var(--radius-lg); 
+      margin-bottom: 24px; 
+      overflow: hidden; 
+      transition: border-color 0.2s; 
+    }
+    .group-card:hover { border-color: var(--border-active); }
+    .group-header { 
+      padding: 20px 24px; 
+      background: rgba(255, 255, 255, 0.02); 
+      border-bottom: 1px solid var(--border-color); 
+      display: flex; 
+      flex-wrap: wrap; 
+      align-items: center; 
+      justify-content: space-between; 
+      gap: 12px; 
+      cursor: pointer; 
+    }
+    .group-title-group { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .group-badge { 
+      background: var(--accent-purple); 
+      color: #fff; 
+      font-family: 'Fira Code', monospace; 
+      font-weight: 700; 
+      font-size: 12px; 
+      padding: 4px 12px; 
+      border-radius: 6px; 
+    }
+    .group-name { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+    .group-body { padding: 24px; border-top: 1px solid var(--border-color); }
+
+    /* Student Roster */
+    .roster-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+      margin: 16px 0;
+      background: var(--bg-card);
+      padding: 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+    }
+    .roster-item {
+      font-size: 12.5px;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .roster-role {
+      font-size: 10px;
+      background: var(--accent-indigo);
+      color: #fff;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+
+    /* Tables */
+    .data-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 12px; }
+    .data-table th { 
+      background: var(--bg-primary); 
+      color: var(--text-secondary); 
+      font-weight: 700; 
+      text-align: left; 
+      padding: 12px 16px; 
+      border-bottom: 1px solid var(--border-color); 
+      font-size: 11.5px; 
+      text-transform: uppercase; 
+      letter-spacing: 0.5px; 
+    }
+    .data-table td { 
+      padding: 12px 16px; 
+      border-bottom: 1px solid var(--border-color); 
+      color: var(--text-primary); 
+      vertical-align: middle; 
+    }
+    .data-table tr:hover td { background: var(--bg-surface-hover); }
+
+    /* Badges */
+    .badge { 
+      font-size: 11px; 
+      font-weight: 700; 
+      padding: 4px 10px; 
+      border-radius: 20px; 
+      text-transform: uppercase; 
+      display: inline-block; 
+    }
+    .badge-green { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-amber { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .badge-rose { background: rgba(244, 63, 94, 0.15); color: #f43f5e; border: 1px solid rgba(244, 63, 94, 0.3); }
+    .badge-purple { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; border: 1px solid rgba(139, 92, 246, 0.3); }
+    .badge-blue { background: rgba(6, 182, 212, 0.15); color: #06b6d4; border: 1px solid rgba(6, 182, 212, 0.3); }
+
+    .code-tag { font-family: 'Fira Code', monospace; background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px; font-size: 12px; color: var(--accent-cyan); }
+    .tables-pill-container { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 12px 0; }
+    .table-pill { font-family: 'Fira Code', monospace; font-size: 11px; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); color: #a5b4fc; padding: 3px 8px; border-radius: 6px; }
+    .table-pill-write { font-family: 'Fira Code', monospace; font-size: 11px; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399; padding: 3px 8px; border-radius: 6px; font-weight: 600; }
+    .table-pill-read { font-family: 'Fira Code', monospace; font-size: 11px; background: rgba(6, 182, 212, 0.12); border: 1px solid rgba(6, 182, 212, 0.4); color: #38bdf8; padding: 3px 8px; border-radius: 6px; font-weight: 600; }
+
+    footer { text-align: center; padding: 32px; color: var(--text-muted); font-size: 13px; border-top: 1px solid var(--border-color); margin-top: 60px; }
+  
+
+    /* Responsive Styles for documentacion_asignacion_grupos_sogac.html */
+    .hamburger { display: none; background: none; border: none; color: var(--text-primary); cursor: pointer; padding: 8px; }
+    .nav-links { display: flex; gap: 12px; }
+    
+    @media (max-width: 900px) {
+      .header-title { font-size: 16px !important; }
+      .logo-group { max-width: calc(100% - 60px); }
+    }
+    
+    @media (max-width: 768px) {
+      html, body {
+        overflow-x: hidden !important;
+        width: 100vw !important;
+        max-width: 100vw !important;
+      }
+      .container {
+        padding: 0 16px !important;
+        margin: 16px auto !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+      }
+      .hamburger { display: block; }
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: var(--bg-surface);
+        padding: 16px;
+        border-bottom: 1px solid var(--border-color);
+        box-shadow: var(--shadow-lg);
+      }
+      .nav-links.open { display: flex; }
+      .header-container { flex-wrap: wrap; }
+      .header-title { font-size: 15px !important; white-space: normal !important; line-height: 1.3; }
+      
+      .hero-title { font-size: 24px !important; line-height: 1.3 !important; }
+      .hero-subtitle { font-size: 14px !important; }
+      
+      .stats-grid {
+        grid-template-columns: 1fr !important;
+      }
+      .controls-bar {
+        flex-direction: column !important;
+        align-items: stretch !important;
+      }
+      .controls-bar .btn {
+        width: 100% !important;
+        margin-bottom: 8px !important;
+      }
+      .table-responsive {
+        overflow-x: auto !important;
+        display: block !important;
+        width: 100% !important;
+        -webkit-overflow-scrolling: touch;
+      }
+      .unassigned-grid {
+        grid-template-columns: 1fr !important;
+      }
+    }
+      .header-title h1 {
+        font-size: 22px;
+      }
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      .controls-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .controls-bar .btn {
+        width: 100%;
+        margin-bottom: 8px;
+        justify-content: center;
+      }
+      .group-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+      .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        display: block;
+        width: 100%;
+      }
+      table th, table td {
+        padding: 10px 8px;
+        font-size: 11px;
+      }
+      .group-card {
+        margin-bottom: 16px;
+      }
+      .unassigned-grid {
+        grid-template-columns: 1fr !important;
+      }
+      .container {
+        padding: 0 10px;
+      }
+    }
+
+</style>
+</head>
+<body>
+
+  <header>
+    <div class="header-container">
+      <div class="logo-group">
+        <span class="logo-badge">SOGAC DB</span>
+        <h1 class="header-title">Documentación de Asignación por Grupos y Auditoría de Cobertura</h1>
+      </div>
+      <button class="hamburger" id="btnHamburger" onclick="document.getElementById('mobileMenu').classList.toggle('open')">
+        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      </button>
+      <div class="nav-links" id="mobileMenu">
+        <a href="index-med.html" target="_blank" class="btn">📊 Diagrama ER</a>
+        <a href="auditoria_migracion_sogac.html" target="_blank" class="btn">📑 Auditoría Migración</a>
+        <button class="btn" id="btnThemeToggle" onclick="toggleTheme()">☀️ / 🌙 Tema</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+      <h2 class="hero-title">Matriz Oficial de Distribución y Cobertura de Requerimientos</h2>
+      <p class="hero-desc">
+        Este documento interactivo organiza y distribuye las responsabilidades del modelo de base de datos <strong>Nuevo-SOGAC (113 tablas en 12 módulos)</strong> entre los <strong>4 Grupos de Estudiantes</strong> del Proyecto Sociotecnológico. Permite consultar qué tablas le corresponden a cada equipo, auditar la cobertura de sus anexos (Maestros, Transacciones y Reportes) y visualizar la resolución de brechas.
+      </p>
+
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-val" id="metricModules">12</div>
+          <div class="metric-lbl">Módulos Temáticos</div>
+          <div class="metric-sub">Geográfico ➔ API & Logs</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-val" id="metricTables">113</div>
+          <div class="metric-lbl">Tablas Registradas</div>
+          <div class="metric-sub">Modelo 3NF Normalizado</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-val">4</div>
+          <div class="metric-lbl">Grupos de Desarrollo</div>
+          <div class="metric-sub">21 Estudiantes Totales</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-val" style="color: var(--accent-emerald);">4 de 4 Auditados</div>
+          <div class="metric-lbl">Avance de Auditoría</div>
+          <div class="metric-sub">100% Cobertura Soportada 🟢</div>
+        </div>
+      </div>
+
+      <!-- Group Color Legend Matrix -->
+      <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+        <h4 style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+          <span>🎨 Identificación Visual de Grupos por Color en el Diagrama ER (`index-med.html`)</span>
+        </h4>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px;">
+          <div style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.3); padding: 12px 16px; border-radius: 10px; display: flex; align-items: center; gap: 12px;">
+            <span style="width: 14px; height: 14px; border-radius: 50%; background: #8b5cf6; display: inline-block; flex-shrink: 0; box-shadow: 0 0 8px rgba(139, 92, 246, 0.6);"></span>
+            <div>
+              <strong style="color: #a78bfa; font-size: 13px;">Grupo 1 — Isaac Rosales</strong>
+              <div style="font-size: 11px; color: var(--text-secondary);">Púrpura (`#8b5cf6`) · 21 Tablas</div>
+            </div>
+          </div>
+          <div style="background: rgba(6, 182, 212, 0.1); border: 1px solid rgba(6, 182, 212, 0.3); padding: 12px 16px; border-radius: 10px; display: flex; align-items: center; gap: 12px;">
+            <span style="width: 14px; height: 14px; border-radius: 50%; background: #06b6d4; display: inline-block; flex-shrink: 0; box-shadow: 0 0 8px rgba(6, 182, 212, 0.6);"></span>
+            <div>
+              <strong style="color: #67e8f9; font-size: 13px;">Grupo 2 — Mauricio Rodríguez</strong>
+              <div style="font-size: 11px; color: var(--text-secondary);">Cian / Turquesa (`#06b6d4`) · 25 Tablas</div>
+            </div>
+          </div>
+          <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); padding: 12px 16px; border-radius: 10px; display: flex; align-items: center; gap: 12px;">
+            <span style="width: 14px; height: 14px; border-radius: 50%; background: #ef4444; display: inline-block; flex-shrink: 0; box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);"></span>
+            <div>
+              <strong style="color: #fca5a5; font-size: 13px;">Grupo 3 — Ángel Gonzales</strong>
+              <div style="font-size: 11px; color: var(--text-secondary);">Rojo Carmesí (`#ef4444`) · 25 Tablas</div>
+            </div>
+          </div>
+          <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); padding: 12px 16px; border-radius: 10px; display: flex; align-items: center; gap: 12px;">
+            <span style="width: 14px; height: 14px; border-radius: 50%; background: #f59e0b; display: inline-block; flex-shrink: 0; box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);"></span>
+            <div>
+              <strong style="color: #fde047; font-size: 13px;">Grupo 4 — Luis Araguren</strong>
+              <div style="font-size: 11px; color: var(--text-secondary);">Ámbar / Naranja (`#f59e0b`) · 12 Tablas</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <!-- Top Summary Box for Unassigned Tables -->
+      <div style="background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: var(--radius-lg); padding: 24px; margin-top: 24px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
+          <h4 style="font-size: 16px; font-weight: 800; color: var(--accent-amber); display: flex; align-items: center; gap: 8px;">
+            <span>📌 Resumen de Tablas Sin Grupo / Disponibles para Asignación (30 Tablas)</span>
+          </h4>
+          <span class="badge badge-amber" style="font-size: 12px; padding: 5px 12px;">⚠️ 30 Tablas Disponibles para Distribución</span>
+        </div>
+        <p style="font-size: 12.5px; color: var(--text-secondary); margin-bottom: 16px;">
+          Del universo total de <strong>113 tablas normalizadas en Nuevo-SOGAC.js</strong>, existen <strong>30 tablas catálogo/funcionales</strong> que aún no han sido reservadas por ninguno de los 4 grupos de desarrollo y están listas para ser adoptadas o tratadas como módulos transversales.
+        </p>
+        
+        <!-- Table list count badges -->
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; max-height: 180px; overflow-y: auto; padding: 12px; background: var(--bg-primary); border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+          <span class="table-pill" style="border-color: rgba(245, 158, 11, 0.4); color: #fde047; font-size: 11px;" title="Módulo 11: Seguridad, Auditoría y Configuración — Registra el historial de peticiones HTTP, direcciones IP, tiempos de respuesta y consumo de los endpoints de la API (Rate Limiting y Auditoría)."><strong>1.</strong> api_access_log</span>
+          <span class="table-pill" style="border-color: rgba(245, 158, 11, 0.4); color: #fde047; font-size: 11px;" title="Módulo 11: Seguridad, Auditoría y Configuración — Lista blanca que define explícitamente cuáles tablas del sistema pueden ser expuestas o consultadas a través de la API Gateway externa."><strong>2.</strong> api_allowed_table</span>
+          <span class="table-pill" style="border-color: rgba(245, 158, 11, 0.4); color: #fde047; font-size: 11px;" title="Módulo 11: Seguridad, Auditoría y Configuración — Almacena y gestiona tokens de acceso Bearer / OAuth (llaves API) asignadas a clientes o sistemas externos para autenticar consumos."><strong>3.</strong> api_key</span>
+          <span class="table-pill" style="border-color: rgba(245, 158, 11, 0.4); color: #fde047; font-size: 11px;" title="Módulo 11: Seguridad, Auditoría y Configuración — Define los permisos granulares (lectura, escritura, scope) asignados a cada API Key o sistema externo consumidor."><strong>4.</strong> api_permission</span>
+          <span class="table-pill" style="border-color: rgba(245, 158, 11, 0.4); color: #fde047; font-size: 11px;" title="Módulo 11: Seguridad, Auditoría y Configuración — Registro de aplicaciones o sistemas de terceros (ej. MPPEU, OPSU, pasarelas) autorizados para conectarse vía REST/Webhooks."><strong>5.</strong> api_system</span>
+          <span class="table-pill" style="border-color: rgba(245, 158, 11, 0.4); color: #fde047; font-size: 11px;" title="Módulo 9: Evaluaciones, Calificaciones y Actas — Permite el pase de lista y registro diario/semanal de asistencias o inasistencias de los estudiantes por cada encuentro de clase."><strong>6.</strong> asistencia_clase</span>
+          <span class="table-pill" style="border-color: rgba(245, 158, 11, 0.4); color: #fde047; font-size: 11px;" title="Módulo 6: Identidad Civil y Expediente Estudiantil — Registro y control de estudiantes beneficiarios de becas (Becas Trabajo, Ayudantías, Alimentos, Transporte) y montos asignados."><strong>7.</strong> becado</span>
+          <span class="table-pill" style="border-color: rgba(245, 158, 11, 0.4); color: #fde047; font-size: 11px;" title="Módulo 8: Control de Inscripciones y Trámites Académicos — Congelamiento o suspensión temporal de la ficha del estudiante por deudas, sanciones disciplinarias o falta de recaudos obligatorios."><strong>8.</strong> bloqueo_administrativo</span>
+          <span class="table-pill" style="border-color: rgba(245, 158, 11, 0.4); color: #fde047; font-size: 11px;" title="Módulo 2: Organización Institucional y Sedes — Catálogo de estatus o condiciones operativas asignables a la universidad, sedes, departamentos o ambientes físicos."><strong>9.</strong> condicion</span>
+          <span class="table-pill" style="border-color: rgba(245, 158, 11, 0.4); color: #fde047; font-size: 11px;" title="Módulo 8: Control de Inscripciones y Trámites Académicos — Registro de asignaturas convalidadas o homologadas externamente procedentes de otros pensums o universidades."><strong>10.</strong> convalidacion</span>
+          <span class="table-pill" style="border-color: rgba(245, 158, 11, 0.4); color: #fde047; font-size: 11px;" title="Módulo 2: Organización Institucional y Sedes — Registro de departamentos o áreas matrices académicas (ej. Departamento de Informática, Administración, Agroalimentación)."><strong>11.</strong> departamento</span>
+          <span class="table-pill" style="border-color: rgba(245, 158, 11, 0.4); color: #fde047; font-size: 11px;" title="Módulo 2: Organización Institucional y Sedes — Catálogo de clasificación de dependencias institucionales (Pública, Privada, Autónoma, Territorial, etc.)."><strong>12.</strong> dependencia_institucion</span>
+          <span class="table-pill" style="border-color: rgba(245, 158, 11, 0.4); color: #fde047; font-size: 11px;" title="Módulo 6: Identidad Civil y Expediente Estudiantil — Catálogo 3NF de condiciones de diversidad funcional y necesidades especiales para políticas de inclusión y accesibilidad."><strong>13.</strong> discapacidad</span>
+          <span class="table-pill" style="border-color: rgba(245, 158, 11, 0.4); color: #fde047; font-size: 11px;" title="Módulo 8: Control de Inscripciones y Trámites Académicos — Registro del proceso y dictamen de homologación/reconocimiento de asignaturas cursadas en otras instituciones de educación superior."><strong>14.</strong> equivalencia_academica</span>
+          <span class="table-pill" style="border-color: rgba(245, 158, 11, 0.4); color: #fde047; font-size: 11px;" title="Módulo 9: Evaluaciones, Calificaciones y Actas — Define los modelos de escala de evaluación institucional (ej. Escala 0-20 puntos, Cualitativa A-F, Aprobado/Reprobado)."><strong>15.</strong> escala_medicion</span>
+          <span class="table-pill" style="border-color: rgba(245, 158, 11, 0.4); color: #fde047; font-size: 11px;" title="Módulo 9: Evaluaciones, Calificaciones y Actas — Tabla de equivalencias y ponderaciones para la conversión estandarizada de calificaciones e índices académicos acumulados."><strong>16.</strong> escala_nota</span>
+          <span class="table-pill" style="border-color: rgba(245, 158, 11, 0.4); color: #fde047; font-size: 11px;" title="Módulo 10: Titulación, Egresados y Certificaciones — Catálogo de fases y estatus del flujo de solicitud de grado (En revisión, Créditos auditados, Aprobado en Consejo, Impreso)."><strong>17.</strong> estatus_solicitud_grado</span>
+          <span class="table-pill" style="border-color: rgba(245, 158, 11, 0.4); color: #fde047; font-size: 11px;" title="Módulo 11: Seguridad, Auditoría y Configuración — Registro unificado tipo Syslog para capturar eventos de bajo nivel, excepciones de software y cambios de infraestructura."><strong>18.</strong> evento</span>
+          <span class="table-pill" style="border-color: rgba(245, 158, 11, 0.4); color: #fde047; font-size: 11px;" title="Módulo 4: Calendario y Planificación de Lapsos — Registro de eventos singulares, feriados, inscripciones y fechas clave en el calendario lectivo institucional."><strong>19.</strong> evento_calendario</span>
+          <span class="table-pill" style="border-color: rgba(245, 158, 11, 0.4); color: #fde047; font-size: 11px;" title="Módulo 5: Talento Humano y Cuerpo Docente — Antecedentes de empleos previos, cargos docentes o experiencia profesional externa declarada por el docente."><strong>20.</strong> experiencia_laboral_docente</span>
+          <span class="table-pill" style="border-color: rgba(245, 158, 11, 0.4); color: #fde047; font-size: 11px;" title="Módulo 8: Control de Inscripciones y Trámites Académicos — Ficha transaccional de inscripción de estudiantes en el Programa Especial de Recuperación (PER) para asignaturas reprobadas."><strong>21.</strong> inscripcion_per</span>
+          <span class="table-pill" style="border-color: rgba(245, 158, 11, 0.4); color: #fde047; font-size: 11px;" title="Módulo 10: Titulación, Egresados y Certificaciones — Registro analítico y métricas precalculadas sobre tasas de egreso, retención y promoción académica por cohorte y PNF."><strong>22.</strong> promocion_estadistica_pnf</span>
+          <span class="table-pill" style="border-color: rgba(245, 158, 11, 0.4); color: #fde047; font-size: 11px;" title="Módulo 10: Titulación, Egresados y Certificaciones — Trazabilidad y validación pública de códigos QR generados para verificación de autenticidad en documentos oficiales."><strong>23.</strong> qr_validated_generated</span>
+          <span class="table-pill" style="border-color: rgba(245, 158, 11, 0.4); color: #fde047; font-size: 11px;" title="Módulo 3: Oferta y Estructura Académica (PNF/Mallas) — Motor de reglas de prelación rígidas o blandas entre unidades curriculares de la malla de estudio."><strong>24.</strong> regla_prelacion</span>
+          <span class="table-pill" style="border-color: rgba(245, 158, 11, 0.4); color: #fde047; font-size: 11px;" title="Módulo 11: Seguridad, Auditoría y Configuración — Personalización de mensajes, alertas y avisos de bienvenida en el dashboard configurables por rol de usuario."><strong>25.</strong> rol_mensaje_configuracion</span>
+          <span class="table-pill" style="border-color: rgba(245, 158, 11, 0.4); color: #fde047; font-size: 11px;" title="Módulo 10: Titulación, Egresados y Certificaciones — Registro y control de títulos intermedios o certificaciones de trayectoria (ej. TSU) otorgados antes del título final."><strong>26.</strong> salida_intermedia</span>
+          <span class="table-pill" style="border-color: rgba(245, 158, 11, 0.4); color: #fde047; font-size: 11px;" title="Módulo 2: Organización Institucional y Sedes — Tabla puente que autoriza y vincula formalmente cuáles PNF se imparten activamente en cada sede universitaria."><strong>27.</strong> sede_pnf</span>
+          <span class="table-pill" style="border-color: rgba(245, 158, 11, 0.4); color: #fde047; font-size: 11px;" title="Módulo 0: Catálogos Base Lógicos — Catálogo maestro transversal de estados del sistema (Activo, Inactivo, Pendiente, Cancelado, Suspendido, etc.)."><strong>28.</strong> status</span>
+          <span class="table-pill" style="border-color: rgba(245, 158, 11, 0.4); color: #fde047; font-size: 11px;" title="Módulo 2: Organización Institucional y Sedes — Catálogo de tipos o ámbitos de condición (ej. Infraestructura, Académica, Administrativa)."><strong>29.</strong> tipo_condicion</span>
+          <span class="table-pill" style="border-color: rgba(245, 158, 11, 0.4); color: #fde047; font-size: 11px;" title="Módulo 10: Titulación, Egresados y Certificaciones — Catálogo oficial de títulos universitarios (ej. Licenciado en Administración, Ingeniero en Informática, TSU)."><strong>30.</strong> titulo_obtenido</span>
+        </div>
+        <div style="font-size: 11px; color: var(--text-muted); margin-top: 8px; text-align: right;">
+          💡 <em>Pase el cursor sobre cada tabla para ver su módulo y propósito. Consulte el catálogo detallado al final del documento.</em>
+        </div>
+      </div>
+
+    <!-- Student Educational Guide Box -->
+    <div style="background: rgba(99, 102, 241, 0.05); border: 1px solid var(--border-active); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 24px; box-shadow: var(--shadow-lg);">
+      <h3 style="font-size: 17px; font-weight: 800; color: var(--text-primary); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+        <span>🎓 Guía Pedagógica de Clasificación de Requerimientos (Para Orientación de Estudiantes)</span>
+      </h3>
+      <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">
+        Para orientar el desarrollo sociotecnológico del equipo y evitar confusiones conceptuales entre los componentes a construir, cada requerimiento asignado se rige estrictamente bajo los siguientes estándares de ingeniería de software:
+      </p>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+        <div style="background: var(--bg-card); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+          <strong style="color: var(--accent-indigo); font-size: 14px;">📋 1. Maestro / CRUD (Anexo A)</strong>
+          <p style="font-size: 12px; color: var(--text-secondary); margin-top: 6px;">
+            <strong>Mantenimiento de Datos Base:</strong> Módulos para Registrar, Consultar, Modificar e Inactivar registros en tablas catálogo o entidades principales (ej. <em>Usuarios, Personas, Profesores, Sedes, PNF, Aulas</em>). No contienen lógica transaccional compleja.
+          </p>
+        </div>
+        <div style="background: var(--bg-card); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+          <strong style="color: var(--accent-cyan); font-size: 14px;">🔄 2. Transacción / Flujo de Negocio (Anexo B)</strong>
+          <p style="font-size: 12px; color: var(--text-secondary); margin-top: 6px;">
+            <strong>Operación Multipaso y Reglas de Negocio:</strong> Procesos operativos que ejecutan validaciones, cambios de estado, control de cupos, disparan side-effects o generan historial (ej. <em>Inscripción, Carga de Notas, Retiro Académico, Envío Masivo de Notificaciones</em>).
+          </p>
+        </div>
+        <div style="background: var(--bg-card); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+          <strong style="color: var(--accent-emerald); font-size: 14px;">📊 3. Reporte / Consulta Analítica (Anexo C)</strong>
+          <p style="font-size: 12px; color: var(--text-secondary); margin-top: 6px;">
+            <strong>Salida de Información Impresa o Digital:</strong> Consultas de solo lectura (`SELECT` con `JOIN` y agregaciones) presentadas en PDF, Excel o pantalla para toma de decisiones (ej. <em>Kárdex de Notas, Actas de Notas, Constancias, Estadísticas</em>).
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Verification Banner & SLA Matrix -->
+    <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 32px; box-shadow: var(--shadow-lg);">
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+        <h3 style="font-size: 18px; font-weight: 800; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
+          <span>🛡️ Auditoría de No-Duplicidad y Matriz de Deslinde de Responsabilidades (Cross-Group SLA)</span>
+        </h3>
+        <span class="badge badge-green" style="font-size: 12px; padding: 6px 14px;">✅ 0% Duplicidad de Requerimientos</span>
+      </div>
+      
+      <p style="font-size: 13.5px; color: var(--text-secondary); margin-bottom: 20px;">
+        Se realizó la verificación cruzada de los <strong>147 requerimientos auditados (42 Maestros, 42 Transacciones y 63 Reportes)</strong> entre los 4 equipos de desarrollo. Se confirma que <strong>ningún maestro, transacción o reporte ha sido duplicado o asignado por error a más de un grupo</strong>. Para garantizar la cohesión del sistema y evitar colisiones de desarrollo, se establece la siguiente matriz de permisos y deslinde de responsabilidades sobre entidades compartidas:
+      </p>
+
+      <table class="data-table" style="margin-top: 8px;">
+        <thead>
+          <tr>
+            <th>Entidad / Tabla Compartida</th>
+            <th>Módulo Propietario (Escritura / CRUD Directo)</th>
+            <th>Módulos Consumidores (Consulta Read-Only / FK Lookup)</th>
+            <th>Límite de Responsabilidad / Regla de Trabajo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="code-tag">user</span>, <span class="code-tag">rol</span>, <span class="code-tag">usuario_rol</span></td>
+            <td><strong>Grupo 1</strong> (Seguridad & Usuarios)</td>
+            <td><strong>Grupo 4</strong> (Alta de Aspirante / Notificaciones)</td>
+            <td><strong>Grupo 1</strong> administra roles, permisos e inactivación de cuentas. <strong>Grupo 4</strong> únicamente crea el usuario inicial durante la admisión o lee el email para notificaciones.</td>
+          </tr>
+          <tr>
+            <td><span class="code-tag">persona</span></td>
+            <td><strong>Grupo 2</strong> (Talento Humano & Expedientes)</td>
+            <td><strong>Grupo 4</strong> (Admisión) & <strong>Grupo 1</strong> (Usuarios)</td>
+            <td><strong>Grupo 2</strong> gestiona la ficha civil máster. <strong>Grupo 4</strong> registra los datos civiles iniciales del aspirante sin alterar la lógica de expediente civil del Grupo 2.</td>
+          </tr>
+          <tr>
+            <td><span class="code-tag">estudiante</span>, <span class="code-tag">expediente_estudiante</span></td>
+            <td><strong>Grupo 2</strong> (Expediente Académico & Estatus)</td>
+            <td><strong>Grupo 4</strong> (Admisión a Matrícula)</td>
+            <td><strong>Grupo 2</strong> controla el kárdex, historial de estatus, promociones y solvencias. <strong>Grupo 4</strong> inicializa la ficha cuando el aspirante es promovido a admitido.</td>
+          </tr>
+          <tr>
+            <td><span class="code-tag">solicitud_grado</span></td>
+            <td><strong>Grupo 2</strong> (Grados & Promociones)</td>
+            <td><strong>Grupo 4</strong> (Titulación QR)</td>
+            <td><strong>Grupo 2</strong> procesa la solicitud de grado y auditoría de créditos. <strong>Grupo 4</strong> emite el documento final y genera la validación QR (<span class="code-tag">qr_validated_generated_titulo</span>).</td>
+          </tr>
+          <tr>
+            <td><span class="code-tag">inscripcion</span>, <span class="code-tag">inscripcion_detalle</span></td>
+            <td><strong>Grupo 1</strong> (Inscripciones)</td>
+            <td><strong>Grupo 4</strong> (Portal Mi Inscripción)</td>
+            <td><strong>Grupo 1</strong> ejecuta la transacción de inscripción y asignación de materias. <strong>Grupo 4</strong> consulta la ficha de inscripción para visualización del estudiante.</td>
+          </tr>
+          <tr>
+            <td><span class="code-tag">seccion</span>, <span class="code-tag">aula</span>, <span class="code-tag">horario</span></td>
+            <td><strong>Grupo 3</strong> (Estructura & Oferta Académica)</td>
+            <td><strong>Grupo 1</strong> (Inscripción) & <strong>Grupo 2</strong> (Evaluaciones)</td>
+            <td><strong>Grupo 3</strong> administra y asigna la oferta horaria y ambientes. <strong>Grupo 1 y 2</strong> consumen la información de seccion/aula para validar cupos y cargar notas.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Controls Bar -->
+    <div class="controls-bar">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Buscar grupo, integrante, módulo, tabla, requerimiento..." oninput="filterContent()">
+      </div>
+
+      <div class="filter-group">
+        <button class="filter-btn active" onclick="setFilter('all', this)">Todos los Grupos</button>
+        <button class="filter-btn" onclick="setFilter('g1', this)">Grupo 1 (Isaac Rosales - 🟣 Púrpura)</button>
+        <button class="filter-btn" onclick="setFilter('g2', this)">Grupo 2 (Mauricio Rodríguez - 🔵 Cian)</button>
+        <button class="filter-btn" onclick="setFilter('g3', this)">Grupo 3 (Ángel Gonzales - 🔴 Rojo)</button>
+        <button class="filter-btn" onclick="setFilter('g4', this)">Grupo 4 (Luis Araguren - 🟡 Ámbar)</button>
+        <button class="filter-btn" onclick="setFilter('global', this)">Catálogos Globales</button>
+        <button class="filter-btn" onclick="setFilter('unassigned', this)">⚠️ Tablas Sin Grupo (30)</button>
+      </div>
+    </div>
+
+    <!-- Group 1 -->
+    <div class="group-card" id="card-g1">
+      <div class="group-header" onclick="toggleCard('body-g1')">
+        <div class="group-title-group">
+          <span class="group-badge" style="background: #8b5cf6;">GRUPO 1</span>
+          <span class="group-name">Grupo 1 — Isaac Rosales (Seguridad, Trámites e Inscripciones)</span>
+          <span style="background: rgba(139, 92, 246, 0.15); color: #8b5cf6; border: 1px solid rgba(139, 92, 246, 0.3); font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 12px;">🎨 Púrpura (`#8b5cf6`)</span>
+        </div>
+        <div>
+          <span class="badge badge-green">🟢 COMPLETADO (100% Cobertura)</span>
+        </div>
+      </div>
+      <div class="group-body" id="body-g1">
+        <h4 style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">👥 Integrantes del Equipo (6):</h4>
+        <div class="roster-grid">
+          <div class="roster-item"><span class="roster-role">Líder</span> <strong>Isaac Rosales</strong> (C.I. 32.218.156)</div>
+          <div class="roster-item"><span class="roster-role" style="background: var(--accent-purple);">Dev</span> <strong>David Villamizar</strong> (C.I. 32.387.002)</div>
+          <div class="roster-item"><span class="roster-role" style="background: var(--accent-purple);">Dev</span> <strong>Valentín Rodríguez</strong> (C.I. 31.710.572)</div>
+          <div class="roster-item"><span class="roster-role" style="background: var(--accent-purple);">Dev</span> <strong>Andrés Rosas</strong> (C.I. 32.386.607)</div>
+          <div class="roster-item"><span class="roster-role" style="background: var(--accent-purple);">Dev</span> <strong>Rafael Montaña</strong> (C.I. 31.491.975)</div>
+          <div class="roster-item"><span class="roster-role" style="background: var(--accent-amber);">QA</span> <strong>Kris Moreno</strong> (C.I. 31.009.523)</div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-top: 16px; margin-bottom: 20px;">
+          <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 8px; padding: 14px;">
+            <h5 style="font-size: 13px; font-weight: 700; color: #34d399; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+              <span>✍️ Tablas de Escritura / Propiedad Directa (CRUD / Mutación): 21 Tablas</span>
+            </h5>
+            <p style="font-size: 11.5px; color: var(--text-secondary); margin-bottom: 8px;">
+              El Grupo 1 administra la inserción, edición, eliminación y lógica de negocio sobre:
+            </p>
+            <div class="tables-pill-container">
+              <span class="table-pill-write">user</span><span class="table-pill-write">rol</span><span class="table-pill-write">usuario_rol</span><span class="table-pill-write">permiso</span><span class="table-pill-write">rol_permiso</span><span class="table-pill-write">noticia 🆕</span><span class="table-pill-write">bitacora_sistema</span><span class="table-pill-write">tipo_inscripcion</span><span class="table-pill-write">inscripcion</span><span class="table-pill-write">inscripcion_detalle</span><span class="table-pill-write">tipo_tramite</span><span class="table-pill-write">causa_retiro 🆕</span><span class="table-pill-write">tramite_academico</span><span class="table-pill-write">tramite_cambio_pnf</span><span class="table-pill-write">tramite_cambio_sede</span><span class="table-pill-write">tramite_cambio_turno</span><span class="table-pill-write">tramite_reingreso</span><span class="table-pill-write">censo_estudiante</span><span class="table-pill-write">censo_oferta</span><span class="table-pill-write">censo_intensivo</span><span class="table-pill-write">programa_especial_recuperacion</span>
+            </div>
+          </div>
+          <div style="background: rgba(6, 182, 212, 0.05); border: 1px solid rgba(6, 182, 212, 0.2); border-radius: 8px; padding: 14px;">
+            <h5 style="font-size: 13px; font-weight: 700; color: #38bdf8; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+              <span>🔍 Tablas de Consulta Obligatoria (Read-Only / Referencia Cruzada):</span>
+            </h5>
+            <p style="font-size: 11.5px; color: var(--text-secondary); margin-bottom: 8px;">
+              El Grupo 1 consulta (SELECT / JOIN) como referencia sin mutar datos en:
+            </p>
+            <div class="tables-pill-container">
+              <span class="table-pill-read">estudiante</span><span class="table-pill-read">persona</span><span class="table-pill-read">seccion</span><span class="table-pill-read">lapso_academico</span><span class="table-pill-read">pnf</span><span class="table-pill-read">sede</span><span class="table-pill-read">status</span>
+            </div>
+          </div>
+        </div>
+
+        <h4 style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-top: 24px; margin-bottom: 8px;">📋 ANEXO A: Especificación de Maestros (11 CRUDs)</h4>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Maestro Especificado</th>
+              <th>Propósito en Documento</th>
+              <th>Tabla en Nuevo-SOGAC.js</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td><strong>Usuarios y Credenciales</strong></td>
+              <td>Autenticación y acceso al sistema</td>
+              <td><span class="code-tag">user</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td><strong>Roles de Sistema</strong></td>
+              <td>Perfiles de acceso y seguridad</td>
+              <td><span class="code-tag">rol</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td><strong>Permisos y Módulos</strong></td>
+              <td>Matriz granular de privilegios</td>
+              <td><span class="code-tag">permiso</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td><strong>Noticias y Avisos</strong></td>
+              <td>Publicaciones comunicacionales generales</td>
+              <td><span class="code-tag">noticia</span> 🆕</td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td><strong>Tipos de Inscripción</strong></td>
+              <td>Clasificación regular, intensivo, PIR</td>
+              <td><span class="code-tag">tipo_inscripcion</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td><strong>Tipos de Trámites</strong></td>
+              <td>Catálogo de solicitudes administrativas</td>
+              <td><span class="code-tag">tipo_tramite</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>7</td>
+              <td><strong>Causas de Retiro</strong></td>
+              <td>Catálogo 3NF de motivos de abandono/retiro</td>
+              <td><span class="code-tag">causa_retiro</span> 🆕</td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>8</td>
+              <td><strong>Censo Estudiantil</strong></td>
+              <td>Expediente y preferencias de censo</td>
+              <td><span class="code-tag">censo_estudiante</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>9</td>
+              <td><strong>Oferta de Censo</strong></td>
+              <td>Disponibilidad de asignaturas por censo</td>
+              <td><span class="code-tag">censo_oferta</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>10</td>
+              <td><strong>Censo de Intensivos</strong></td>
+              <td>Inscripción y oferta de veranos/intensivos</td>
+              <td><span class="code-tag">censo_intensivo</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>11</td>
+              <td><strong>Programa Especial de Recuperación (PIR)</strong></td>
+              <td>Recuperación académica supervisada</td>
+              <td><span class="code-tag">programa_especial_recuperacion</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4 style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-top: 24px; margin-bottom: 8px;">🔄 ANEXO B: Especificación de Transacciones (14 Flujos)</h4>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Transacción Especificada</th>
+              <th>Lógica e Integración</th>
+              <th>Tablas en Nuevo-SOGAC.js</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td><strong>Asignación Usuario-Rol</strong></td>
+              <td>Vincular roles a usuarios del sistema</td>
+              <td><span class="code-tag">usuario_rol</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td><strong>Asignación Rol-Permiso</strong></td>
+              <td>Matriz de privilegios por función</td>
+              <td><span class="code-tag">rol_permiso</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td><strong>Registro de Inscripción</strong></td>
+              <td>Creación de ficha principal de inscripción</td>
+              <td><span class="code-tag">inscripcion</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td><strong>Detalle de Asignaturas Inscritas</strong></td>
+              <td>Asignación de unidades curriculares inscritas</td>
+              <td><span class="code-tag">inscripcion_detalle</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td><strong>Trámite Cambio de PNF</strong></td>
+              <td>Solicitud y aprobación de cambio de PNF</td>
+              <td><span class="code-tag">tramite_cambio_pnf</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td><strong>Trámite Cambio de Sede</strong></td>
+              <td>Transferencia entre sedes universitarias</td>
+              <td><span class="code-tag">tramite_cambio_sede</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>7</td>
+              <td><strong>Trámite Cambio de Turno</strong></td>
+              <td>Ajuste de turno de cursado (mañana/tarde/noche)</td>
+              <td><span class="code-tag">tramite_cambio_turno</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>8</td>
+              <td><strong>Trámite Reingreso Académico</strong></td>
+              <td>Reincorporación de estudiantes inactivos</td>
+              <td><span class="code-tag">tramite_reingreso</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>9</td>
+              <td><strong>Solicitud de Retiro Académico</strong></td>
+              <td>Procesamiento de retiro formal y causal</td>
+              <td><span class="code-tag">tramite_academico</span> + <span class="code-tag">causa_retiro</span> 🆕</td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>10</td>
+              <td><strong>Apertura y Cierre de Censo</strong></td>
+              <td>Planificación masiva de demanda estudiantil</td>
+              <td><span class="code-tag">censo_estudiante</span> + <span class="code-tag">censo_oferta</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>11</td>
+              <td><strong>Inscripción Intensivos</strong></td>
+              <td>Postulación y asignación de materias de verano</td>
+              <td><span class="code-tag">censo_intensivo</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>12</td>
+              <td><strong>Inscripción en Programa PIR</strong></td>
+              <td>Recuperación especial de trayectos pendientes</td>
+              <td><span class="code-tag">programa_especial_recuperacion</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>13</td>
+              <td><strong>Publicación Comunicacional</strong></td>
+              <td>Generación de avisos institucionales</td>
+              <td><span class="code-tag">noticia</span> 🆕</td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>14</td>
+              <td><strong>Auditoría de Eventos de Sistema</strong></td>
+              <td>Trazabilidad de modificaciones de usuarios</td>
+              <td><span class="code-tag">bitacora_sistema</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4 style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-top: 24px; margin-bottom: 8px;">📊 ANEXO C: Especificación de Reportes (5 Reportes)</h4>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Reporte Especificado</th>
+              <th>Filtros Aplicados / Dominio</th>
+              <th>Formato</th>
+              <th>Viabilidad SQL</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td><strong>Listado de Usuarios y Roles Activos</strong></td>
+              <td>Filtro por rol, estado y fecha de creación</td>
+              <td>PDF / Pantalla</td>
+              <td><span class="badge badge-green">100% Viable</span></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td><strong>Estadísticas de Inscripciones por Lapso</strong></td>
+              <td>Consolidado de matrículas activas por PNF/Sede</td>
+              <td>PDF / Excel</td>
+              <td><span class="badge badge-green">100% Viable</span></td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td><strong>Resumen Solicitudes de Trámites</strong></td>
+              <td>Estatus de cambios de sede, PNF y reingresos</td>
+              <td>PDF Oficial</td>
+              <td><span class="badge badge-green">100% Viable</span></td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td><strong>Demanda de Censos e Intensivos</strong></td>
+              <td>Proyección de materias solicitadas para intensivos</td>
+              <td>PDF / Excel</td>
+              <td><span class="badge badge-green">100% Viable</span></td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td><strong>Bitácora de Auditoría e Incidentes</strong></td>
+              <td>Histórico de accesos, fallos y cambios críticos</td>
+              <td>Pantalla / CSV</td>
+              <td><span class="badge badge-green">100% Viable</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="margin-top: 20px; padding: 16px; background: rgba(16, 185, 129, 0.08); border-left: 4px solid var(--accent-emerald); border-radius: 6px;">
+          <strong style="color: var(--accent-emerald);">🎉 Estado Final de Auditoría (Grupo 1):</strong>
+          <p style="font-size: 13px; margin-top: 4px; color: var(--text-secondary);">
+            Se incorporaron las tablas catálogo 3NF <span class="code-tag">noticia</span> (<span class="code-tag">id_not</span>) y <span class="code-tag">causa_retiro</span> (<span class="code-tag">id_cre</span>). El Grupo 1 cuenta con <strong>100% de cobertura técnica y funcional en sus 30 requerimientos</strong>.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Group 2 -->
+    <div class="group-card" id="card-g2">
+      <div class="group-header" onclick="toggleCard('body-g2')">
+        <div class="group-title-group">
+          <span class="group-badge" style="background: #06b6d4;">GRUPO 2</span>
+          <span class="group-name">Grupo 2 — Mauricio Rodríguez (Evaluaciones, Expediente, Promociones y Kárdex)</span>
+          <span style="background: rgba(6, 182, 212, 0.15); color: #06b6d4; border: 1px solid rgba(6, 182, 212, 0.3); font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 12px;">🎨 Cian / Turquesa (`#06b6d4`)</span>
+        </div>
+        <div>
+          <span class="badge badge-green">🟢 COMPLETADO (100% Cobertura)</span>
+        </div>
+      </div>
+      <div class="group-body" id="body-g2">
+        <h4 style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">👥 Integrantes del Equipo (5):</h4>
+        <div class="roster-grid">
+          <div class="roster-item"><span class="roster-role">Líder / Dev</span> <strong>Mauricio Rodríguez</strong> (C.I. 31.057.057)</div>
+          <div class="roster-item"><span class="roster-role" style="background: var(--accent-cyan);">Analista</span> <strong>María Rosa Márquez</strong> (C.I. 31.355.948)</div>
+          <div class="roster-item"><span class="roster-role" style="background: var(--accent-amber);">Analista/QA</span> <strong>David Morey</strong> (C.I. 31.114.665)</div>
+          <div class="roster-item"><span class="roster-role" style="background: var(--accent-purple);">Dev</span> <strong>Edgar Bravo</strong> (C.I. 31.356.588)</div>
+          <div class="roster-item"><span class="roster-role" style="background: var(--accent-purple);">Dev</span> <strong>Amilcar Delgado</strong> (C.I. 32.097.472)</div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-top: 16px; margin-bottom: 20px;">
+          <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 8px; padding: 14px;">
+            <h5 style="font-size: 13px; font-weight: 700; color: #34d399; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+              <span>✍️ Tablas de Escritura / Propiedad Directa (CRUD / Mutación): 25 Tablas</span>
+            </h5>
+            <p style="font-size: 11.5px; color: var(--text-secondary); margin-bottom: 8px;">
+              El Grupo 2 administra la inserción, edición, eliminación y lógica de negocio sobre:
+            </p>
+            <div class="tables-pill-container">
+              <span class="table-pill-write">estudiante</span><span class="table-pill-write">profesor</span><span class="table-pill-write">persona</span><span class="table-pill-write">autoridad</span><span class="table-pill-write">tipo_autoridad</span><span class="table-pill-write">cargo</span><span class="table-pill-write">categoria_docente</span><span class="table-pill-write">condicion_residencia 🆕</span><span class="table-pill-write">condicion_laboral</span><span class="table-pill-write">dedicacion_docente</span><span class="table-pill-write">etnia</span><span class="table-pill-write">profesion</span><span class="table-pill-write">perfil_bienestar</span><span class="table-pill-write">expediente_estudiante</span><span class="table-pill-write">historial_estatus_estudiante</span><span class="table-pill-write">plan_evaluacion</span><span class="table-pill-write">calificacion</span><span class="table-pill-write">calificacion_corte</span><span class="table-pill-write">acta_calificacion</span><span class="table-pill-write">libro_acta</span><span class="table-pill-write">historico_registro_anual</span><span class="table-pill-write">promocion</span><span class="table-pill-write">promocion_estudiante</span><span class="table-pill-write">promocion_pnf</span><span class="table-pill-write">solicitud_grado</span>
+            </div>
+          </div>
+          <div style="background: rgba(6, 182, 212, 0.05); border: 1px solid rgba(6, 182, 212, 0.2); border-radius: 8px; padding: 14px;">
+            <h5 style="font-size: 13px; font-weight: 700; color: #38bdf8; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+              <span>🔍 Tablas de Consulta Obligatoria (Read-Only / Referencia Cruzada):</span>
+            </h5>
+            <p style="font-size: 11.5px; color: var(--text-secondary); margin-bottom: 8px;">
+              El Grupo 2 consulta (SELECT / JOIN) como referencia sin mutar datos en:
+            </p>
+            <div class="tables-pill-container">
+              <span class="table-pill-read">seccion</span><span class="table-pill-read">unidad_curricular</span><span class="table-pill-read">lapso_academico</span><span class="table-pill-read">malla_curricular</span><span class="table-pill-read">user</span><span class="table-pill-read">sede</span><span class="table-pill-read">pnf</span>
+            </div>
+          </div>
+        </div>
+
+        <h4 style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-top: 24px; margin-bottom: 8px;">📋 ANEXO A: Especificación de Maestros (13 CRUDs)</h4>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Maestro Especificado</th>
+              <th>Propósito en Documento</th>
+              <th>Tabla en Nuevo-SOGAC.js</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td><strong>Ficha Civil de Personas</strong></td>
+              <td>Información de identidad y datos demográficos</td>
+              <td><span class="code-tag">persona</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td><strong>Ficha de Estudiante</strong></td>
+              <td>Expediente y estatus académico activo</td>
+              <td><span class="code-tag">estudiante</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td><strong>Ficha Docente / Profesor</strong></td>
+              <td>Perfil y vinculación laboral del cuerpo docente</td>
+              <td><span class="code-tag">profesor</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td><strong>Autoridades Institucionales</strong></td>
+              <td>Directivos, rectores y jefes de departamento</td>
+              <td><span class="code-tag">autoridad</span> + <span class="code-tag">tipo_autoridad</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td><strong>Cargos Institucionales</strong></td>
+              <td>Catálogo de funciones docentes/administrativas</td>
+              <td><span class="code-tag">cargo</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td><strong>Categoría Docente</strong></td>
+              <td>Escalafón (Instructor, Asistente, Agregado, etc.)</td>
+              <td><span class="code-tag">categoria_docente</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>7</td>
+              <td><strong>Dedicación Docente</strong></td>
+              <td>Carga horaria (Tiempo Completo, Exclusiva, etc.)</td>
+              <td><span class="code-tag">dedicacion_docente</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>8</td>
+              <td><strong>Profesiones y Títulos</strong></td>
+              <td>Catálogo de perfiles profesionales</td>
+              <td><span class="code-tag">profesion</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>9</td>
+              <td><strong>Etnias y Población Indígena</strong></td>
+              <td>Inclusión y caracterización demográfica</td>
+              <td><span class="code-tag">etnia</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>10</td>
+              <td><strong>Condición Laboral</strong></td>
+              <td>Relación contractual (Fijo, Contratado, Jubilado)</td>
+              <td><span class="code-tag">condicion_laboral</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>11</td>
+              <td><strong>Condición de Residencia</strong></td>
+              <td>Catálogo 3NF de situación habitacional</td>
+              <td><span class="code-tag">condicion_residencia</span> 🆕</td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>12</td>
+              <td><strong>Perfil Socio-Bienestar</strong></td>
+              <td>Atención médica, becas e indicadores socioeconómicos</td>
+              <td><span class="code-tag">perfil_bienestar</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>13</td>
+              <td><strong>Expedientes Estudiantiles</strong></td>
+              <td>Archivo físico/digital de antecedentes y solvencias</td>
+              <td><span class="code-tag">expediente_estudiante</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4 style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-top: 24px; margin-bottom: 8px;">🔄 ANEXO B: Especificación de Transacciones (15 Flujos)</h4>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Transacción Especificada</th>
+              <th>Lógica e Integración</th>
+              <th>Tablas en Nuevo-SOGAC.js</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td><strong>Apertura de Expediente Académico</strong></td>
+              <td>Ficha técnica del estudiante y recaudos</td>
+              <td><span class="code-tag">expediente_estudiante</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td><strong>Trazabilidad Estatus Estudiantil</strong></td>
+              <td>Cambios de estado (Regular, Retirado, Egreso)</td>
+              <td><span class="code-tag">historial_estatus_estudiante</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td><strong>Aprobación Plan de Evaluación</strong></td>
+              <td>Ponderaciones, hitos y fechas por sección</td>
+              <td><span class="code-tag">plan_evaluacion</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td><strong>Carga de Calificaciones</strong></td>
+              <td>Ingreso de notas continuas por asignatura</td>
+              <td><span class="code-tag">calificacion</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td><strong>Carga por Corte de Evaluación</strong></td>
+              <td>Definición parcial de cortes acumulados</td>
+              <td><span class="code-tag">calificacion_corte</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td><strong>Cierre de Actas de Notas</strong></td>
+              <td>Generación y firma digital/física de actas</td>
+              <td><span class="code-tag">acta_calificacion</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>7</td>
+              <td><strong>Empaste Libro de Actas</strong></td>
+              <td>Foliado y encapitulado de actas de sección</td>
+              <td><span class="code-tag">libro_acta</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>8</td>
+              <td><strong>Histórico Registro Anual (HRA)</strong></td>
+              <td>Consolidación anual e historial indeleble</td>
+              <td><span class="code-tag">historico_registro_anual</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>9</td>
+              <td><strong>Promoción de Cohorte/PNF</strong></td>
+              <td>Creación de actos académicos de promoción</td>
+              <td><span class="code-tag">promocion</span> + <span class="code-tag">promocion_pnf</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>10</td>
+              <td><strong>Promoción por Estudiante</strong></td>
+              <td>Inclusión de egresados/promovidos a nómina</td>
+              <td><span class="code-tag">promocion_estudiante</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>11</td>
+              <td><strong>Procesamiento Solicitud de Grado</strong></td>
+              <td>Validación de requisitos y grado académico</td>
+              <td><span class="code-tag">solicitud_grado</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>12</td>
+              <td><strong>Asignación de Cargos Docentes</strong></td>
+              <td>Vinculación de profesores con cargos</td>
+              <td><span class="code-tag">profesor</span> + <span class="code-tag">cargo</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>13</td>
+              <td><strong>Nombramiento de Autoridades</strong></td>
+              <td>Registro de firmas autorizadas institucionalmente</td>
+              <td><span class="code-tag">autoridad</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>14</td>
+              <td><strong>Actualización Perfil de Bienestar</strong></td>
+              <td>Ficha socioeconómica y médica del estudiante</td>
+              <td><span class="code-tag">perfil_bienestar</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>15</td>
+              <td><strong>Registro de Vivienda y Empleo</strong></td>
+              <td>Control de residencia y empleo estudiantil</td>
+              <td><span class="code-tag">condicion_residencia</span> 🆕 + <span class="code-tag">condicion_laboral</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4 style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-top: 24px; margin-bottom: 8px;">📊 ANEXO C: Especificación de Reportes (20 Reportes)</h4>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Reporte Especificado</th>
+              <th>Filtros Aplicados / Dominio</th>
+              <th>Formato</th>
+              <th>Viabilidad SQL</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1-5</td>
+              <td><strong>Kárdex de Notas y Certificaciones Académicas</strong></td>
+              <td>Histórico acumulado y promedio por alumno</td>
+              <td>PDF Oficial</td>
+              <td><span class="badge badge-green">100% Viable</span></td>
+            </tr>
+            <tr>
+              <td>6-10</td>
+              <td><strong>Actas Fin de Lapso y Libros de Actas Foliados</strong></td>
+              <td>Resumen por seccion, materia y docente</td>
+              <td>PDF Oficial</td>
+              <td><span class="badge badge-green">100% Viable</span></td>
+            </tr>
+            <tr>
+              <td>11-15</td>
+              <td><strong>Nóminas de Promoción y Cuadro de Honor / Mérito</strong></td>
+              <td>Clasificación por índice acumulado y egreso</td>
+              <td>PDF / Excel</td>
+              <td><span class="badge badge-green">100% Viable</span></td>
+            </tr>
+            <tr>
+              <td>16-20</td>
+              <td><strong>Estadísticas de Talento Humano y Perfil Estudiantil</strong></td>
+              <td>Caracterización docente, etnia y bienestar socioeconómico</td>
+              <td>PDF / Pantalla</td>
+              <td><span class="badge badge-green">100% Viable</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="margin-top: 20px; padding: 16px; background: rgba(16, 185, 129, 0.08); border-left: 4px solid var(--accent-emerald); border-radius: 6px;">
+          <strong style="color: var(--accent-emerald);">🎉 Estado Final de Auditoría (Grupo 2):</strong>
+          <p style="font-size: 13px; margin-top: 4px; color: var(--text-secondary);">
+            Se implementó la tabla catálogo 3NF <span class="code-tag">condicion_residencia</span> (<span class="code-tag">id_cre</span>). El Grupo 2 cuenta con <strong>100% de cobertura técnica y funcional en sus 48 requerimientos</strong>.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Group 3 -->
+    <div class="group-card" id="card-g3">
+      <div class="group-header" onclick="toggleCard('body-g3')">
+        <div class="group-title-group">
+          <span class="group-badge" style="background: #ef4444;">GRUPO 3</span>
+          <span class="group-name">Grupo 3 — Ángel Gonzales (Geográfico, Estructura Académica, Oferta y Horarios)</span>
+          <span style="background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 12px;">🎨 Rojo Carmesí (`#ef4444`)</span>
+        </div>
+        <div>
+          <span class="badge badge-green">🟢 COMPLETADO (100% Cobertura)</span>
+        </div>
+      </div>
+      <div class="group-body" id="body-g3">
+        <h4 style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">👥 Integrantes del Equipo (5):</h4>
+        <div class="roster-grid">
+          <div class="roster-item"><span class="roster-role">Líder / Dev</span> <strong>Ángel Gonzales</strong> (C.I. 31.009.430)</div>
+          <div class="roster-item"><span class="roster-role" style="background: var(--accent-cyan);">Analista</span> <strong>Alejandro Aguirrez</strong> (C.I. 31.459.869)</div>
+          <div class="roster-item"><span class="roster-role" style="background: var(--accent-amber);">QA</span> <strong>Miguel Hernández</strong> (C.I. 32.114.408)</div>
+          <div class="roster-item"><span class="roster-role" style="background: var(--accent-amber);">QA</span> <strong>Dixon Hernández</strong> (C.I. 30.923.015)</div>
+          <div class="roster-item"><span class="roster-role" style="background: var(--accent-purple);">Dev</span> <strong>Enmanuel Rodríguez</strong> (C.I. 32.103.498)</div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-top: 16px; margin-bottom: 20px;">
+          <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 8px; padding: 14px;">
+            <h5 style="font-size: 13px; font-weight: 700; color: #34d399; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+              <span>✍️ Tablas de Escritura / Propiedad Directa (CRUD / Mutación): 25 Tablas</span>
+            </h5>
+            <p style="font-size: 11.5px; color: var(--text-secondary); margin-bottom: 8px;">
+              El Grupo 3 administra la inserción, edición, eliminación y lógica de negocio sobre:
+            </p>
+            <div class="tables-pill-container">
+              <span class="table-pill-write">pais</span><span class="table-pill-write">estado</span><span class="table-pill-write">municipio</span><span class="table-pill-write">parroquia</span><span class="table-pill-write">localidad</span><span class="table-pill-write">universidad</span><span class="table-pill-write">sede</span><span class="table-pill-write">pnf</span><span class="table-pill-write">malla_curricular</span><span class="table-pill-write">malla_curricular_detalle</span><span class="table-pill-write">unidad_curricular</span><span class="table-pill-write">tipo_unidad_curricular</span><span class="table-pill-write">eje_curricular</span><span class="table-pill-write">trayecto</span><span class="table-pill-write">tipo_periodo</span><span class="table-pill-write">ano_academico</span><span class="table-pill-write">lapso_academico</span><span class="table-pill-write">corte_lapso</span><span class="table-pill-write">cohorte</span><span class="table-pill-write">cohorte_sede</span><span class="table-pill-write">seccion</span><span class="table-pill-write">carga_academica</span><span class="table-pill-write">aula</span><span class="table-pill-write">tipo_aula 🆕</span><span class="table-pill-write">horario</span>
+            </div>
+          </div>
+          <div style="background: rgba(6, 182, 212, 0.05); border: 1px solid rgba(6, 182, 212, 0.2); border-radius: 8px; padding: 14px;">
+            <h5 style="font-size: 13px; font-weight: 700; color: #38bdf8; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+              <span>🔍 Tablas de Consulta Obligatoria (Read-Only / Referencia Cruzada):</span>
+            </h5>
+            <p style="font-size: 11.5px; color: var(--text-secondary); margin-bottom: 8px;">
+              El Grupo 3 consulta (SELECT / JOIN) como referencia sin mutar datos en:
+            </p>
+            <div class="tables-pill-container">
+              <span class="table-pill-read">profesor</span><span class="table-pill-read">user</span><span class="table-pill-read">status</span>
+            </div>
+          </div>
+        </div>
+
+        <h4 style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-top: 24px; margin-bottom: 8px;">📋 ANEXO A: Especificación de Maestros (12 CRUDs)</h4>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Maestro Especificado</th>
+              <th>Propósito en Documento</th>
+              <th>Tabla en Nuevo-SOGAC.js</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td><strong>Estructura Geográfica Nacional</strong></td>
+              <td>Países, Estados, Municipios, Parroquias y Localidades</td>
+              <td><span class="code-tag">pais</span> ... <span class="code-tag">localidad</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td><strong>Universidades y Sedes</strong></td>
+              <td>Organización territorial universitaria</td>
+              <td><span class="code-tag">universidad</span> + <span class="code-tag">sede</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td><strong>Programas Nacionales de Formación (PNF)</strong></td>
+              <td>Carreras y programas académicos ofertados</td>
+              <td><span class="code-tag">pnf</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td><strong>Mallas Curriculares y Detalle</strong></td>
+              <td>Diseño curricular y planes de estudio</td>
+              <td><span class="code-tag">malla_curricular</span> + <span class="code-tag">malla_curricular_detalle</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td><strong>Unidades Curriculares</strong></td>
+              <td>Asignaturas, materias y talleres del pensum</td>
+              <td><span class="code-tag">unidad_curricular</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td><strong>Tipos y Ejes Curriculares</strong></td>
+              <td>Clasificación (Obligatoria, Electiva, Eje Formativo)</td>
+              <td><span class="code-tag">tipo_unidad_curricular</span> + <span class="code-tag">eje_curricular</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>7</td>
+              <td><strong>Trayectos y Tipos de Período</strong></td>
+              <td>Estructura de avance (Trayecto I al IV, Semestral/Anual)</td>
+              <td><span class="code-tag">trayecto</span> + <span class="code-tag">tipo_periodo</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>8</td>
+              <td><strong>Años Académicos</strong></td>
+              <td>Calendario lectivo anual</td>
+              <td><span class="code-tag">ano_academico</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>9</td>
+              <td><strong>Lapsos Académicos y Cortes</strong></td>
+              <td>Periodos lectivos activos y cortes de evaluación</td>
+              <td><span class="code-tag">lapso_academico</span> + <span class="code-tag">corte_lapso</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>10</td>
+              <td><strong>Cohortes por Sede</strong></td>
+              <td>Agrupación de promociones territoriales</td>
+              <td><span class="code-tag">cohorte</span> + <span class="code-tag">cohorte_sede</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>11</td>
+              <td><strong>Aulas y Ambientes Físicos</strong></td>
+              <td>Catálogo 3NF de recintos y tipos de ambiente</td>
+              <td><span class="code-tag">aula</span> + <span class="code-tag">tipo_aula</span> 🆕</td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>12</td>
+              <td><strong>Secciones Académicas</strong></td>
+              <td>Grupos de estudio por materia, sede y turno</td>
+              <td><span class="code-tag">seccion</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4 style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-top: 24px; margin-bottom: 8px;">🔄 ANEXO B: Especificación de Transacciones (7 Flujos)</h4>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Transacción Especificada</th>
+              <th>Lógica e Integración</th>
+              <th>Tablas en Nuevo-SOGAC.js</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td><strong>Diseño y Configuración de Malla</strong></td>
+              <td>Asignación de materias y unidades de crédito</td>
+              <td><span class="code-tag">malla_curricular</span> + <span class="code-tag">malla_curricular_detalle</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td><strong>Apertura de Lapso Académico</strong></td>
+              <td>Planificación de fechas y cortes de nota</td>
+              <td><span class="code-tag">lapso_academico</span> + <span class="code-tag">corte_lapso</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td><strong>Asignación Cohorte-Sede</strong></td>
+              <td>Vinculación de promociones en sedes regionales</td>
+              <td><span class="code-tag">cohorte_sede</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td><strong>Creación y Apertura de Secciones</strong></td>
+              <td>Parametrización de cupos y aulas asignadas</td>
+              <td><span class="code-tag">seccion</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td><strong>Asignación Carga Académica Docente</strong></td>
+              <td>Asignación de profesores a secciones</td>
+              <td><span class="code-tag">carga_academica</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td><strong>Programación de Horarios por Aula</strong></td>
+              <td>Distribución horaria sin solapamiento de bloques</td>
+              <td><span class="code-tag">horario</span> + <span class="code-tag">aula</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>7</td>
+              <td><strong>Clasificación de Ambientes Físicos</strong></td>
+              <td>Gestión de laboratorios, talleres y aulas teóricas</td>
+              <td><span class="code-tag">tipo_aula</span> 🆕 + <span class="code-tag">aula</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4 style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-top: 24px; margin-bottom: 8px;">📊 ANEXO C: Especificación de Reportes (7 Reportes)</h4>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Reporte Especificado</th>
+              <th>Filtros Aplicados / Dominio</th>
+              <th>Formato</th>
+              <th>Viabilidad SQL</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td><strong>Directorio Geográfico Institucional</strong></td>
+              <td>Mapeo territorial de sedes y dependencias</td>
+              <td>PDF / Pantalla</td>
+              <td><span class="badge badge-green">100% Viable</span></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td><strong>Pensum / Malla Curricular Oficial por PNF</strong></td>
+              <td>Estructura de prelaciones y créditos por trayecto</td>
+              <td>PDF Oficial</td>
+              <td><span class="badge badge-green">100% Viable</span></td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td><strong>Distribución de Cargas Académicas Docentes</strong></td>
+              <td>Asignación de horas por profesor y sección</td>
+              <td>PDF / Excel</td>
+              <td><span class="badge badge-green">100% Viable</span></td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td><strong>Matriz Horaria por Aula y Sección</strong></td>
+              <td>Ocupación semanal por ambiente y bloque</td>
+              <td>PDF / Pantalla</td>
+              <td><span class="badge badge-green">100% Viable</span></td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td><strong>Inventario y Capacidad de Aulas</strong></td>
+              <td>Disponibilidad y tipo de aulas físicas</td>
+              <td>PDF / Excel</td>
+              <td><span class="badge badge-green">100% Viable</span></td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td><strong>Calendario de Lapsos y Cortes Activos</strong></td>
+              <td>Programación temporal de evaluaciones</td>
+              <td>PDF Oficial</td>
+              <td><span class="badge badge-green">100% Viable</span></td>
+            </tr>
+            <tr>
+              <td>7</td>
+              <td><strong>Distribución Territorial de Cohortes</strong></td>
+              <td>Matrícula activa agrupada por cohorte y sede</td>
+              <td>PDF / Pantalla</td>
+              <td><span class="badge badge-green">100% Viable</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="margin-top: 20px; padding: 16px; background: rgba(16, 185, 129, 0.08); border-left: 4px solid var(--accent-emerald); border-radius: 6px;">
+          <strong style="color: var(--accent-emerald);">🎉 Estado Final de Auditoría (Grupo 3):</strong>
+          <p style="font-size: 13px; margin-top: 4px; color: var(--text-secondary);">
+            Se implementó la tabla catálogo 3NF <span class="code-tag">tipo_aula</span> (<span class="code-tag">id_tau</span>). El Grupo 3 cuenta con <strong>100% de cobertura técnica y funcional en sus 26 requerimientos</strong>.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Group 4 -->
+    <div class="group-card" id="card-g4">
+      <div class="group-header" onclick="toggleCard('body-g4')">
+        <div class="group-title-group">
+          <span class="group-badge" style="background: #f59e0b;">GRUPO 4</span>
+          <span class="group-name">Grupo 4 — Luis Araguren (Admisión, Censo, Notificaciones, Proyectos y Titulación)</span>
+          <span style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 12px;">🎨 Ámbar / Naranja (`#f59e0b`)</span>
+        </div>
+        <div>
+          <span class="badge badge-green">🟢 COMPLETADO (100% Cobertura)</span>
+        </div>
+      </div>
+      <div class="group-body" id="body-g4">
+        
+        <h4 style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">👥 Integrantes del Equipo (5):</h4>
+        <div class="roster-grid">
+          <div class="roster-item"><span class="roster-role">Integrante</span> <strong>Luis Araguren</strong> (C.I. 31.812.526)</div>
+          <div class="roster-item"><span class="roster-role" style="background: var(--accent-purple);">Integrante</span> <strong>Luis Abreu</strong> (C.I. 32.651.933)</div>
+          <div class="roster-item"><span class="roster-role" style="background: var(--accent-purple);">Integrante</span> <strong>Andrés Díaz</strong> (C.I. 32.848.653)</div>
+          <div class="roster-item"><span class="roster-role" style="background: var(--accent-purple);">Integrante</span> <strong>Jean Morales</strong> (C.I. 31.967.400)</div>
+          <div class="roster-item"><span class="roster-role" style="background: var(--accent-purple);">Integrante</span> <strong>José Gregorio Palacios</strong> (C.I. 28.503.545)</div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-top: 16px; margin-bottom: 20px;">
+          <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 8px; padding: 14px;">
+            <h5 style="font-size: 13px; font-weight: 700; color: #34d399; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+              <span>✍️ Tablas de Escritura / Alta Inicial y Administración (CRUD / Mutación): 20 Tablas</span>
+            </h5>
+            <p style="font-size: 11.5px; color: var(--text-secondary); margin-bottom: 8px;">
+              El Grupo 4 administra la inserción, edición y alta de aspirantes/titulados sobre:
+            </p>
+            <div class="tables-pill-container">
+              <span class="table-pill-write">persona</span><span class="table-pill-write">telefono_persona</span><span class="table-pill-write">tipo_telefono</span><span class="table-pill-write">sistema_estudio_bachiller</span><span class="table-pill-write">rama_estudio_bachiller</span><span class="table-pill-write">expediente_estudiante</span><span class="table-pill-write">estudiante</span><span class="table-pill-write">user</span><span class="table-pill-write">rol</span><span class="table-pill-write">usuario_rol</span><span class="table-pill-write">proceso_admision</span><span class="table-pill-write">documento_requisito</span><span class="table-pill-write">notificacion_correo 🆕</span><span class="table-pill-write">proyecto_investigacion</span><span class="table-pill-write">integrante_proyecto</span><span class="table-pill-write">jurado_proyecto</span><span class="table-pill-write">solicitud_grado</span><span class="table-pill-write">qr_validated_generated_titulo</span><span class="table-pill-write">bitacora_sistema</span><span class="table-pill-write">configuracion_sistema</span>
+            </div>
+          </div>
+          <div style="background: rgba(6, 182, 212, 0.05); border: 1px solid rgba(6, 182, 212, 0.2); border-radius: 8px; padding: 14px;">
+            <h5 style="font-size: 13px; font-weight: 700; color: #38bdf8; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+              <span>🔍 Tablas de Consulta Obligatoria (Read-Only / Referencia Cruzada):</span>
+            </h5>
+            <p style="font-size: 11.5px; color: var(--text-secondary); margin-bottom: 8px;">
+              El Grupo 4 consulta (SELECT / JOIN) como referencia sin mutar datos en:
+            </p>
+            <div class="tables-pill-container">
+              <span class="table-pill-read">inscripcion</span><span class="table-pill-read">inscripcion_detalle</span><span class="table-pill-read">seccion</span><span class="table-pill-read">sede</span><span class="table-pill-read">pnf</span><span class="table-pill-read">malla_curricular</span><span class="table-pill-read">historico_registro_anual</span>
+            </div>
+          </div>
+        </div>
+
+        <h4 style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-top: 24px; margin-bottom: 8px;">📋 ANEXO A: Especificación de Maestros (6 CRUDs)</h4>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Maestro Especificado</th>
+              <th>Propósito en Documento</th>
+              <th>Tabla en Nuevo-SOGAC.js</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td><strong>Datos personales</strong></td>
+              <td>Información básica, demográfica y contacto</td>
+              <td><span class="code-tag">persona</span> + <span class="code-tag">telefono_persona</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td><strong>Información Académica</strong></td>
+              <td>Antecedentes educativos de bachillerato</td>
+              <td><span class="code-tag">sistema_estudio_bachiller</span> + <span class="code-tag">expediente_estudiante</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td><strong>Cuenta y seguridad</strong></td>
+              <td>Credenciales, recuperación de clave y roles</td>
+              <td><span class="code-tag">user</span> + <span class="code-tag">rol</span> + <span class="code-tag">usuario_rol</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td><strong>Registro de Aspirante</strong></td>
+              <td>Creación de perfil inicial e ingreso</td>
+              <td><span class="code-tag">proceso_admision</span> + <span class="code-tag">estudiante</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td><strong>Mi inscripción</strong></td>
+              <td>Selección de trayecto, sede y turno</td>
+              <td><span class="code-tag">inscripcion</span> + <span class="code-tag">inscripcion_detalle</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td><strong>Mis Documentos</strong></td>
+              <td>Carga y validación de cédula, títulos, notas</td>
+              <td><span class="code-tag">documento_requisito</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4 style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-top: 24px; margin-bottom: 8px;">🔄 ANEXO B: Especificación de Transacciones (6 Flujos)</h4>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Transacción Especificada</th>
+              <th>Lógica e Integración</th>
+              <th>Tablas en Nuevo-SOGAC.js</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td><strong>Emisión de Ficha de Preinscripción</strong></td>
+              <td>Generación de comprobante civil y académico de admisión</td>
+              <td><span class="code-tag">inscripcion</span> + <span class="code-tag">estudiante</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td><strong>Control Transaccional de Cupos (Sede/Turno)</strong></td>
+              <td>Gestión de disponibilidad de cupos por sección sin sobreventa</td>
+              <td><span class="code-tag">seccion</span> (<span class="code-tag">capacidad_max_sec</span>)</td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td><strong>Consignación y Validación de Solicitudes</strong></td>
+              <td>Carga, revisión y aprobación digital de recaudos</td>
+              <td><span class="code-tag">documento_requisito</span> + <span class="code-tag">expediente_estudiante</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td><strong>Asignación de Citas Presenciales</strong></td>
+              <td>Programación de turnos presenciales de admisión</td>
+              <td><span class="code-tag">proceso_admision</span> + <span class="code-tag">evento_calendario</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td><strong>Cola y Envío Masivo de Notificaciones</strong></td>
+              <td>Procesamiento asíncrono de emails y avisos</td>
+              <td><span class="code-tag">notificacion_correo</span> 🆕</td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td><strong>Auditoría y Bitácora de Eventos de Usuario</strong></td>
+              <td>Triggers de auditoría INSERT/UPDATE/DELETE sobre sesiones</td>
+              <td><span class="code-tag">bitacora_sistema</span></td>
+              <td><span class="badge badge-green">100% Soportado</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4 style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-top: 24px; margin-bottom: 8px;">📊 ANEXO C: Especificación de Reportes (31 Reportes)</h4>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Reporte Especificado</th>
+              <th>Filtros Aplicados / Dominio</th>
+              <th>Formato</th>
+              <th>Viabilidad SQL</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1-7</td>
+              <td><strong>Actas y Certificaciones de Grado/Título/Malla</strong></td>
+              <td>Solicitud de grado y comprobantes oficiales</td>
+              <td>PDF / Pantalla</td>
+              <td><span class="badge badge-green">100% Viable</span></td>
+            </tr>
+            <tr>
+              <td>8-10</td>
+              <td><strong>Constancias Culminación, Egresado y Posición</strong></td>
+              <td>Rendimiento acumulado y cuadro de mérito</td>
+              <td>PDF Oficial</td>
+              <td><span class="badge badge-green">100% Viable</span></td>
+            </tr>
+            <tr>
+              <td>11-15</td>
+              <td><strong>Listados de Aspirantes y Ceremonias</strong></td>
+              <td>Admisión, lugar de nacimiento y actos</td>
+              <td>PDF / Excel</td>
+              <td><span class="badge badge-green">100% Viable</span></td>
+            </tr>
+            <tr>
+              <td>16-25</td>
+              <td><strong>Notas Aspirantes, Certificadas y Títulos</strong></td>
+              <td>Kárdex impreso oficial por lotes</td>
+              <td>PDF Oficial</td>
+              <td><span class="badge badge-green">100% Viable</span></td>
+            </tr>
+            <tr>
+              <td>26-31</td>
+              <td><strong>Verificación Título y Solicitudes de Retiro/Cambios</strong></td>
+              <td>Trámites administrativos y código QR</td>
+              <td>Pantalla / PDF</td>
+              <td><span class="badge badge-green">100% Viable</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="margin-top: 20px; padding: 16px; background: rgba(16, 185, 129, 0.08); border-left: 4px solid var(--accent-emerald); border-radius: 6px;">
+          <strong style="color: var(--accent-emerald);">🎉 Estado Final de Auditoría (Grupo 4):</strong>
+          <p style="font-size: 13px; margin-top: 4px; color: var(--text-secondary);">
+            Se implementó la tabla catálogo <span class="code-tag">notificacion_correo</span> 3NF (<span class="code-tag">id_nco</span>) para envíos masivos. El Grupo 4 cuenta con <strong>100% de cobertura técnica y funcional en sus 43 requerimientos</strong>.
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+    
+    <!-- Detailed Section for Unassigned Tables -->
+    <div class="group-card" id="card-unassigned" style="border-color: rgba(245, 158, 11, 0.4);">
+      <div class="group-header" onclick="toggleCard('body-unassigned')" style="background: rgba(245, 158, 11, 0.05);">
+        <div class="group-title-group">
+          <span class="group-badge" style="background: var(--accent-amber); color: #000;">TABLAS SIN GRUPO</span>
+          <span class="group-name">Catálogo Detallado de Tablas Aún Sin Grupo Asignado (30 Tablas Disponibles)</span>
+        </div>
+        <div>
+          <span class="badge badge-amber" style="font-size: 12px; padding: 6px 14px;">📋 30 Tablas Listas para Asignar</span>
+        </div>
+      </div>
+      <div class="group-body" id="body-unassigned">
+        <p style="color: var(--text-secondary); font-size: 13.5px; margin-bottom: 20px;">
+          A continuación se presenta el desglose exhaustivo de las <strong>30 tablas del modelo Nuevo-SOGAC.js</strong> que no forman parte de los anexos actuales de los Grupos 1, 2, 3 ni 4. Cada tabla especifica su nombre oficial, módulo temático de pertenencia, reseña de uso y el grupo sugerido para su eventual incorporación:
+        </p>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="width: 45px;">#</th>
+              <th style="width: 210px;">Nombre de Tabla (DBML)</th>
+              <th style="width: 250px;">Módulo en Nuevo-SOGAC.js</th>
+              <th>Reseña y Propósito de Uso</th>
+              <th style="width: 170px;">Grupo Sugerido</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="font-weight: 700; color: var(--text-muted); text-align: center;">1</td>
+              <td><span class="code-tag" style="color: #fde047; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); font-weight: 700;">api_access_log</span></td>
+              <td><span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Módulo 11: Seguridad, Auditoría y Configuración</span></td>
+              <td style="font-size: 12px; color: var(--text-primary); line-height: 1.5;">Registra el historial de peticiones HTTP, direcciones IP, tiempos de respuesta y consumo de los endpoints de la API (Rate Limiting y Auditoría).</td>
+              <td><span class="badge badge-amber" style="font-size: 10px; font-weight: 600;">Grupo 1 / Grupo 4</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight: 700; color: var(--text-muted); text-align: center;">2</td>
+              <td><span class="code-tag" style="color: #fde047; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); font-weight: 700;">api_allowed_table</span></td>
+              <td><span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Módulo 11: Seguridad, Auditoría y Configuración</span></td>
+              <td style="font-size: 12px; color: var(--text-primary); line-height: 1.5;">Lista blanca que define explícitamente cuáles tablas del sistema pueden ser expuestas o consultadas a través de la API Gateway externa.</td>
+              <td><span class="badge badge-amber" style="font-size: 10px; font-weight: 600;">Grupo 1 / Grupo 4</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight: 700; color: var(--text-muted); text-align: center;">3</td>
+              <td><span class="code-tag" style="color: #fde047; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); font-weight: 700;">api_key</span></td>
+              <td><span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Módulo 11: Seguridad, Auditoría y Configuración</span></td>
+              <td style="font-size: 12px; color: var(--text-primary); line-height: 1.5;">Almacena y gestiona tokens de acceso Bearer / OAuth (llaves API) asignadas a clientes o sistemas externos para autenticar consumos.</td>
+              <td><span class="badge badge-amber" style="font-size: 10px; font-weight: 600;">Grupo 1 / Grupo 4</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight: 700; color: var(--text-muted); text-align: center;">4</td>
+              <td><span class="code-tag" style="color: #fde047; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); font-weight: 700;">api_permission</span></td>
+              <td><span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Módulo 11: Seguridad, Auditoría y Configuración</span></td>
+              <td style="font-size: 12px; color: var(--text-primary); line-height: 1.5;">Define los permisos granulares (lectura, escritura, scope) asignados a cada API Key o sistema externo consumidor.</td>
+              <td><span class="badge badge-amber" style="font-size: 10px; font-weight: 600;">Grupo 1 / Grupo 4</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight: 700; color: var(--text-muted); text-align: center;">5</td>
+              <td><span class="code-tag" style="color: #fde047; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); font-weight: 700;">api_system</span></td>
+              <td><span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Módulo 11: Seguridad, Auditoría y Configuración</span></td>
+              <td style="font-size: 12px; color: var(--text-primary); line-height: 1.5;">Registro de aplicaciones o sistemas de terceros (ej. MPPEU, OPSU, pasarelas) autorizados para conectarse vía REST/Webhooks.</td>
+              <td><span class="badge badge-amber" style="font-size: 10px; font-weight: 600;">Grupo 1 / Grupo 4</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight: 700; color: var(--text-muted); text-align: center;">6</td>
+              <td><span class="code-tag" style="color: #fde047; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); font-weight: 700;">asistencia_clase</span></td>
+              <td><span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Módulo 9: Evaluaciones, Calificaciones y Actas</span></td>
+              <td style="font-size: 12px; color: var(--text-primary); line-height: 1.5;">Permite el pase de lista y registro diario/semanal de asistencias o inasistencias de los estudiantes por cada encuentro de clase.</td>
+              <td><span class="badge badge-amber" style="font-size: 10px; font-weight: 600;">Grupo 2 / Grupo 3</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight: 700; color: var(--text-muted); text-align: center;">7</td>
+              <td><span class="code-tag" style="color: #fde047; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); font-weight: 700;">becado</span></td>
+              <td><span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Módulo 6: Identidad Civil y Expediente Estudiantil</span></td>
+              <td style="font-size: 12px; color: var(--text-primary); line-height: 1.5;">Registro y control de estudiantes beneficiarios de becas (Becas Trabajo, Ayudantías, Alimentos, Transporte) y montos asignados.</td>
+              <td><span class="badge badge-amber" style="font-size: 10px; font-weight: 600;">Grupo 2 / Grupo 4</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight: 700; color: var(--text-muted); text-align: center;">8</td>
+              <td><span class="code-tag" style="color: #fde047; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); font-weight: 700;">bloqueo_administrativo</span></td>
+              <td><span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Módulo 8: Control de Inscripciones y Trámites Académicos</span></td>
+              <td style="font-size: 12px; color: var(--text-primary); line-height: 1.5;">Congelamiento o suspensión temporal de la ficha del estudiante por deudas, sanciones disciplinarias o falta de recaudos obligatorios.</td>
+              <td><span class="badge badge-amber" style="font-size: 10px; font-weight: 600;">Grupo 1 / Grupo 2</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight: 700; color: var(--text-muted); text-align: center;">9</td>
+              <td><span class="code-tag" style="color: #fde047; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); font-weight: 700;">condicion</span></td>
+              <td><span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Módulo 2: Organización Institucional y Sedes</span></td>
+              <td style="font-size: 12px; color: var(--text-primary); line-height: 1.5;">Catálogo de estatus o condiciones operativas asignables a la universidad, sedes, departamentos o ambientes físicos.</td>
+              <td><span class="badge badge-amber" style="font-size: 10px; font-weight: 600;">Grupo 3 (Institucional)</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight: 700; color: var(--text-muted); text-align: center;">10</td>
+              <td><span class="code-tag" style="color: #fde047; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); font-weight: 700;">convalidacion</span></td>
+              <td><span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Módulo 8: Control de Inscripciones y Trámites Académicos</span></td>
+              <td style="font-size: 12px; color: var(--text-primary); line-height: 1.5;">Registro de asignaturas convalidadas o homologadas externamente procedentes de otros pensums o universidades.</td>
+              <td><span class="badge badge-amber" style="font-size: 10px; font-weight: 600;">Grupo 1 / Grupo 3</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight: 700; color: var(--text-muted); text-align: center;">11</td>
+              <td><span class="code-tag" style="color: #fde047; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); font-weight: 700;">departamento</span></td>
+              <td><span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Módulo 2: Organización Institucional y Sedes</span></td>
+              <td style="font-size: 12px; color: var(--text-primary); line-height: 1.5;">Registro de departamentos o áreas matrices académicas (ej. Departamento de Informática, Administración, Agroalimentación).</td>
+              <td><span class="badge badge-amber" style="font-size: 10px; font-weight: 600;">Grupo 3 (Estructura)</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight: 700; color: var(--text-muted); text-align: center;">12</td>
+              <td><span class="code-tag" style="color: #fde047; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); font-weight: 700;">dependencia_institucion</span></td>
+              <td><span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Módulo 2: Organización Institucional y Sedes</span></td>
+              <td style="font-size: 12px; color: var(--text-primary); line-height: 1.5;">Catálogo de clasificación de dependencias institucionales (Pública, Privada, Autónoma, Territorial, etc.).</td>
+              <td><span class="badge badge-amber" style="font-size: 10px; font-weight: 600;">Grupo 3 (Institucional)</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight: 700; color: var(--text-muted); text-align: center;">13</td>
+              <td><span class="code-tag" style="color: #fde047; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); font-weight: 700;">discapacidad</span></td>
+              <td><span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Módulo 6: Identidad Civil y Expediente Estudiantil</span></td>
+              <td style="font-size: 12px; color: var(--text-primary); line-height: 1.5;">Catálogo 3NF de condiciones de diversidad funcional y necesidades especiales para políticas de inclusión y accesibilidad.</td>
+              <td><span class="badge badge-amber" style="font-size: 10px; font-weight: 600;">Grupo 2 / Grupo 4</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight: 700; color: var(--text-muted); text-align: center;">14</td>
+              <td><span class="code-tag" style="color: #fde047; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); font-weight: 700;">equivalencia_academica</span></td>
+              <td><span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Módulo 8: Control de Inscripciones y Trámites Académicos</span></td>
+              <td style="font-size: 12px; color: var(--text-primary); line-height: 1.5;">Registro del proceso y dictamen de homologación/reconocimiento de asignaturas cursadas en otras instituciones de educación superior.</td>
+              <td><span class="badge badge-amber" style="font-size: 10px; font-weight: 600;">Grupo 1 / Grupo 3</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight: 700; color: var(--text-muted); text-align: center;">15</td>
+              <td><span class="code-tag" style="color: #fde047; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); font-weight: 700;">escala_medicion</span></td>
+              <td><span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Módulo 9: Evaluaciones, Calificaciones y Actas</span></td>
+              <td style="font-size: 12px; color: var(--text-primary); line-height: 1.5;">Define los modelos de escala de evaluación institucional (ej. Escala 0-20 puntos, Cualitativa A-F, Aprobado/Reprobado).</td>
+              <td><span class="badge badge-amber" style="font-size: 10px; font-weight: 600;">Grupo 2 (Evaluaciones)</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight: 700; color: var(--text-muted); text-align: center;">16</td>
+              <td><span class="code-tag" style="color: #fde047; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); font-weight: 700;">escala_nota</span></td>
+              <td><span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Módulo 9: Evaluaciones, Calificaciones y Actas</span></td>
+              <td style="font-size: 12px; color: var(--text-primary); line-height: 1.5;">Tabla de equivalencias y ponderaciones para la conversión estandarizada de calificaciones e índices académicos acumulados.</td>
+              <td><span class="badge badge-amber" style="font-size: 10px; font-weight: 600;">Grupo 2 (Evaluaciones)</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight: 700; color: var(--text-muted); text-align: center;">17</td>
+              <td><span class="code-tag" style="color: #fde047; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); font-weight: 700;">estatus_solicitud_grado</span></td>
+              <td><span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Módulo 10: Titulación, Egresados y Certificaciones</span></td>
+              <td style="font-size: 12px; color: var(--text-primary); line-height: 1.5;">Catálogo de fases y estatus del flujo de solicitud de grado (En revisión, Créditos auditados, Aprobado en Consejo, Impreso).</td>
+              <td><span class="badge badge-amber" style="font-size: 10px; font-weight: 600;">Grupo 2 / Grupo 4</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight: 700; color: var(--text-muted); text-align: center;">18</td>
+              <td><span class="code-tag" style="color: #fde047; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); font-weight: 700;">evento</span></td>
+              <td><span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Módulo 11: Seguridad, Auditoría y Configuración</span></td>
+              <td style="font-size: 12px; color: var(--text-primary); line-height: 1.5;">Registro unificado tipo Syslog para capturar eventos de bajo nivel, excepciones de software y cambios de infraestructura.</td>
+              <td><span class="badge badge-amber" style="font-size: 10px; font-weight: 600;">Grupo 1 (Seguridad)</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight: 700; color: var(--text-muted); text-align: center;">19</td>
+              <td><span class="code-tag" style="color: #fde047; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); font-weight: 700;">evento_calendario</span></td>
+              <td><span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Módulo 4: Calendario y Planificación de Lapsos</span></td>
+              <td style="font-size: 12px; color: var(--text-primary); line-height: 1.5;">Registro de eventos singulares, feriados, inscripciones y fechas clave en el calendario lectivo institucional.</td>
+              <td><span class="badge badge-amber" style="font-size: 10px; font-weight: 600;">Grupo 3 (Calendario)</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight: 700; color: var(--text-muted); text-align: center;">20</td>
+              <td><span class="code-tag" style="color: #fde047; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); font-weight: 700;">experiencia_laboral_docente</span></td>
+              <td><span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Módulo 5: Talento Humano y Cuerpo Docente</span></td>
+              <td style="font-size: 12px; color: var(--text-primary); line-height: 1.5;">Antecedentes de empleos previos, cargos docentes o experiencia profesional externa declarada por el docente.</td>
+              <td><span class="badge badge-amber" style="font-size: 10px; font-weight: 600;">Grupo 2 (Talento Humano)</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight: 700; color: var(--text-muted); text-align: center;">21</td>
+              <td><span class="code-tag" style="color: #fde047; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); font-weight: 700;">inscripcion_per</span></td>
+              <td><span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Módulo 8: Control de Inscripciones y Trámites Académicos</span></td>
+              <td style="font-size: 12px; color: var(--text-primary); line-height: 1.5;">Ficha transaccional de inscripción de estudiantes en el Programa Especial de Recuperación (PER) para asignaturas reprobadas.</td>
+              <td><span class="badge badge-amber" style="font-size: 10px; font-weight: 600;">Grupo 1 (Inscripciones)</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight: 700; color: var(--text-muted); text-align: center;">22</td>
+              <td><span class="code-tag" style="color: #fde047; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); font-weight: 700;">promocion_estadistica_pnf</span></td>
+              <td><span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Módulo 10: Titulación, Egresados y Certificaciones</span></td>
+              <td style="font-size: 12px; color: var(--text-primary); line-height: 1.5;">Registro analítico y métricas precalculadas sobre tasas de egreso, retención y promoción académica por cohorte y PNF.</td>
+              <td><span class="badge badge-amber" style="font-size: 10px; font-weight: 600;">Grupo 2 / Grupo 4</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight: 700; color: var(--text-muted); text-align: center;">23</td>
+              <td><span class="code-tag" style="color: #fde047; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); font-weight: 700;">qr_validated_generated</span></td>
+              <td><span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Módulo 10: Titulación, Egresados y Certificaciones</span></td>
+              <td style="font-size: 12px; color: var(--text-primary); line-height: 1.5;">Trazabilidad y validación pública de códigos QR generados para verificación de autenticidad en documentos oficiales.</td>
+              <td><span class="badge badge-amber" style="font-size: 10px; font-weight: 600;">Grupo 4 / Grupo 1</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight: 700; color: var(--text-muted); text-align: center;">24</td>
+              <td><span class="code-tag" style="color: #fde047; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); font-weight: 700;">regla_prelacion</span></td>
+              <td><span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Módulo 3: Oferta y Estructura Académica (PNF/Mallas)</span></td>
+              <td style="font-size: 12px; color: var(--text-primary); line-height: 1.5;">Motor de reglas de prelación rígidas o blandas entre unidades curriculares de la malla de estudio.</td>
+              <td><span class="badge badge-amber" style="font-size: 10px; font-weight: 600;">Grupo 3 (Mallas)</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight: 700; color: var(--text-muted); text-align: center;">25</td>
+              <td><span class="code-tag" style="color: #fde047; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); font-weight: 700;">rol_mensaje_configuracion</span></td>
+              <td><span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Módulo 11: Seguridad, Auditoría y Configuración</span></td>
+              <td style="font-size: 12px; color: var(--text-primary); line-height: 1.5;">Personalización de mensajes, alertas y avisos de bienvenida en el dashboard configurables por rol de usuario.</td>
+              <td><span class="badge badge-amber" style="font-size: 10px; font-weight: 600;">Grupo 1 (Seguridad)</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight: 700; color: var(--text-muted); text-align: center;">26</td>
+              <td><span class="code-tag" style="color: #fde047; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); font-weight: 700;">salida_intermedia</span></td>
+              <td><span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Módulo 10: Titulación, Egresados y Certificaciones</span></td>
+              <td style="font-size: 12px; color: var(--text-primary); line-height: 1.5;">Registro y control de títulos intermedios o certificaciones de trayectoria (ej. TSU) otorgados antes del título final.</td>
+              <td><span class="badge badge-amber" style="font-size: 10px; font-weight: 600;">Grupo 2 / Grupo 4</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight: 700; color: var(--text-muted); text-align: center;">27</td>
+              <td><span class="code-tag" style="color: #fde047; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); font-weight: 700;">sede_pnf</span></td>
+              <td><span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Módulo 2: Organización Institucional y Sedes</span></td>
+              <td style="font-size: 12px; color: var(--text-primary); line-height: 1.5;">Tabla puente que autoriza y vincula formalmente cuáles PNF se imparten activamente en cada sede universitaria.</td>
+              <td><span class="badge badge-amber" style="font-size: 10px; font-weight: 600;">Grupo 3 (Estructura)</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight: 700; color: var(--text-muted); text-align: center;">28</td>
+              <td><span class="code-tag" style="color: #fde047; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); font-weight: 700;">status</span></td>
+              <td><span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Módulo 0: Catálogos Base Lógicos</span></td>
+              <td style="font-size: 12px; color: var(--text-primary); line-height: 1.5;">Catálogo maestro transversal de estados del sistema (Activo, Inactivo, Pendiente, Cancelado, Suspendido, etc.).</td>
+              <td><span class="badge badge-amber" style="font-size: 10px; font-weight: 600;">Catálogo Global (Transversal)</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight: 700; color: var(--text-muted); text-align: center;">29</td>
+              <td><span class="code-tag" style="color: #fde047; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); font-weight: 700;">tipo_condicion</span></td>
+              <td><span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Módulo 2: Organización Institucional y Sedes</span></td>
+              <td style="font-size: 12px; color: var(--text-primary); line-height: 1.5;">Catálogo de tipos o ámbitos de condición (ej. Infraestructura, Académica, Administrativa).</td>
+              <td><span class="badge badge-amber" style="font-size: 10px; font-weight: 600;">Grupo 3 (Institucional)</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight: 700; color: var(--text-muted); text-align: center;">30</td>
+              <td><span class="code-tag" style="color: #fde047; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); font-weight: 700;">titulo_obtenido</span></td>
+              <td><span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">Módulo 10: Titulación, Egresados y Certificaciones</span></td>
+              <td style="font-size: 12px; color: var(--text-primary); line-height: 1.5;">Catálogo oficial de títulos universitarios (ej. Licenciado en Administración, Ingeniero en Informática, TSU).</td>
+              <td><span class="badge badge-amber" style="font-size: 10px; font-weight: 600;">Grupo 2 / Grupo 4</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="margin-top: 24px; padding: 18px; background: rgba(99, 102, 241, 0.08); border-left: 4px solid var(--accent-indigo); border-radius: 8px;">
+          <strong style="color: var(--accent-indigo); font-size: 13.5px;">💡 Recomendación de Asignación por Dominios Tecnológicos:</strong>
+          <ul style="font-size: 12.5px; color: var(--text-secondary); margin-top: 8px; margin-left: 20px; line-height: 1.6;">
+            <li><strong>Módulo API Gateway (5 tablas):</strong> <span class="code-tag">api_access_log</span>, <span class="code-tag">api_allowed_table</span>, <span class="code-tag">api_key</span>, <span class="code-tag">api_permission</span>, <span class="code-tag">api_system</span> &rarr; Sugerido para <strong>Grupo 1 (Seguridad)</strong> o <strong>Grupo 4 (Servicios/Notificaciones)</strong>.</li>
+            <li><strong>Perfil Demográfico y Becas (3 tablas):</strong> <span class="code-tag">becado</span>, <span class="code-tag">discapacidad</span>, <span class="code-tag">asistencia_clase</span> &rarr; Sugerido para <strong>Grupo 2 (Expediente/Bienestar)</strong>.</li>
+            <li><strong>Estructura e Institución (4 tablas):</strong> <span class="code-tag">departamento</span>, <span class="code-tag">dependencia_institucion</span>, <span class="code-tag">condicion</span>, <span class="code-tag">tipo_condicion</span> &rarr; Sugerido para <strong>Grupo 3 (Estructura)</strong>.</li>
+            <li><strong>Equivalencias y Trámites Especiales (4 tablas):</strong> <span class="code-tag">convalidacion</span>, <span class="code-tag">equivalencia_academica</span>, <span class="code-tag">bloqueo_administrativo</span>, <span class="code-tag">inscripcion_per</span> &rarr; Sugerido para <strong>Grupo 1 (Trámites/Inscripciones)</strong>.</li>
+            <li><strong>Escalas de Evaluación y Grados (5 tablas):</strong> <span class="code-tag">escala_medicion</span>, <span class="code-tag">escala_nota</span>, <span class="code-tag">estatus_solicitud_grado</span>, <span class="code-tag">salida_intermedia</span>, <span class="code-tag">titulo_obtenido</span> &rarr; Sugerido para <strong>Grupo 2 (Evaluaciones/Promociones)</strong> o <strong>Grupo 4 (Titulación)</strong>.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Global Catalogs -->
+    <div class="group-card" id="card-global">
+      <div class="group-header" onclick="toggleCard('body-global')">
+        <div class="group-title-group">
+          <span class="group-badge" style="background: var(--accent-emerald);">CATÁLOGOS GLOBALES</span>
+          <span class="group-name">Tablas Transversales y de Sistema (Uso Compartido por los 4 Grupos)</span>
+        </div>
+        <div>
+          <span class="badge badge-green">34 Tablas Compartidas</span>
+        </div>
+      </div>
+      <div class="group-body" id="body-global">
+        <p style="color: var(--text-secondary); margin-bottom: 16px;">
+          Tablas universales de referencia que sirven como base para las relaciones de todos los grupos de estudiantes:
+        </p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px;">
+          <div style="background: var(--bg-card); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);">
+            <strong style="color: var(--accent-emerald);">📍 Módulo Geográfico (5)</strong>
+            <p style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;"><code>pais</code>, <code>estado</code>, <code>municipio</code>, <code>parroquia</code>, <code>localidad</code></p>
+          </div>
+          <div style="background: var(--bg-card); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);">
+            <strong style="color: var(--accent-indigo);">🏢 Módulo Institucional (6)</strong>
+            <p style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;"><code>universidad</code>, <code>sede</code>, <code>departamento</code>, <code>dependencia_institucion</code>, <code>condicion</code>, <code>tipo_condicion</code></p>
+          </div>
+          <div style="background: var(--bg-card); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);">
+            <strong style="color: var(--accent-purple);">🔒 Seguridad y Sistema (18)</strong>
+            <p style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;"><code>user</code>, <code>rol</code>, <code>permiso</code>, <code>status</code>, <code>bitacora_sistema</code>, <code>configuracion_sistema</code>, <code>api_*</code></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <p><strong>DB-SOGAC — Sistema de Control Académico y Gestión de Datos</strong></p>
+    <p style="margin-top: 6px;">Documentación de Asignación por Grupos & Auditoría de Cobertura Funcional | 2026</p>
+  </footer>
+
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      const current = html.getAttribute('data-theme');
+      html.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+    }
+
+    function toggleCard(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.style.display = el.style.display === 'none' ? 'block' : 'none';
+      }
+    }
+
+    function setFilter(filter, btn) {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const cards = ['card-g1', 'card-g2', 'card-g3', 'card-g4', 'card-global', 'card-unassigned'];
+      cards.forEach(id => {
+        const card = document.getElementById(id);
+        if (filter === 'all') {
+          card.style.display = 'block';
+        } else if (id === 'card-' + filter) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    function filterContent() {
+      const query = document.getElementById('searchInput').value.toLowerCase().trim();
+      const cards = document.querySelectorAll('.group-card');
+      cards.forEach(card => {
+        const text = card.innerText.toLowerCase();
+        if (!query || text.includes(query)) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>

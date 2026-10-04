@@ -1,0 +1,503 @@
+Especificación Técnica de Arquitectura de Datos y Ecosistema Tecnológico: Sistema de Control de Estudios UPTP "JJ Montilla"
+Este documento establece la arquitectura integral de persistencia y el marco tecnológico para la plataforma de inscripción, control de estudios y egreso de la Universidad Politécnica Territorial del Estado Portuguesa "Juan de Jesús Montilla". El diseño combina un esquema relacional normalizado para el motor transaccional PostgreSQL, fundamentado en claves primarias y foráneas numéricas autoincrementables (bigserial / bigint), articulado con un backend en PHP / Laravel 11 gestionado mediante Eloquent ORM, un esquema de autenticación y seguridad multicapa con Laravel Fortify, y un frontend reactivo bajo el patrón SPA estructurado con Inertia.js, Vue 3, TypeScript, Zod, vee-validate y Lucide Icons.
+1. Ecosistema Tecnológico Homologado
+Motor de Base de Datos: PostgreSQL. Administra integridad referencial estricta, restricciones CHECK, campos transaccionales atómicos e identificadores primarios únicos autoincrementables (bigint / secuencias IDENTITY de 64 bits) para optimizar la velocidad de indexación en estructuras B-Tree, reducir la fragmentación en disco y acelerar las operaciones de unión (JOIN) entre tablas relacionadas.
+Backend & ORM: Laravel 11 y PHP. La interacción con la base de datos se realiza a través de modelos de Eloquent ORM bajo la convención nativa de identificadores enteros autoincrementables ($table->id()), tipados con el método casts() nativo sin requerir sobrecargas de resolución de identificadores binarios o distribuidos.
+Seguridad y Autenticación: Laravel Fortify. Provee autenticación sin interfaz predefinida, autenticación de dos factores (2FA), restablecimiento seguro de claves, confirmación de contraseñas y mitigación de ataques por fuerza bruta, conectando la cuenta del sistema (users) con el registro humano central (persona) mediante una clave foránea entera autoincremental (persona_id).
+Capa de Presentación y Frontend (SPA): Arquitectura cliente-servidor unificada mediante Inertia.js y Vue 3 (Composition API con sintaxis <script setup>).
+Tipado y Validación Reactiva: Contratos de datos bidireccionales construidos en TypeScript (con identificadores primarios y foráneos tipados estrictamente como number). Las reglas del negocio en formularios cliente se implementan mediante esquemas sincrónicos de Zod orquestados por vee-validate, reflejando las limitaciones declaradas en las tablas de PostgreSQL.
+Diseño e Iconografía: Librería Lucide Icons (lucide-vue-next) para interfaces operativas administrativas y estudiantiles.
+2. Cuadro de Totalización General de Tablas y Atributos
+Módulo Funcional
+N° de Tablas
+N° de Atributos
+Porcentaje del Modelo
+1. Estructura Geográfica
+5
+19
+4.26%
+2. Organización Institucional y Sedes
+5
+30
+6.73%
+3. Autoridades y Firmantes Legales
+3
+16
+3.59%
+4. Escalas de Medición Académica
+2
+10
+2.24%
+5. Perfil Demográfico y Antecedentes
+5
+17
+3.81%
+6. Estructura Académica
+4
+19
+4.26%
+7. Gestión del Tiempo
+3
+16
+3.59%
+8. Actores e Infraestructura
+4
+26
+5.83%
+9. Oferta, Planificación e Inscripción
+5
+31
+6.95%
+10. Evaluaciones y Notas
+3
+22
+4.93%
+11. Legalidad Académica (Actas y Libros)
+2
+14
+3.14%
+12. Expedientes, Trámites y Egreso
+3
+16
+3.59%
+13. Egresos, Promociones y Actos de Grado
+6
+38
+8.52%
+14. Seguimiento y Equivalencias
+2
+14
+3.14%
+15. Admisión, Asistencia y Bienestar
+3
+26
+5.83%
+16. Eje Proyecto PNF
+3
+17
+3.81%
+17. Programa Especial de Recuperación y Normativa
+4
+27
+6.05%
+18. Seguridad, Auditoría y Verificación Documental
+8
+47
+10.54%
+19. Seguridad (RBAC - Roles y Permisos)
+4
+12
+2.69%
+20. Configuración Global
+1
+5
+1.12%
+21. Clasificación Docente / Laboral
+4
+14
+3.14%
+22. Censos e Intensivos
+2
+10
+2.24%
+TOTAL GENERAL CONSOLIDADO
+81 tablas
+446 atributos
+100.00%
+
+3. Especificación de Entidades por Módulo
+Módulo 1: Estructura Geográfica (5 tablas, 19 atributos)
+Para registrar formalmente el lugar de nacimiento y residencia de estudiantes y personal, conforme a los estándares de la OPSU.
+Tabla
+Atributos
+Propósito / Uso en el Sistema
+pais
+3
+Registro base de países.
+estado
+4
+Entidades federales o provincias.
+municipio
+4
+División territorial administrativa.
+parroquia
+4
+Subdivisión del municipio.
+localidad
+4
+Registro de ciudades, caseríos o sectores específicos.
+
+Módulo 2: Organización Institucional y Sedes (5 tablas, 30 atributos)
+Considerando que la institución puede tener extensiones, el sistema no asume una única ubicación física.
+Tabla
+Atributos
+Propósito / Uso en el Sistema
+universidad
+8
+Guarda datos matriz como Gaceta, RIF y códigos del Ministerio.
+sede
+7
+Núcleos o extensiones físicas.
+sede_pnf
+4
+Define qué PNF se dictan en qué sedes.
+cohorte
+5
+Organización de las generaciones de ingreso por año académico.
+cohorte_sede
+6
+Asignación de generaciones de ingreso a un núcleo en específico.
+
+Módulo 3: Autoridades y Firmantes Legales (3 tablas, 16 atributos)
+Indispensables para imprimir automáticamente el nombre, cargo y resolución de la autoridad de turno en documentos oficiales.
+Tabla
+Atributos
+Propósito / Uso en el Sistema
+tipo_autoridad
+3
+Clasificación general (Ej. Rector, Vicerrector, Secretario).
+cargo
+3
+Denominación específica del rol directivo.
+autoridad
+10
+Vincula a la persona con el cargo, sede y las resoluciones/gacetas de nombramiento.
+
+Módulo 4: Escalas de Medición Académica (2 tablas, 10 atributos)
+Soporte para materias que no se evalúan en escala del 1 al 20, sino cualitativamente u otras escalas.
+Tabla
+Atributos
+Propósito / Uso en el Sistema
+escala_medicion
+6
+Configuración de los límites de nota (aprobatoria, mínima y máxima).
+escala_nota
+4
+Tabla de equivalencias a 100% o 20 puntos para cálculos estandarizados.
+
+Módulo 5: Perfil Demográfico y Antecedentes de Ingreso (5 tablas, 17 atributos)
+Datos obligatorios para las estadísticas del Ministerio de Educación Universitaria.
+Tabla
+Atributos
+Propósito / Uso en el Sistema
+etnia
+3
+Clasificación de pueblos originarios para perfiles demográficos.
+discapacidad
+3
+Catálogo formal de discapacidades o condiciones especiales.
+rama_estudio_bachiller
+3
+Origen académico previo del estudiante.
+sistema_estudio_bachiller
+3
+Modalidad de educación media general de donde proviene.
+becado
+5
+Registro de estudiantes con beneficios e instituciones otorgantes (Ej. Fundayacucho).
+
+Módulo 6: Estructura Académica (4 tablas, 19 atributos)
+Define la oferta de formación, los departamentos y las reglas de integración curricular.
+Tabla
+Atributos
+Propósito / Uso en el Sistema
+departamento
+3
+Organiza jerárquicamente a los docentes y avala la oferta académica de las unidades curriculares.
+pnf
+4
+Catálogo de los Programas Nacionales de Formación (carreras) activos e inactivos.
+unidad_curricular
+7
+Registro central de las materias, definiendo su peso en unidades de crédito, su escala de medición y su naturaleza.
+malla_curricular
+5
+Actúa como pivote para asignar en qué nivel (trayecto/semestre) se dicta una materia específica dentro de un PNF.
+
+Módulo 7: Gestión del Tiempo (3 tablas, 16 atributos)
+Controla la cronología de las operaciones administrativas y académicas.
+Tabla
+Atributos
+Propósito / Uso en el Sistema
+ano_academico
+4
+Delimita el macro-periodo institucional (Ej. Año fiscal/académico 2026).
+lapso_academico
+7
+Permite la flexibilidad semestral, trimestral o intensiva, controlando la apertura y cierre de clases.
+evento_calendario
+5
+Configura los hitos operativos que abren o cierran módulos del sistema (fechas exactas de inscripción, carga de notas).
+
+Módulo 8: Actores e Infraestructura (4 tablas, 26 atributos)
+Centraliza la información demográfica, roles humanos y espacios físicos.
+Tabla
+Atributos
+Propósito / Uso en el Sistema
+persona
+10
+Entidad núcleo de datos demográficos extendida con perfiles de nacimiento y residencia. Evita la duplicidad de datos si un estudiante luego se convierte en profesor.
+estudiante
+6
+Extiende los datos de persona agregando atributos exclusivos de su vida estudiantil, antecedentes y estatus.
+profesor
+9
+Extiende los datos de persona agregando su relación laboral, dedicación, escalafón y especialidad docente.
+aula
+5
+Inventario de espacios físicos por núcleo para evitar colisiones de asignación y controlar el aforo máximo.
+
+Módulo 9: Oferta, Planificación e Inscripción (5 tablas, 31 atributos)
+El núcleo transaccional. Resuelve la matrícula y la elaboración de horarios.
+Tabla
+Atributos
+Propósito / Uso en el Sistema
+seccion
+8
+Agrupación macro de alumnos inscritos en un mismo núcleo, nivel, PNF, lapso y turno.
+carga_academica
+4
+Triangula la relación exacta para el sistema: a qué Sección se le da qué Materia y quién es el Profesor.
+horario
+6
+Reserva el espacio físico (aula) y los bloques de tiempo (días/horas) para cada carga académica.
+inscripcion
+5
+Documento de cabecera que formaliza la voluntad del estudiante de cursar un lapso específico en un PNF.
+inscripcion_detalle
+8
+El desglose exacto de las materias cursadas, vinculadas a actas legales y totalizadores de nota final e inasistencias.
+
+Módulo 10: Evaluaciones y Notas (3 tablas, 22 atributos)
+Maneja la rigurosidad matemática y el rastro de auditoría de las calificaciones.
+Tabla
+Atributos
+Propósito / Uso en el Sistema
+corte_lapso
+6
+Reglas institucionales inmutables (Ej. 4 cortes obligatorios de 25%) y sus fechas límite de carga.
+plan_evaluacion
+7
+Desglose personal del docente para fraccionar el peso de un corte en exámenes, talleres o exposiciones.
+calificacion
+9
+Almacena la nota individual del alumno. Incorpora campos de auditoría estricta (created_at, updated_at, usuario_id).
+
+Módulo 11: Legalidad Académica (Actas y Libros) (2 tablas, 14 atributos)
+Garantiza el blindaje jurídico de los resultados académicos ante el Ministerio.
+Tabla
+Atributos
+Propósito / Uso en el Sistema
+libro_acta
+5
+Representación del tomo físico/digital donde la universidad archiva los históricos de notas por PNF.
+acta_calificacion
+9
+Documento legal inmutable que "congela" las notas de una carga académica, bloqueando ediciones posteriores no autorizadas.
+
+Módulo 12: Expedientes, Trámites y Egreso (3 tablas, 16 atributos)
+Digitaliza el flujo de trabajo de la taquilla de control de estudios.
+Tabla
+Atributos
+Propósito / Uso en el Sistema
+documento_requisito
+4
+Catálogo de exigencias legales necesarias para el ingreso o egreso (Notas certificadas, partidas de nacimiento).
+expediente_estudiante
+6
+Control (checklist) de recepción de los documentos físicos consignados por el estudiante.
+tramite_academico
+6
+Taquilla virtual para que el alumno solicite y monitoree constancias, récords o retiros.
+
+Módulo 13: Egresos, Promociones y Actos de Grado (6 tablas, 38 atributos)
+Estructura organizativa del acto formal de grado y certificaciones por trayectos.
+Tabla
+Atributos
+Propósito / Uso en el Sistema
+titulo_obtenido
+5
+Registro de los grados a otorgar (Ej. TSU, Ingeniería, Licenciatura).
+salidas_intermedias
+5
+Certificaciones obtenidas al aprobar trayectos específicos del PNF.
+promocion
+7
+Cabecera general del acto formal de grado o egreso masivo.
+promocion_pnf
+6
+Agrupación de los graduandos segregados por cada programa de formación.
+promocion_estudiante
+9
+Posición, número de tomo, folio de registro e índice de rendimiento del egresado.
+solicitud_grado
+6
+Trámite específico realizado por el alumno para optar a la titulación.
+
+Módulo 14: Seguimiento y Equivalencias (2 tablas, 14 atributos)
+Mantiene la trazabilidad y la homologación de saberes.
+Tabla
+Atributos
+Propósito / Uso en el Sistema
+historial_estatus_estudiante
+7
+Log longitudinal inmutable. Registra exactamente cuándo y por qué un alumno pasó de "Regular" a "Retirado" o "Egresado".
+equivalencia_academica
+7
+Permite asentar materias aprobadas provenientes de otras instituciones sin necesidad de cursarlas en el lapso actual.
+
+Módulo 15: Admisión, Asistencia y Bienestar (3 tablas, 26 atributos)
+Módulos satélites para pre-ingreso y control preventivo.
+Tabla
+Atributos
+Propósito / Uso en el Sistema
+proceso_admision
+10
+"Sala de espera" de registros (Asignados OPSU, censos) para no contaminar la tabla de alumnos regulares hasta su formalización.
+asistencia_clase
+8
+Línea de detalle diaria que permite al docente tomar asistencia y registrar automáticamente el porcentaje de fallas.
+perfil_bienestar
+8
+Extensión de seguridad vital para salidas de campo (Agroalimentación, etc.), almacenando alergias y contactos de emergencia.
+
+Módulo 16: Eje Proyecto PNF (3 tablas, 17 atributos)
+Módulo especializado para la gestión del núcleo de los Programas Nacionales de Formación.
+Tabla
+Atributos
+Propósito / Uso en el Sistema
+proyecto_investigacion
+9
+Gestión administrativa del Trabajo Socio-Tecnológico, vinculando título, estatus y la comunidad abordada.
+integrante_proyecto
+4
+Agrupación de estudiantes que defienden en conjunto un mismo proyecto de investigación.
+jurado_proyecto
+4
+Asignación del panel de docentes encargados de evaluar y asentar la calificación final de la defensa.
+
+Módulo 17: Programa Especial de Recuperación y Normativa (4 tablas, 27 atributos)
+Gestión de escenarios extraordinarios y reglas de cumplimiento institucionales.
+Tabla
+Atributos
+Propósito / Uso en el Sistema
+programa_especial_recuperacion
+8
+Cabecera para aperturar evaluaciones extraordinarias (PER, suficiencias) fuera de la estructura de clases ordinarias.
+inscripcion_per
+6
+Estudiantes específicos inscritos para presentar el examen de recuperación y su calificación final en la prueba.
+regla_prelacion
+5
+Motor dinámico que permite configurar si una materia exige aprobación previa, cursada o un número específico de créditos.
+bloqueo_administrativo
+8
+Sistema de retenciones (Ej. deuda en biblioteca, expediente incompleto) que inhabilita las gestiones del alumno en el portal.
+
+Módulo 18: Seguridad, Auditoría y Verificación Documental (8 tablas, 47 atributos)
+Para emitir documentos verificables y mantener un rastreo legal profundo del sistema mediante APIs y logs.
+Tabla
+Atributos
+Propósito / Uso en el Sistema
+qr_validated_generated
+8
+Registro de códigos QR para la validación web de constancias y trámites.
+qr_validated_generated_titulo
+8
+Validación QR específica inyectada en los pergaminos de títulos.
+eventos
+7
+Bitácora global inmutable de acciones del sistema con rastreo de IP.
+api_systems
+4
+Sistemas externos autorizados (Ej. Ministerio, OPSU) para conectarse.
+api_allowed_tables
+3
+Tablas específicas expuestas o permitidas para su consumo vía API.
+api_keys
+5
+Tokens de acceso y credenciales de seguridad para integraciones externas.
+api_permissions
+5
+Nivel de privilegios (lectura/escritura) concedidos a cada sistema externo.
+api_access_logs
+7
+Registro exhaustivo de cada petición recibida a través de los endpoints de la API.
+
+Módulo 19: Seguridad (RBAC - Roles y Permisos) (4 tablas, 12 atributos)
+Arquitectura estandarizada para controlar el acceso a módulos, operaciones y pantallas dentro del ecosistema SPA.
+Tabla
+Atributos
+Propósito / Uso en el Sistema
+rol
+4
+Definición jerárquica de los perfiles de sistema (Ej. Coordinador PNF, Taquilla, Admin).
+permiso
+2
+Catálogo atómico de acciones permitidas u operaciones del sistema.
+rol_permiso
+3
+Tabla pivote que otorga capacidades específicas a un rol.
+usuario_rol
+3
+Asigna y vincula directamente las credenciales de un usuario de Laravel con su nivel de autorización.
+
+Módulo 20: Configuración Global (1 tabla, 5 atributos)
+Almacén persistente estructurado para mantener variables de estado y reglas de negocio dinámicas.
+Tabla
+Atributos
+Propósito / Uso en el Sistema
+configuracion_sistema
+5
+Gestiona de forma dinámica capacidades máximas, banderas de inscripción y límites utilizando el patrón clave-valor, eliminando configuraciones quemadas en código.
+
+Módulo 21: Clasificación Docente y Laboral (4 tablas, 14 atributos)
+Catálogos institucionales para organizar la planta profesoral y generar constancias de trabajo y auditorías.
+Tabla
+Atributos
+Propósito / Uso en el Sistema
+condicion_laboral
+3
+Estado contractual del docente (Fijo, Contratado, Jubilado).
+categoria_docente
+3
+Nivel del escalafón universitario del profesor (Instructor, Agregado, Titular).
+dedicacion_docente
+5
+Definición exacta de la carga en horas académicas frente a las horas administrativas exigidas.
+profesion
+3
+Título de grado base habilitante del personal.
+
+Módulo 22: Censos e Intensivos (2 tablas, 10 atributos)
+Proceso de medición de demanda previo a la apertura de programas de verano o avance académico.
+Tabla
+Atributos
+Propósito / Uso en el Sistema
+censo_oferta
+6
+Cabecera para evaluar la viabilidad de abrir cursos especiales, definiendo la materia y el cupo mínimo requerido.
+censo_estudiante
+4
+Registro transaccional que capta la intención de la población estudiantil para justificar la apertura de la sección intensiva.
+
+4. Directrices de Integración en el Stack Tecnológico
+Modelado Eloquent y Persistencia: Todas las entidades extienden de Illuminate\Database\Eloquent\Model utilizando la convención estándar de clave primaria autoincremental entera (protected $keyType = 'int'; public $incrementing = true;). En las migraciones de Laravel 11, las tablas maestras y secundarias se declaran mediante $table->id(); y las claves foráneas con $table->foreignId('nombre_id')->constrained();. La integridad de tipos de datos se gestiona mediante el método:
+PHP
+protected function casts(): array
+{
+    return [
+        'fecha_inscripcion' => 'datetime',
+        'nota_final' => 'decimal:2',
+        'perdio_por_inasistencia' => 'boolean',
+    ];
+}
+
+
+
+
+Vínculo Fortify y Modelo Persona: La tabla users contiene una clave foránea entera persona_id (foreignId('persona_id')->constrained('persona')) para enlazar las credenciales del sistema directamente con el registro civil del docente, alumno o personal administrativo, sin redundancias demográficas.
+Gestión de Permisos (RBAC): Las nuevas tablas del Módulo 19 interactúan directamente con middleware en Laravel para bloquear llamadas API no autorizadas, delegando también los roles serializados a Vue 3 para ocultar/mostrar elementos de la UI dinámicamente según el usuario logueado.
+Gestión Transaccional en Servicios: Operaciones complejas como la generación y cierre de actas (acta_calificacion), inscripciones masivas (inscripcion_detalle) y aprobación de admisiones se encapsulan en clases de acción bajo transacciones DB::transaction() para asegurar consistencia ACID ante caídas de red o excepciones.
+Pipeline Inertia + Vue + TypeScript: Los controladores procesan las peticiones sin serialización a JSON manual, despachando respuestas tipo Inertia::render('Inscripcion/Index', [...]). Los contratos de datos en TypeScript reflejan identificadores de tipo number. Los formularios en Vue 3 validan en tiempo real los valores de los cortes y notas mediante esquemas Zod conectados a useForm de vee-validate, garantizando que ninguna calificación enviada viole los límites porcentuales antes de alcanzar los endpoints de Laravel 11.
+

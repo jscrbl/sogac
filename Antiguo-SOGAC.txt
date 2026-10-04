@@ -1,0 +1,1210 @@
+Table estado {
+  est_codigo char(2) [pk, not null]
+  est_nombre varchar(40) [not null]
+  est_estatus char(1) [default: 'A', note: 'A=Activo, I=Inactivo']
+}
+
+Table municipio {
+  mun_cod char(4) [pk, not null]
+  mun_nombre varchar(100)
+  mun_cod_estado char(2) [not null, ref: > estado.est_codigo]
+  mun_estatus char(1) [default: 'A']
+}
+
+Table parroquia {
+  par_codigo char(6) [pk, not null]
+  par_nombre varchar [not null]
+  par_cod_municipio char(4) [not null, ref: > municipio.mun_cod]
+  par_estatus char(1) [default: 'A']
+}
+
+Table pais {
+  pai_codigo integer [pk, increment]
+  pai_nombre varchar [not null, unique]
+  pai_estatus char(1) [default: 'A']
+}
+
+// ===================================
+// TABLAS MAESTRAS DE CONFIGURACIÓN ACADÉMICA
+// ===================================
+
+Table etnia {
+  etn_codigo integer [pk, increment]
+  etn_nombre varchar [not null, unique]
+  etn_estatus char(1) [default: 'A']
+}
+
+Table tipo_autoridad {
+  tau_codigo integer [pk, increment]
+  tau_nombre varchar [not null, unique]
+  tau_estatus char(1) [default: 'A']
+}
+
+Table tipo_seccion {
+  tse_codigo integer [pk, increment]
+  tse_nombre varchar(42) [not null]
+  tse_estatus char(1) [default: 'A']
+}
+
+Table tipo_lapso {
+  tap_codigo integer [pk, increment]
+  tap_nombre varchar [not null, unique]
+  tap_estatus char(1) [default: 'A']
+}
+
+Table turno {
+  tur_codigo integer [pk, increment]
+  tur_nombre varchar [not null, unique]
+  tur_estatus char(1) [default: 'A']
+}
+
+Table trayecto {
+  tra_codigo integer [pk, increment]
+  tra_nombre varchar [not null]
+  tra_estatus char(1) [default: 'A']
+}
+
+Table semestre {
+  sem_codigo integer [pk, increment]
+  sem_nombre varchar [not null]
+  sem_estatus char(1) [default: 'A']
+  sem_cod_trayecto integer [ref: > trayecto.tra_codigo]
+}
+
+Table tipo_unidad_curricular {
+  tuc_codigo integer [pk, increment]
+  tuc_nombre varchar [not null, unique]
+  tuc_estatus char(1)
+}
+
+Table eje {
+  eje_codigo integer [pk, increment]
+  eje_nombre varchar [not null, unique]
+  eje_estatus char(1) [default: 'A']
+}
+
+Table escala_medicion {
+  eme_codigo integer [pk, increment]
+  eme_nombre varchar [not null]
+  eme_nota_aprobatoria decimal(5,2)
+  eme_nota_minima decimal(5,2)
+  eme_nota_maxima decimal(5,2)
+  eme_estatus char(1) [default: 'A']
+}
+
+Table grado_academico {
+  gra_codigo integer [pk, increment]
+  gra_nombre varchar [not null, unique]
+  gra_estatus char(1) [default: 'A']
+}
+
+Table modalidad_estudio {
+  mes_codigo integer [pk, increment]
+  mes_nombre varchar [not null, unique]
+  mes_estatus char(1) [default: 'A']
+}
+
+Table regimen_estudio {
+  reg_codigo integer [pk, increment]
+  reg_nombre varchar [not null, unique]
+  reg_estatus char(1) [default: 'A']
+}
+
+Table requerimiento {
+  req_codigo integer [pk, increment]
+  req_nombre varchar [not null]
+  req_estatus char(1) [default: 'A']
+}
+
+Table causa_retiro {
+  cre_codigo integer [pk, increment]
+  cre_nombre varchar [not null]
+  cre_estatus char(1) [default: 'A']
+}
+
+Table condicion_inscrito {
+  cin_codigo integer [pk, increment]
+  cin_nombre varchar [not null]
+  cin_estatus char(1) [default: 'A']
+}
+
+Table condicion_laboral {
+  cla_codigo integer [pk, increment]
+  cla_nombre varchar [not null]
+  cla_estatus char(1) [default: 'A']
+}
+
+Table condicion_residencia {
+  cre_codigo integer [pk, increment]
+  cre_nombre varchar [not null]
+  cre_estatus char(1) [default: 'A']
+}
+
+Table dedicacion {
+  ded_codigo integer [pk, increment]
+  ded_nombre varchar [not null]
+  ded_horas_academicas integer
+  ded_horas_administrativas integer
+  ded_estatus boolean [default: true]
+}
+
+Table profesion {
+  prf_codigo integer [pk, increment]
+  prf_nombre varchar [not null]
+  prf_estatus char(1) [default: 'A']
+}
+
+Table cargo {
+  car_codigo integer [pk, increment]
+  car_nombre varchar [not null]
+  car_estatus char(1) [default: 'A']
+}
+
+Table categoria {
+  cat_codigo integer [pk, increment]
+  cat_nombre varchar [not null]
+  cat_estatus char(1) [default: 'A']
+}
+
+Table unidad_credito_equivalente {
+  uce_codigo integer [pk, increment]
+  uce_nombre varchar [not null]
+  uce_estatus char(1) [default: 'A']
+}
+
+Table modalidad_ingreso {
+  min_codigo integer [pk, increment]
+  min_nombre varchar [not null]
+  min_estatus char(1) [default: 'A']
+}
+
+Table mencion_honorifica {
+  mho_codigo integer [pk, increment]
+  mho_nombre varchar [not null]
+  mho_estatus char(1) [default: 'A']
+}
+
+Table dependencia {
+  dep_codigo integer [pk, increment]
+  dep_nombre varchar(60) [not null]
+  dep_estatus char(1) [default: 'A']
+}
+
+Table condicion_sede {
+  cse_codigo integer [pk, increment]
+  cse_nombre varchar(20) [not null]
+  cse_estatus char(1) [default: 'A']
+}
+
+Table discapacidad {
+  dis_codigo integer [pk, increment]
+  dis_nombre varchar(70) [not null]
+  dis_estatus char(1) [default: 'A']
+}
+
+Table dependencia_administrativa {
+  dad_codigo integer [pk, increment]
+  dad_nombre varchar(100) [not null]
+  dad_estatus char(1) [default: 'A']
+}
+
+Table documento {
+  doc_codigo integer [pk, increment]
+  doc_nombre varchar(120) [not null]
+  doc_estatus char(1) [default: 'A']
+  doc_tipo char(1)
+}
+
+Table tipo_evaluacion {
+  tev_codigo integer [pk, increment]
+  tev_nombre varchar(30) [not null]
+  tev_estatus char(1) [default: 'A']
+}
+
+Table documentos_consignados {
+  dco_codigo integer [pk, increment]
+  dco_cod_documento integer [ref: > documento.doc_codigo]
+  dco_cedula char(12)
+  dco_estatus char(1)
+}
+
+Table localidad {
+  loc_codigo integer [pk, increment]
+  loc_nombre varchar(45) [not null]
+  loc_cod_parroquia char(6) [ref: > parroquia.par_codigo]
+  loc_estatus char(1)
+}
+
+// ===================================
+// TABLAS DE MÓDULOS, ROLES Y PERMISOS
+// ===================================
+
+Table modulo {
+  mod_codigo integer [pk, increment]
+  mod_nombre varchar [not null]
+  mod_estatus char(1) [default: 'A']
+}
+
+Table servicio {
+  ser_codigo integer [pk, increment]
+  ser_nombre varchar [not null]
+  ser_url varchar
+  ser_estatus char(1) [default: 'A']
+  ser_cod_modulo integer [ref: > modulo.mod_codigo]
+  ser_abrir_especial char(1)
+}
+
+Table rol {
+  rol_codigo integer [pk, increment]
+  rol_nombre varchar [not null]
+  rol_cod_programa integer
+  rol_cod_sede integer
+  rol_estatus char(1)
+}
+
+Table servicio_rol {
+  sro_codigo integer [pk, increment]
+  sro_cod_rol integer [not null, ref: > rol.rol_codigo]
+  sro_cod_servicio integer [not null, ref: > servicio.ser_codigo]
+  sro_estatus char(1) [default: 'A']
+}
+
+// ===================================
+// TABLAS DE PERSONAS Y USUARIOS
+// ===================================
+
+Table persona {
+  per_cedula varchar(12) [pk, not null]
+  per_documento varchar(20)
+  per_nacionalidad varchar(2)
+  per_antecedentes_penales text
+  per_nombres varchar(100) [not null]
+  per_apellidos varchar(100) [not null]
+  per_genero char(1)
+  per_fecha_nacimiento date
+  per_lugar_nacimiento varchar(100)
+  per_estado_nacimiento char(2) [ref: > estado.est_codigo]
+  per_cod_etnia integer [ref: > etnia.etn_codigo]
+  per_discapacidad boolean [default: false]
+  per_tipo_discapacidad text
+  per_edo_civil char(1)
+  per_direccion text
+  per_email varchar(100)
+  per_telefono_fijo varchar(12)
+  per_telefono_movil varchar(12)
+  per_telefono_trabajo varchar(12)
+  per_cod_localidad_nacimiento integer [ref: > localidad.loc_codigo]
+  per_cod_localidad_residencia integer [ref: > localidad.loc_codigo]
+  per_foto bytea
+  per_estatus char(1) [default: 'A']
+}
+
+
+Table usuario {
+  usu_codigo integer [pk, increment]
+  usu_nombre varchar(50) [not null, unique]
+  usu_clave varchar(255) [not null]
+  usu_cedula varchar(12) [not null, ref: > persona.per_cedula]
+  usu_cod_rol integer [not null, ref: > rol.rol_codigo]
+  usu_pregunta_1 varchar(200)
+  usu_respuesta_1 varchar(200)
+  usu_pregunta_2 varchar(200)
+  usu_respuesta_2 varchar(200)
+  usu_intento_inicio integer [default: 0]
+  usu_fecha_intento_inicio timestamp
+  usu_estatus char(1) [default: 'A']
+}
+
+// ===================================
+// TABLAS INSTITUCIONALES Y DE PROGRAMAS
+// ===================================
+
+Table universidad {
+  uni_codigo integer [pk, increment]
+  uni_codigo_ministerio char(10)
+  uni_nombre varchar(200) [not null]
+  uni_siglas varchar(10)
+  uni_telefono char(12)
+  uni_fax char(12)
+  uni_correo varchar(50)
+  uni_gaceta integer
+  uni_fecha_inicio date
+  uni_fecha_fin date
+  uni_url_pagina varchar(80)
+  uni_logo varchar(80)
+  uni_rif varchar(12)
+  uni_cod_condicion integer [ref: > condicion_sede.cse_codigo]
+  uni_cod_dependecia integer [ref: > dependencia.dep_codigo]
+  uni_cod_estado char(2) [ref: > estado.est_codigo]
+  uni_decreto integer
+  uni_fecha_gaceta date
+  uni_fecha_decreto date
+}
+
+
+Table sede {
+  sed_codigo integer [pk, increment]
+  sed_codigo_ministerio char(10)
+  sed_nombre varchar(100) [not null]
+  sed_siglas char(3)
+  sed_telefono char(12)
+  sed_fax char(12)
+  sed_correo varchar(50)
+  sed_direccion varchar(50)
+  sed_gaceta integer
+  sed_resolucion integer
+  sed_fecha_gaceta date
+  sed_fecha_resolucion date
+  sed_fecha_inicio date
+  sed_fecha_fin date
+  sed_cod_universidad integer [ref: > universidad.uni_codigo]
+  sed_cod_condicion integer [ref: > condicion_sede.cse_codigo]
+  sed_cod_localidad char(10) [ref: > localidad.loc_codigo]  // Nota: localidad.loc_codigo es integer, pero aquí es char(10). Ajustar según tipos reales.
+  sed_estatus char(1) [default: 'A']
+}
+
+Table programa {
+  pro_codigo integer [pk, increment]
+  pro_codigo_ministerio varchar(10)
+  pro_nombre varchar [not null]
+  pro_siglas varchar(10)
+  pro_intermedia char(1)
+  pro_gaceta varchar(20)
+  pro_resolucion varchar(20)
+  pro_fecha_gaceta date
+  pro_fecha_resolucion date
+  pro_comentario text
+  pro_arancel double
+  pro_tipo char(1)
+  pro_cod_universidad integer [ref: > universidad.uni_codigo]
+  pro_cod_regimen integer [ref: > regimen_estudio.reg_codigo]
+  pro_cod_mes integer [ref: > modalidad_estudio.mes_codigo]
+  pro_cod_turno integer [ref: > turno.tur_codigo]
+  pro_cod_grado_academico integer [ref: > grado_academico.gra_codigo]
+  pro_cod_requerimiento integer [ref: > requerimiento.req_codigo]
+  pro_cod_eme integer [ref: > escala_medicion.eme_codigo]
+  pro_nombre_carnet varchar(50)
+  pro_color_fondo char(7)
+  pro_color_texto char(7)
+  pro_estatus char(1) [default: 'A']
+}
+
+
+Table malla {
+  mal_codigo integer [pk, increment]
+  mal_nombre varchar [not null]
+  mal_cod_programa integer [ref: > programa.pro_codigo]
+  mal_cod_uce integer [ref: > unidad_credito_equivalente.uce_codigo]
+  mal_cod_trayecto integer [ref: > trayecto.tra_codigo]
+  mal_estatus char(1) [default: 'A']
+  mal_total_credito_tsu integer
+  mal_total_credito_ing integer
+  mal_total_horas_tsu integer
+  mal_total_horas_ing integer
+  mal_total_unidades_tsu integer
+  mal_total_unidades_ing integer
+  mal_total_credito_prosecucion integer
+  mal_total_horas_prosecucion integer
+  mal_total_unidades_prosecucion integer
+  mal_cod_semestre_salida_tsu integer [ref: > semestre.sem_codigo]
+  mal_cod_semestre_salida_ing integer [ref: > semestre.sem_codigo]
+}
+
+Table unidad_curricular {
+  ucu_codigo integer [pk, increment]
+  ucu_siglas varchar(12)
+  ucu_nombre varchar(200) [not null]
+  ucu_unidad_credito decimal(5,2)
+  ucu_thte integer
+  ucu_htea integer
+  ucu_htei integer
+  ucu_nota_aprobatoria decimal(5,2)
+  ucu_duracion_semestre varchar(10)
+  ucu_cod_malla integer [ref: > malla.mal_codigo]
+  ucu_cod_tuc integer [ref: > tipo_unidad_curricular.tuc_codigo]
+  ucu_cod_semestre integer [ref: > semestre.sem_codigo]
+  ucu_cod_eje integer [ref: > eje.eje_codigo]
+  ucu_prelacion char(1) [default: 'N']
+  ucu_estatus char(1)
+  ucu_sistema_viejo char(9)
+}
+
+Table unidad_curricular_prelacion {
+  ucp_codigo integer [pk, increment]
+  ucp_cod_unidad_original integer [not null, ref: > unidad_curricular.ucu_codigo]
+  ucp_cod_unidad_prelacion integer [not null, ref: > unidad_curricular.ucu_codigo]
+  ucp_estatus char(1) [default: 'A']
+}
+
+Table titulo_obtenido {
+  tit_codigo integer [pk, increment]
+  tit_nombre varchar [not null]
+  tit_tipo_grado varchar(50)
+  tit_cod_programa integer [ref: > programa.pro_codigo]
+  tit_estatus char(1) [default: 'A']
+  tit_gaceta varchar(20)
+  tit_fecha_gaceta date
+  tit_resolucion varchar(20)
+  tit_fecha_resolucion date
+}
+
+Table lapso_academico {
+  lap_codigo integer [pk, increment]
+  lap_nombre varchar(20)
+  lap_fecha_inicio date
+  lap_fecha_fin date
+  lap_tipo integer [ref: > tipo_lapso.tap_codigo]
+  lap_cod_universidad integer [ref: > universidad.uni_codigo]
+  lap_condicion char(1)
+  lap_cerrado char(1)
+  lap_nota char(1)
+  lap_estatus char(1) [default: 'A']
+}
+
+Table cohorte {
+  coh_codigo integer [pk, increment]
+  coh_nombre varchar
+  coh_fecha_inicio date
+  coh_fecha_fin_posible date
+  coh_fecha_fin_real date
+  coh_condicion varchar(20)
+  cod_lapso integer [ref: > lapso_academico.lap_codigo]
+  coh_estatus char(1)
+}
+
+Table sede_programa {
+  spr_codigo integer [pk, increment]
+  spr_cod_programa integer [not null, ref: > programa.pro_codigo]
+  spr_cod_sede integer [not null, ref: > localidad.loc_codigo]
+  spr_codigo_ministerio char(5)
+  spr_cantidad_asignados integer
+}
+
+Table cohorte_sede {
+  cse_codigo integer [pk, increment]
+  cse_cod_malla integer [ref: > malla.mal_codigo]
+  cse_cod_sede integer [ref: > localidad.loc_codigo]
+  cse_cod_cohorte integer
+  cse_nombre varchar(100)
+  cse_estatus char(1)
+}
+
+// ===================================
+// TABLAS DE PERSONAL DOCENTE Y ADMINISTRATIVO
+// ===================================
+
+Table docente {
+  doc_cedula varchar(12) [pk, ref: > persona.per_cedula]
+  doc_fecha_ingreso date
+  doc_cod_profesion integer [ref: > profesion.prf_codigo]
+  doc_cod_sede integer [ref: > localidad.loc_codigo]
+  doc_cod_condicion_laboral integer [ref: > condicion_laboral.cla_codigo]
+  doc_cod_categoria_actual integer [ref: > categoria.cat_codigo]
+  doc_cod_categoria_inicial integer [ref: > categoria.cat_codigo]
+  doc_cod_dedicacion integer [ref: > dedicacion.ded_codigo]
+  doc_estatus char(1) [default: 'A']
+}
+
+
+Table docente_programa {
+  dpr_codigo integer [pk, increment]
+  dpr_cod_programa integer [not null, ref: > programa.pro_codigo]
+  dpr_cedula varchar(12) [not null, ref: > docente.doc_cedula]
+  dpr_estatus char(1) [default: 'A']
+}
+
+// ===================================
+// TABLAS DE ESTUDIANTES Y ASIGNACIÓN
+// ===================================
+
+Table estudiante {
+  est_cedula varchar(12) [pk, ref: > persona.per_cedula]
+  est_sni varchar(15)
+  est_bachiller_ano_egreso char(4)
+  est_cod_localidad_bachillerato integer [ref: > localidad.loc_codigo]
+  est_cod_programa integer [ref: > programa.pro_codigo]
+  est_cod_sede integer [ref: > localidad.loc_codigo]
+  est_cod_turno integer [ref: > turno.tur_codigo]
+  est_cod_malla integer [ref: > malla.mal_codigo]
+  est_ultima_seccion integer
+  est_cod_cohorte_sede_ingreso integer [ref: > cohorte_sede.cse_codigo]
+  est_cod_lapso_academico_ingreso integer [ref: > lapso_academico.lap_codigo]
+  est_cod_lapso_academico_egreso integer [ref: > lapso_academico.lap_codigo]
+  est_cod_seb integer [ref: > sistema_estudio_bachiller.seb_codigo]
+  est_cod_reb integer [ref: > rama_estudio_bachiller.reb_codigo]
+  est_cod_mencion_honorifica integer [ref: > mencion_honorifica.mho_codigo]
+  est_cod_promocion_tsu integer
+  est_cod_promocion_ing integer
+  est_ira decimal(5,2)
+  est_posicion_graduando_in integer
+  est_posicion_graduando_ts integer
+  est_tsu_titulo_caracter char(1)
+  est_tsu_ano_egreso char(4)
+  est_tsu_cod_dependencia integer
+  est_tsu_instituto varchar(150)
+  est_bachiller_tipo_instituto integer
+  est_tipo_aspirante char(1)
+  est_tipo_culminacion char(1)
+  est_becado char(1) [default: 'N']
+  est_becado_interno char(1)
+  est_organismo_beca varchar
+  est_observacion_sancion text
+  est_cod_modalidad_ingreso integer [ref: > modalidad_ingreso.min_codigo]
+  est_cod_condicion_residencia integer [ref: > condicion_residencia.cre_codigo]
+  est_cod_condicion_inscrito integer [ref: > condicion_inscrito.cin_codigo]
+  est_cod_inscrito integer [ref: > condicion_inscrito.cin_codigo]
+  est_privado_libertad char(1) [default: 'N']
+  est_cantidad_sancionado integer [default: 0]
+  est_estatus char(1) [default: 'A']
+  est_fecha_ingreso date
+  est_solvencia_adm char(1) [default: 'N']
+  est_solvencia_aca char(1) [default: 'N']
+  est_solvencia_bib char(1) [default: 'N']
+  est_sancion_universitaria char(1) [default: 'N']
+  est_culminacion_aca char(1) [default: 'N']
+  est_aspirante char(1) [default: 'S']
+  est_confirmacion_aspirante char(1) [default: 'N']
+  est_trayecto integer [ref: > trayecto.tra_codigo]
+  est_semestre integer [ref: > semestre.sem_codigo]
+  est_condicion_inscrito integer [ref: > condicion_inscrito.cin_codigo]
+  est_condicion char(1)
+  est_condicion2 char(1)
+  est_cerrado char(1) [default: 'N']
+  est_mencion_honorifica_tsu integer [ref: > mencion_honorifica.mho_codigo]
+  est_convalidado_interno char(1) [default: 'N']
+  est_convalidado char(1)
+  est_fecha_registro timestamp [default: `CURRENT_TIMESTAMP`]
+  est_fecha_actualizacion timestamp
+  est_es_pnf char(1) [default: 'S']
+}
+
+Table becados {
+  bec_cedula varchar(12) [pk, ref: > estudiante.est_cedula]
+}
+
+Table asignado {
+  cedula varchar(12) [pk]
+  nombre varchar(100)
+  rama integer
+  ano_egreso char(4)
+  lapso_academico char(7)
+  indice_academico decimal(5,2)
+  cod_sede integer [ref: > localidad.loc_codigo]
+  cod_programa integer [ref: > programa.pro_codigo]
+  apellido varchar(100)
+  correo varchar(100)
+  sexo char(1)
+  celular char(12)
+  sni varchar(15)
+}
+
+// ===================================
+// TABLAS DE PLANIFICACIÓN FÍSICA Y HORARIOS
+// ===================================
+
+Table ambiente {
+  amb_codigo integer [pk, increment]
+  amb_nombre varchar(45) [not null]
+  amb_capacidad integer [not null]
+  amb_cod_sede integer [ref: > localidad.loc_codigo]
+  amb_estatus char(1) [default: 'A']
+  amb_siglas char(4)
+  amb_cod_programa integer [ref: > programa.pro_codigo]
+}
+
+Table bloque_hora {
+  blo_codigo integer [pk, increment]
+  blo_hora_inicio time
+  blo_hora_fin time
+  blo_cod_turno integer [ref: > turno.tur_codigo]
+  blo_estatus char(1) [default: 'A']
+}
+
+Table seccion {
+  sec_codigo integer [pk, increment]
+  sec_nombre char(8) [not null]
+  sec_cod_lapso_academico integer [ref: > lapso_academico.lap_codigo]
+  sec_cod_tipo_seccion integer [ref: > tipo_seccion.tse_codigo]
+  sec_cod_semestre integer [ref: > semestre.sem_codigo]
+  sec_cod_turno integer [ref: > turno.tur_codigo]
+  sec_cod_sede integer [ref: > localidad.loc_codigo]
+  sec_cod_malla integer [ref: > malla.mal_codigo]
+  sec_cod_escala_medicion integer [ref: > escala_medicion.eme_codigo]
+  sec_cod_cohorte_sede integer [ref: > cohorte_sede.cse_codigo]
+  sec_capacidad integer
+  sec_inscritos integer [default: 0]
+  sec_estatus char(1) [default: 'A']
+}
+
+Table seccion_unidad_docente {
+  sud_codigo integer [pk, increment]
+  sud_cod_seccion integer [not null, ref: > seccion.sec_codigo]
+  sud_cod_unidad integer [not null, ref: > unidad_curricular.ucu_codigo]
+  sud_ced_docente varchar(12) [not null, ref: > docente.doc_cedula]
+  sud_capacidad integer
+  sud_nro_inscritos integer [default: 0]
+  sud_estatus char(1) [default: 'A']
+  sud_condicion char(1)
+  sud_nameplan varchar(50)
+}
+
+Table horario {
+  hor_codigo integer [pk, increment]
+  hor_dia char(1)
+  hor_cod_ambiente integer [not null, ref: > ambiente.amb_codigo]
+  hor_cod_sud integer [not null, ref: > seccion_unidad_docente.sud_codigo]
+  hor_cod_bloque_hora integer [not null, ref: > bloque_hora.blo_codigo]
+  hor_cod_lapso integer [not null, ref: > lapso_academico.lap_codigo]
+  hor_cod_sede integer [not null, ref: > localidad.loc_codigo]
+  hor_cod_programa integer [not null, ref: > programa.pro_codigo]
+  hor_cod_seccion integer [not null, ref: > seccion.sec_codigo]
+  hor_estatus char(1) [default: 'A']
+}
+
+
+// ===================================
+// TABLAS DE PROCESOS DE INSCRIPCIÓN Y EVALUACIÓN
+// ===================================
+
+Table planificacion_inscripcion {
+  pin_codigo integer [pk, increment]
+  pin_tipo_inscripcion char(1)
+  pin_fecha_inicio timestamp
+  pin_fecha_fin timestamp
+  pin_cod_lapso integer [ref: > lapso_academico.lap_codigo]
+  pin_cod_sede integer [ref: > localidad.loc_codigo]
+  pin_cod_programa integer [ref: > programa.pro_codigo]
+  pin_estatus char(1)
+}
+
+
+Table inscripcion {
+  ins_codigo integer [pk, increment]
+  ins_cedula varchar(12) [not null]
+  ins_cod_seccion_unidad_docente integer [not null, ref: > seccion_unidad_docente.sud_codigo]
+  ins_nota_final_100 decimal(5,2)
+  ins_nota_final_20 decimal(5,2)
+  ins_cod_condicion_inscrito integer [ref: > condicion_inscrito.cin_codigo]
+  ins_estatus char(1) [default: 'A']
+  ins_nota_final_hito_100 decimal(5,2)
+  ins_nota_final_hito_20 decimal(5,2)
+  ins_observacion text
+  ins_observacion_inactiva text
+  ins_tipo char(1)
+}
+
+Table evaluacion {
+  eva_codigo integer [pk, increment]
+  eva_cod_sud integer [not null, ref: > seccion_unidad_docente.sud_codigo]
+  eva_cantidad_evaluaciones integer
+}
+
+Table matriz_evaluacion {
+  mev_codigo integer [pk, increment]
+  mev_porcentaje integer
+  mev_semana_planificada integer
+  mev_semana_ejecutada integer
+  mev_cod_evaluacion integer [not null, ref: > evaluacion.eva_codigo]
+  mev_cod_tipo_evaluacion integer [not null, ref: > tipo_evaluacion.tev_codigo]
+}
+
+Table evaluacion_estudiante {
+  ees_codigo integer [pk, increment]
+  ees_cod_inscripcion integer [not null, ref: > inscripcion.ins_codigo]
+  ees_cod_matriz_evaluacion integer [not null, ref: > matriz_evaluacion.mev_codigo]
+  ees_nota double
+  ees_cantidad_modificaciones integer [default: 0]
+  ees_nota_hito integer
+  ees_cantidad_modificaciones_hito integer [default: 0]
+  ees_observacion text
+  ees_estatus char(1) [default: 'A']
+}
+
+// ===================================
+// TABLAS DE MOVILIDAD Y SOLICITUDES
+// ===================================
+
+Table cambio_universidad {
+  cse_codigo integer [pk, increment]
+  cse_cedula varchar(12) [not null]
+  cse_cod_universidad_origen integer [ref: > universidad.uni_codigo]
+  cse_cod_universidad_destino integer [ref: > universidad.uni_codigo]
+  cse_estatus char(1)
+  cse_fecha date
+}
+
+Table cambio_programa {
+  cpr_codigo integer [pk, increment]
+  cpr_cedula varchar(12) [not null]
+  cpr_fecha date
+  cpr_cod_programa_origen integer [ref: > programa.pro_codigo]
+  cpr_cod_programa_destino integer [ref: > programa.pro_codigo]
+  cpr_estatus char(1)
+  cpr_cod_solicitud integer
+}
+
+Table cambio_turno {
+  ctu_codigo integer [pk, increment]
+  ctu_fecha date
+  ctu_cedula varchar(12) [not null]
+  ctu_cod_turno_origen integer [ref: > turno.tur_codigo]
+  ctu_cod_turno_destino integer [ref: > turno.tur_codigo]
+  ctu_estatus char(1)
+  ctu_cod_solicitud integer
+}
+
+Table cambio_sede {
+  cse_codigo integer [pk, increment]
+  cse_fecha date
+  cse_cedula varchar(12) [not null]
+  cse_cod_sede_origen integer [ref: > localidad.loc_codigo]
+  cse_cod_sede_destino integer [ref: > localidad.loc_codigo]
+  cse_cod_solicitud integer
+  cse_estatus char(1)
+}
+
+Table cambio_malla {
+  cma_codigo integer [pk, increment]
+  cma_cod_malla_origen integer [ref: > malla.mal_codigo]
+  cma_cod_malla_destino integer [ref: > malla.mal_codigo]
+  cma_convalidado char(1)
+  cma_estatus char(1)
+  cma_cod_solicitud integer
+  cma_fecha date
+  cma_cedula varchar(12) [not null]
+}
+
+Table cambio_reingreso {
+  cre_codigo integer [pk, increment]
+  cre_fecha date
+  cre_cedula varchar(12) [not null, ref: > estudiante.est_cedula]
+  cre_cod_lapso_origen integer [ref: > lapso_academico.lap_codigo]
+  cre_cod_lapso_destino integer [ref: > lapso_academico.lap_codigo]
+  cre_estatus char(1)
+  cre_cod_solicitud integer
+}
+
+Table solicitud_retiro {
+  sor_codigo integer [pk, increment]
+  sor_cedula varchar(12) [not null]
+  sor_cod_programa integer [ref: > programa.pro_codigo]
+  sor_cod_malla integer [ref: > malla.mal_codigo]
+  sor_cod_sede integer [ref: > localidad.loc_codigo]
+  sor_cod_lapso_academico_solicitud integer [ref: > lapso_academico.lap_codigo]
+  sor_fecha_solicitud date
+  sor_tipo_retiro char(1)
+  sor_ultima_seccion_cursada integer [ref: > seccion.sec_codigo]
+  sor_cod_causa_retiro integer [ref: > causa_retiro.cre_codigo]
+  sor_causa_especificada varchar(200)
+  sor_fecha_aprobacion date
+  sor_estatus_aprobacion char(1)
+  sor_observacion text
+  sor_cod_usuario_aprobacion varchar(30)
+  sor_estatus char(1)
+}
+
+Table solicitud_reingreso_cabios {
+  src_codigo integer [pk, increment]
+  src_ultima_seccion_origen integer [ref: > seccion.sec_codigo]
+  src_ultima_seccion_destino integer [ref: > seccion.sec_codigo]
+  src_cod_lapso_academico_actual integer [ref: > lapso_academico.lap_codigo]
+  src_procesada char(1)
+  src_cod_malla integer [ref: > malla.mal_codigo]
+  src_cedula char(12)
+  src_estatus char(1)
+  src_fecha date
+}
+
+Table sol_reingreso {
+  sre_codigo integer [pk, increment]
+  sre_cod_solicitud integer
+  sre_cod_usuario varchar(12)
+  sre_cod_lapso_origen integer [ref: > lapso_academico.lap_codigo]
+  sre_cod_lapso_destino integer
+  sre_observacion text
+  sre_estatus_aprobacion char(1)
+  sre_fecha_aprobacion date
+  sre_estatus char(1)
+}
+
+Table sol_cambio_turno {
+  sct_codigo integer [pk, increment]
+  sct_cod_solicitud integer
+  sct_cod_usuario varchar(12)
+  sct_cod_turno_origen integer [ref: > turno.tur_codigo]
+  sct_cod_turno_destino integer [ref: > turno.tur_codigo]
+  sct_observacion text
+  sct_estatus_aprobacion char(1)
+  sct_fecha_aprobacion date
+  sct_estatus char(1)
+}
+
+Table sol_cambio_sede {
+  scs_codigo integer [pk, increment]
+  scs_cod_solicitud integer
+  scs_cod_usuario varchar(12)
+  scs_cod_sede_origen integer [ref: > localidad.loc_codigo]
+  scs_cod_sede_destino integer [ref: > localidad.loc_codigo]
+  scs_observacion text
+  scs_estatus_aprobacion char(1)
+  scs_fecha_aprobacion date
+  scs_estatus char(1)
+}
+
+Table sol_cambio_programa {
+  scp_codigo integer [pk, increment]
+  scp_cod_solicitud integer
+  scp_cod_usuario varchar(12)
+  scp_cod_programa_origen integer [ref: > programa.pro_codigo]
+  scp_cod_programa_destino integer [ref: > programa.pro_codigo]
+  scp_cod_malla_origen integer [ref: > malla.mal_codigo]
+  scp_cod_malla_destino integer [ref: > malla.mal_codigo]
+  scp_observacion text
+  scp_estatus_aprobacion char(1)
+  scp_fecha_aprobacion date
+  scp_estatus char(1)
+}
+
+// ===================================
+// TABLAS DE GRADUACIÓN Y TÍTULOS
+// ===================================
+
+Table promocion {
+  prm_codigo integer [pk, increment]
+  prm_nombre varchar
+  prm_fecha_egreso date
+  prm_tipo_promocion varchar
+  prm_mayor_indice decimal
+  prm_menor_indice decimal
+  prm_cantidad_egresado integer
+  prm_tomo varchar(20)
+  prm_estatus char(1)
+}
+
+Table promocion_programa {
+  prp_codigo integer [pk, increment]
+  prp_cantidad_egresado integer
+  prp_mayor_indice decimal
+  prp_menor_indice decimal
+  prp_cod_programa integer [ref: > programa.pro_codigo]
+  prp_cod_promocion integer [ref: > promocion.prm_codigo]
+  prp_cod_titulo_obtenido integer [ref: > titulo_obtenido.tit_codigo]
+  prp_estatus char(1)
+}
+
+Table promocion_estudiante {
+  pre_codigo integer [pk, increment]
+  pre_tomo varchar(20)
+  pre_folio varchar(20)
+  pre_cedula varchar(12) [not null, ref: > estudiante.est_cedula]
+  pre_cod_programa integer [ref: > programa.pro_codigo]
+  pre_cod_malla integer [ref: > malla.mal_codigo]
+  pre_cod_sede integer [ref: > localidad.loc_codigo]
+  pre_ira decimal(5,2)
+  pre_numero_posicion_promocion integer
+  pre_tipo_graduando char(1)
+  pre_estatus char(1)
+  pre_observacion_inactivar text
+  pre_observacion_activar text
+  pre_numero_posicion_programa integer
+  pre_cod_titulo_obtenido integer [ref: > titulo_obtenido.tit_codigo]
+  pre_cod_promocion integer [ref: > promocion.prm_codigo]
+  pre_cod_promocion_programa integer [ref: > promocion_programa.prp_codigo]
+  pre_salidas_folio varchar(20)
+  pre_fecha_salida_folio date
+  pre_condicion_ingreso integer [ref: > modalidad_ingreso.min_codigo]
+}
+
+Table solicitud_grado {
+  sgr_codigo integer [pk, increment]
+  sgr_fecha_solicitud date
+  sgr_fecha_cita date
+  sgr_tipo_titulo char(1)
+  sgr_procesada char(1)
+  sgr_usuario_aprobacion varchar(30)
+  sgr_fecha_proceso date
+  sgr_observacion text
+  sgr_cod_sede integer [ref: > localidad.loc_codigo]
+  sgr_cod_malla integer [ref: > malla.mal_codigo]
+  sgr_cod_programa integer [ref: > programa.pro_codigo]
+  sgr_cod_promocion integer [ref: > promocion.prm_codigo]
+  sgr_cedula varchar(12) [not null, ref: > estudiante.est_cedula]
+  sgr_estatus char(1)
+}
+
+// ===================================
+// TABLAS DE HISTORIAL ACADÉMICO (ANUALES)
+// ===================================
+
+Table anuales {
+  anu_codigo integer [pk, increment]
+  anu_cedula varchar(12) [not null]
+  anu_cod_sede integer [ref: > localidad.loc_codigo]
+  anu_cod_programa integer [ref: > programa.pro_codigo]
+  anu_cod_malla integer [ref: > malla.mal_codigo]
+  anu_cod_trayecto integer [ref: > trayecto.tra_codigo]
+  anu_cod_lapso integer [ref: > lapso_academico.lap_codigo]
+  anu_nombre_lapso char(10)
+  anu_cod_unidad integer [ref: > unidad_curricular.ucu_codigo]
+  anu_nota decimal(5,2)
+  anu_cod_escala_medicion integer [ref: > escala_medicion.eme_codigo]
+  anu_observacion char(2)
+  anu_condicion char(1)
+  anu_condicion_repitencia char(1)
+  anu_nuc integer
+  anu_siglas_ucu varchar(12)
+  anu_50 decimal(4,2)
+  anu_codigo_trimestral char(8)
+  anu_estatus char(1)
+  anu_observacion_2 varchar(300)
+}
+
+Table convalidacion {
+  con_codigo integer [pk, increment]
+  con_cod_programa_o integer [ref: > programa.pro_codigo]
+  con_cod_malla_o integer [ref: > malla.mal_codigo]
+  con_cod_unidad_o integer [ref: > unidad_curricular.ucu_codigo]
+  con_cod_programa_d integer [ref: > programa.pro_codigo]
+  con_cod_malla_d integer [ref: > malla.mal_codigo]
+  con_cod_unidad_d integer [ref: > unidad_curricular.ucu_codigo]
+  con_estatus char(1)
+}
+
+// ===================================
+// TABLAS DE CONFIGURACIÓN, API Y EVENTOS
+// ===================================
+
+Table configuracion {
+  conf_id integer [pk, increment]
+  con_cantidad_evaluaciones integer
+  con_porcentaje_evaluaciones integer
+  con_nota_hito decimal
+  con_nota_per_desde decimal
+  con_nota_per_hasta decimal
+  con_cantidad_modificaciones_notas integer
+  con_cantidad_modificaciones_notas_hitos integer
+  con_cantidad_cambios_programa integer
+  con_semana_cohorte_1 integer
+  con_semana_cohorte_2 integer
+  con_semana_cohorte_3 integer
+  con_semana_cohorte_4 integer
+  con_habilitar_evaluacion boolean
+  con_habilitar_evaluacion_proyecto boolean
+  con_habilitar_evaluacion_correccion boolean
+  con_habilitar_evaluacion_per boolean
+  con_habilitar_evaluacion_tra_ini boolean
+  con_habilitar_evaluacion_hito boolean
+  con_habilitar_cambios boolean
+  con_habilitar_retiros boolean
+  con_habilitar_inscripcion boolean
+  con_habilitar_inscripcion_repitencia char(1)
+  con_habilitar_inscripcion_asignados char(1)
+  con_dia_certificacion integer
+  con_dias_adicionales_constancia_egreso integer
+  con_capacidad_seccion integer
+  con_capacidad_seccion_trayecto_inicial integer
+  con_lapso_per_inicio date
+  con_lapso_per_fin date
+  con_solicitud_grado_inicio date
+  con_solicitud_grado_fin date
+  con_fecha_vencimiento_carnet date
+  con_fecha_inicio_cambios date
+  con_fecha_fin_cambios date
+  con_fecha_inicio_retiro date
+  con_fecha_fin_retiro date
+  con_fecha_independencia date
+  con_fecha_federacion date
+  con_fecha_cita date
+
+}
+
+Table api_systems {
+  id integer [pk, increment]
+  name varchar(10) [not null]
+  description text
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+}
+
+Table api_allowed_tables {
+  id integer [pk, increment]
+  table_name varchar(100) [not null]
+  schema_name varchar
+  description text
+}
+
+Table api_keys {
+  id integer [pk, increment]
+  system_id integer [ref: > api_systems.id]
+  api_key varchar(255) [not null]
+  is_active boolean [default: true]
+  expires_at timestamp
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+}
+
+Table api_permissions {
+  id integer [pk, increment]
+  system_id integer [ref: > api_systems.id]
+  table_id integer [ref: > api_allowed_tables.id]
+  can_read boolean [default: false]
+  can_write boolean [default: false]
+  filters jsonb
+}
+
+Table api_access_logs {
+  id integer [pk, increment]
+  system_id integer [ref: > api_systems.id]
+  ip_address inet
+  endpoint varchar(255)
+  http_method varchar(10)
+  query_params jsonb
+  response_code integer
+  response_time_ms integer
+  accessed_at timestamp [default: `CURRENT_TIMESTAMP`]
+}
+
+Table eventos {
+  eve_codigo integer [pk, increment]
+  eve_usu_nombre varchar(30)
+  eve_formulario varchar(100)
+  eve_tipo_evento varchar(20)
+  eve_fecha timestamp [default: `CURRENT_TIMESTAMP`]
+  eve_ip varchar(20)
+  eve_observacion text
+}
+
+Table rol_mensaje_configuracion {
+  rmc_cod_configuracion integer [pk, increment]
+  rmc_cod_rol integer [ref: > rol.rol_codigo]
+  rmc_mensaje_text text
+}
+
+Table qr_validated_generated {
+  id integer [pk, increment]
+  unique_id varchar(100) [unique]
+  pdf_name varchar(255)
+  user_cedula varchar(20)
+  generated_by_cedula varchar(20)
+  qr_payload text
+  verification_hash varchar(255)
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+  status varchar(20) [default: 'Pendiente']
+  revoked_at timestamp
+  codigo_pro integer [ref: > programa.pro_codigo]
+}
+
+Table qr_validated_generated_titulo {
+  id integer [pk, increment]
+  unique_id varchar(100) [unique]
+  pdf_name varchar(255)
+  user_cedula varchar(20)
+  generated_by_cedula varchar(20)
+  qr_payload text
+  verification_hash varchar(255)
+  created_at timestamp [default: `CURRENT_TIMESTAMP`]
+  status varchar(20) [default: 'Pendiente']
+  revoked_at timestamp
+  codigo_pro integer [ref: > programa.pro_codigo]
+}
+
+// ===================================
+// TABLAS ADICIONALES (ENTES, CENSOS, ESCALAS, ETC.)
+// ===================================
+
+Table ente_publico {
+  epu_ced_docente varchar(12)
+  epu_cod_lapso integer
+  epu_org varchar(6)
+  epu_fec date
+  epu_dep varchar(6)
+  epu_car varchar(6)
+  epu_ded varchar(6)
+  epu_hor varchar(60)
+  epu_sue decimal(12,2)
+}
+
+Table ente_privado {
+  epr_ced_docente varchar(12)
+  epr_cod_lapso integer
+  epr_empp varchar(60)
+  epr_depp varchar(60)
+  epr_funp varchar(60)
+  epr_horp varchar(60)
+  epr_suep decimal(12)
+}
+
+Table rama_estudio_bachiller {
+  reb_codigo integer [pk, increment]
+  reb_nombre varchar [not null]
+  reb_estatus char(1)
+}
+
+Table sistema_estudio_bachiller {
+  seb_codigo integer [pk, increment]
+  seb_nombre varchar [not null]
+  seb_estatus char(1)
+}
+
+Table autoridad {
+  aut_codigo integer [pk, increment]
+  aut_cedula varchar(12) [not null]
+  aut_documento_identificacion varchar(20)
+  aut_nacionalidad varchar(2)
+  aut_nombres varchar(100)
+  aut_apellidos varchar(100)
+  aut_genero char(1)
+  aut_fecha_nacimiento date
+  aut_telefono varchar(12)
+  aut_celular varchar(12)
+  aut_direccion text
+  aut_correo varchar(100)
+  aut_fecha_inicio date
+  aut_fecha_fin date
+  aut_gaceta varchar(20)
+  aut_fecha_gaceta date
+  aut_resolucion varchar(20)
+  aut_fecha_resolucion date
+  aut_tipo_consejo_directivo varchar
+  aut_numero_consejo_directivo varchar
+  aut_fecha_consejo_directivo date
+  aut_titulo varchar
+  aut_cod_grado_academico integer [ref: > grado_academico.gra_codigo]
+  aut_cod_universidad integer [ref: > universidad.uni_codigo]
+  aut_cod_pais integer [ref: > pais.pai_codigo]
+  aut_cod_categoria integer [ref: > categoria.cat_codigo]
+  aut_cod_tipo_autoridad integer [ref: > tipo_autoridad.tau_codigo]
+  aut_localidad integer [ref: > localidad.loc_codigo]
+  aut_estatus char(1)
+}
+
+Table censo_intensivo {
+  id integer [pk, increment]
+  id_serial integer
+  cedula_estudiante varchar(15)
+  codigo_uc varchar(255)
+  fecha_inscripcion date
+  name_unidad varchar(50)
+  malla varchar
+}
+
+Table escala_nota {
+  eno_codigo integer [pk, increment]
+  eno_nota_100 decimal(5,2)
+  eno_nota_20 decimal(5,2)
+  eno_cod_escala_medicion integer [ref: > escala_medicion.eme_codigo]
+}
+
+Table salidas_intermedias {
+  codigo_salidas integer [pk, increment]
+  sal_nombre varchar [not null]
+  sal_pnf integer [ref: > programa.pro_codigo]
+  sal_tipo varchar
+  estatus char(1)
+}
+
+// ===================================
+// REFERENCIAS ADICIONALES (para completar las que no se pudieron declarar inline)
+// ===================================
+
+Ref: estudiante.est_ultima_seccion > seccion.sec_codigo
+Ref: rol.rol_cod_programa > programa.pro_codigo
+Ref: rol.rol_cod_sede > localidad.loc_codigo

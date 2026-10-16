@@ -471,7 +471,7 @@ Table programa {
   comentario_prg text [note: 'Observaciones o notas administrativas del programa']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
-  created_at timestamptz [default: `now()`, note: 'Fecha de creación del registro']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
   updated_at timestamptz [note: 'Fecha de última actualización']
   deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
   created_id integer [note: 'Usuario que creó el registro']
@@ -695,7 +695,7 @@ Table user {
   per_id integer [not null, unique, note: 'Enlace estricto 1:1 con el ciudadano físico (Ref: persona)']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
-  created_at timestamptz [default: `now()`, note: 'Fecha de creación del registro']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
   updated_at timestamptz [note: 'Fecha de última actualización']
   deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
   created_id integer [note: 'Usuario que creó el registro']
@@ -1264,7 +1264,7 @@ Table solicitud_grado {
   aprobada_por_use_id integer [note: 'Auditoría: ID del usuario administrativo que aprobó la solicitud (Ref: user)']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status, 1=Activo, 2=Inactivo)']
-  created_at timestamptz [default: `now()`, note: 'Fecha de creación del registro']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
   updated_at timestamptz [note: 'Fecha de última actualización']
   deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
   created_id integer [note: 'Usuario que creó el registro']
@@ -1526,7 +1526,7 @@ Table qr_validated_generated_titulo {
   generado_por_use_id integer [note: 'Autoridad o analista que emitió el lote de diplomas (Ref: user)']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
-  created_at timestamptz [default: `now()`, note: 'Fecha de creación del registro']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
   updated_at timestamptz [note: 'Fecha de última actualización']
   deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
   created_id integer [note: 'Usuario que creó el registro']
@@ -3688,14 +3688,14 @@ Table documento_aspirante {
   ruta_archivo_dap varchar(500) [not null, note: 'Ruta de almacenamiento físico en disco o bucket S3']
   estado_validacion_dap varchar(30) [not null, default: 'pendiente', note: 'Estado: pendiente, aprobado, rechazado']
   observacion_dap text [note: 'Motivo de rechazo o notas de validación por taquilla']
-  fecha_subida_dap timestamptz [default: `now()`, note: 'Fecha y hora exacta de carga digital']
+  fecha_subida_dap timestamptz [default: \`now()\`, note: 'Fecha y hora exacta de carga digital']
 
   pra_id integer [not null, note: 'Proceso de admisión del aspirante (Ref: proceso_admision)']
   dor_id integer [not null, note: 'Tipo de documento o recaudo legal exigido (Ref: documento_requisito)']
   validado_por_use_id integer [note: 'Auditoría: Usuario analista que validó el soporte (Ref: user)']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
-  created_at timestamptz [default: `now()`, note: 'Fecha de creación del registro']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
   updated_at timestamptz [note: 'Fecha de última actualización']
   deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
   created_id integer [note: 'Usuario que creó el registro']

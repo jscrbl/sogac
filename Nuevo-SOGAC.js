@@ -202,7 +202,7 @@ Table sede {
 Table sede_pnf {
   id_sep integer [primary key, increment, note: 'Tabla puente para definir la oferta académica por núcleo']
   sed_id integer [not null, note: 'Núcleo donde se imparte el programa']
-  pnf_id integer [not null, note: 'Programa Nacional de Formación ofertado']
+  prg_id integer [not null, note: 'Programa Nacional de Formación ofertado']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
   created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
@@ -212,7 +212,7 @@ Table sede_pnf {
   updated_id integer [note: 'Usuario que actualizó por última vez']
 
   indexes {
-    (sed_id, pnf_id) [unique, note: 'Garantiza que una sede no duplique la oferta del mismo PNF']
+    (sed_id, prg_id) [unique, note: 'Garantiza que una sede no duplique la oferta del mismo PNF']
   }
 }
 
@@ -397,10 +397,11 @@ Table becado {
 // MÓDULO 6: ESTRUCTURA ACADÉMICA
 // ==========================================
 Table departamento {
-  id_dep integer [primary key, increment, note: 'Identificador único del área académica matriz']
-  nombre_dep varchar(255) [not null, note: 'Nombre oficial del departamento (Ej. Dpto. de Informática)']
+  id_dep integer [primary key, increment, note: 'Identificador único del área académica o administrativa matriz']
+  nombre_dep varchar(255) [not null, note: 'Nombre oficial del departamento (Ej. Dpto. de Informática, Bienestar Estudiantil)']
+  descripcion_dep text [note: 'Descripción del alcance, competencias y objetivos del departamento']
 
-  jefe_departamento_pro_id integer [note: 'Profesor responsable de avalar procesos del área']
+  jefe_departamento_pro_id integer [note: 'Profesor responsable de avalar procesos del área (Ref: profesor)']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
   created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
@@ -455,13 +456,22 @@ Table eje_curricular {
   updated_id integer [note: 'Usuario que actualizó por última vez']
 }
 
-Table pnf {
-  id_pnf integer [primary key, increment, note: 'Identificador único de la carrera']
-  codigo_pnf varchar(30) [note: 'Código correlativo interno o ministerial de la carrera']
-  nombre_pnf varchar(255) [not null, note: 'Denominación completa (Ej. PNF en Agroalimentación)']
+Table programa {
+  id_prg integer [primary key, increment, note: 'Identificador único del programa académico o carrera matriz']
+  codigo_prg varchar(30) [unique, not null, note: 'Código correlativo interno o ministerial (Ej. INF, AGRO)']
+  codigo_ministerio_prg varchar(30) [note: 'Código específico asignado por la OPSU o el MPPEU']
+  nombre_prg varchar(255) [not null, note: 'Denominación completa (Ej. Programa Nacional de Formación en Informática)']
+  siglas_prg varchar(20) [note: 'Abreviatura oficial del programa (Ej. PNFI)']
+  gaceta_prg varchar(100) [note: 'Número de Gaceta Oficial de creación o resolución']
+  fecha_gaceta_prg date [note: 'Fecha de publicación oficial en Gaceta']
+  resolucion_prg varchar(100) [note: 'Número de resolución del Consejo o CNU']
+  fecha_resolucion_prg date [note: 'Fecha de la resolución ministerial']
+  tiene_salida_intermedia_prg boolean [default: true, note: 'Indica si otorga certificaciones o TSU intermedio']
+  arancel_prg numeric(10,2) [default: 0.00, note: 'Costo por concepto de trámite o matrícula si aplica']
+  comentario_prg text [note: 'Observaciones o notas administrativas del programa']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
-  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  created_at timestamptz [default: `now()`, note: 'Fecha de creación del registro']
   updated_at timestamptz [note: 'Fecha de última actualización']
   deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
   created_id integer [note: 'Usuario que creó el registro']
@@ -503,7 +513,7 @@ Table malla_curricular {
   fecha_aprobacion_mac date [note: 'Fecha de aprobación u oficialización del plan de estudios']
   observacion_mac text [note: 'Notas sobre la vigencia, modalidad de estudio o transición de la malla']
 
-  pnf_id integer [not null, note: 'Carrera o PNF al que pertenece este plan de estudios (Ref: pnf)']
+  prg_id integer [not null, note: 'Carrera o PNF al que pertenece este plan de estudios (Ref: pnf)']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status, 1=Vigente, 2=Obsoleto/Inactivo)']
   created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
@@ -634,7 +644,9 @@ Table persona {
   nacionalidad_per varchar(1) [default: 'V', note: 'Nacionalidad de origen de la persona (V=Venezolano, E=Extranjero)']
   documento_per varchar(50) [note: 'Número alternativo de documento de identificación (Ej. RIF personal, número de pasaporte o carnet de extranjería)']
   nombres_per varchar(255) [not null, note: 'Nombres legales completos del ciudadano según documento de identidad']
+  segundo_nombre_per varchar(100) [note: 'Segundo nombre del ciudadano si aplica']
   apellidos_per varchar(255) [not null, note: 'Apellidos legales completos del ciudadano según documento de identidad']
+  segundo_apellido_per varchar(100) [note: 'Segundo apellido del ciudadano si aplica']
   fecha_nacimiento_per date [note: 'Fecha oficial de nacimiento del ciudadano para cálculo de edad y estadísticas demográficas']
   genero_per varchar(20) [note: 'Género o sexo biológico/legal del ciudadano (Ej. Masculino, Femenino)']
   estado_civil_per varchar(30) [note: 'Estado civil de la persona (Ej. Soltero(a), Casado(a), Divorciado(a), Viudo(a), Concubinato)']
@@ -642,6 +654,11 @@ Table persona {
   direccion_per text [note: 'Dirección física detallada del domicilio/residencia actual del ciudadano']
   foto_per text [note: 'Ruta o URL del archivo con la imagen/fotografía de perfil o carnet del ciudadano']
   antecedentes_penales_per boolean [default: false, note: 'Indica si la persona posee constancia/registro de antecedentes penales']
+
+
+  reb_id integer [note: 'Clave foránea a rama_estudio_bachiller para la mención de educación media (Ref: rama_estudio_bachiller)']
+  seb_id integer [note: 'Clave foránea a sistema_estudio_bachiller para la modalidad de secundaria (Ref: sistema_estudio_bachiller)']
+  bachillerato_loc_id integer [note: 'Clave foránea a la localidad geográfica donde el alumno cursó el bachillerato (Ref: localidad)']
 
   etn_id integer [note: 'Clave foránea a etnia para clasificación de pueblos originarios (Ref: etnia)']
   dis_id integer [note: 'Clave foránea a discapacidad para requerimientos de accesibilidad o reportes (Ref: discapacidad)']
@@ -658,18 +675,34 @@ Table persona {
 
 Table user {
   id_use integer [primary key, increment, note: 'Credencial técnica de acceso al sistema (Laravel Fortify)']
-  email_use varchar(255) [unique, not null, note: 'Identificador de login único']
+  email_use varchar(255) [unique, not null, note: 'Identificador de login principal / Correo institucional']
+  username_use varchar(100) [unique, note: 'Nombre de usuario alfanumérico alternativo para inicio de sesión']
   password_use varchar(255) [not null, note: 'Hash bcrypt o argon2 de seguridad']
+  two_factor_secret_use text [note: 'Secreto de autenticación en dos pasos (2FA TOTP cifrado)']
+  two_factor_recovery_codes_use text [note: 'Códigos de recuperación de emergencia 2FA en formato JSON']
+  two_factor_confirmed_at_use timestamptz [note: 'Fecha y hora en que se confirmó el segundo factor de autenticación']
+  master_key_use text [note: 'Clave maestra de recuperación / token de seguridad cifrado']
+  security_questions_use jsonb [note: 'Preguntas y respuestas secretas de seguridad en formato JSON']
+  extra_permissions_use jsonb [note: 'Permisos atómicos adicionales o excepciones asignadas directamente al usuario']
+  email_verified_at_use timestamptz [note: 'Fecha y hora en que se validó el correo electrónico institucional']
+  intentos_fallidos_use smallint [not null, default: 0, note: 'Contador consecutivo de intentos fallidos para bloqueo por fuerza bruta']
+  bloqueado_hasta_use timestamptz [note: 'Marca de tiempo límite hasta la cual la cuenta permanece bloqueada preventivamente']
+  ultimo_login_use timestamptz [note: 'Registro de fecha y hora del último inicio de sesión exitoso']
+  remember_token_use varchar(100) [note: 'Token de persistencia de sesión segura']
+  ultima_actividad_chat_use timestamptz [note: 'Marca de tiempo de última interacción en el módulo de chat o mensajería']
+  infracciones_reset_at_use timestamptz [note: 'Fecha programada para reiniciar el historial de infracciones o penalizaciones']
 
-  per_id integer [not null, unique, note: 'Enlace estricto 1:1 con el ciudadano físico']
+  per_id integer [not null, unique, note: 'Enlace estricto 1:1 con el ciudadano físico (Ref: persona)']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
-  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  created_at timestamptz [default: `now()`, note: 'Fecha de creación del registro']
   updated_at timestamptz [note: 'Fecha de última actualización']
   deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
   created_id integer [note: 'Usuario que creó el registro']
   updated_id integer [note: 'Usuario que actualizó por última vez']
 }
+
+
 
 Table estudiante {
   id_est integer [primary key, increment, note: 'Identificador autoincremental único del perfil académico del alumno']
@@ -678,14 +711,16 @@ Table estudiante {
   ano_egreso_bachiller_est integer [note: 'Año oficial de graduación de Educación Media / Bachillerato (Ej. 2023)']
   privado_libertad_est boolean [default: false, note: 'Indica si el estudiante cursa estudios bajo régimen de reclusión o centro penitenciario (true/false)']
   ira_historico_est numeric(5,2) [note: 'Índice de Rendimiento Académico (IRA) acumulado histórico proveniente de la base de datos anterior']
+  semestre_est varchar(50) [note: 'Semestre, trayecto o año formativo declarado en servicios de bienestar']
+  solvencia_adm_est boolean [default: true, note: 'Solvencia administrativa y de aranceles del alumno']
+  solvencia_aca_est boolean [default: true, note: 'Solvencia de notas y expediente académico del alumno']
+  solvencia_bib_est boolean [default: true, note: 'Solvencia de biblioteca y entrega de textos del alumno']
 
   per_id integer [unique, not null, note: 'Clave foránea 1:1 a persona para los datos demográficos y de identidad (Ref: persona)']
-  reb_id integer [note: 'Clave foránea a rama_estudio_bachiller para la mención de educación media (Ref: rama_estudio_bachiller)']
-  seb_id integer [note: 'Clave foránea a sistema_estudio_bachiller para la modalidad de secundaria (Ref: sistema_estudio_bachiller)']
-  bachillerato_loc_id integer [note: 'Clave foránea a la localidad geográfica donde el alumno cursó el bachillerato (Ref: localidad)']
   cos_ingreso_id integer [note: 'Clave foránea a la cohorte y oferta de sede con la que ingresó el estudiante (Ref: cohorte_sede)']
   laa_ingreso_id integer [note: 'Clave foránea al lapso académico inicial en el que arrancó el estudiante (Ref: lapso_academico)']
   laa_egreso_id integer [note: 'Clave foránea al lapso académico en el cual egresó o culminó sus estudios (Nullable, Ref: lapso_academico)']
+  sed_id integer [note: 'Sede universitaria principal de adscripción académica del estudiante (Ref: sede)']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status, 1=Activo, 2=Inactivo, 3=Egresado, etc.)']
   created_at timestamptz [default: \`now()\`, note: 'Fecha y hora de creación del registro en el sistema']
@@ -742,7 +777,7 @@ Table seccion {
   cupo_maximo_sec integer [note: 'Límite total de matriculados permitidos en el bloque']
 
   laa_id integer [not null, note: 'Periodo lectivo de existencia de la sección']
-  pnf_id integer [not null, note: 'Carrera a la que pertenece el grupo']
+  prg_id integer [not null, note: 'Carrera a la que pertenece el grupo']
   sed_id integer [not null, note: 'Núcleo donde verán clases físicamente']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
@@ -810,7 +845,7 @@ Table inscripcion {
 
   est_id integer [not null, note: 'Alumno que solicita cursar estudios']
   laa_id integer [not null, note: 'Periodo para el cual se compromete']
-  pnf_id integer [not null, note: 'Carrera por la que avanza en este periodo']
+  prg_id integer [not null, note: 'Carrera por la que avanza en este periodo']
   tpi_id integer [not null, note: 'Modalidad estandarizada de inscripción (Ref: tipo_inscripcion)']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status, 1=Activa, 2=Inactiva/Anulada)']
@@ -821,7 +856,7 @@ Table inscripcion {
   updated_id integer [note: 'Usuario que actualizó por última vez']
 
   indexes {
-    (est_id, laa_id, pnf_id) [unique, note: 'Garantiza un solo comprobante de inscripción por estudiante, lapso y carrera']
+    (est_id, laa_id, prg_id) [unique, note: 'Garantiza un solo comprobante de inscripción por estudiante, lapso y carrera']
   }
 }
 
@@ -941,7 +976,7 @@ Table libro_acta {
   numero_libro_lia varchar(255) [note: 'Serial físico o digital del tomo (Ej. LIB-INF-05)']
   ano_apertura_lia integer [note: 'Año civil en el que se inauguró el libro']
 
-  pnf_id integer [not null, note: 'Carrera a la que pertenece el libro']
+  prg_id integer [not null, note: 'Carrera a la que pertenece el libro']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
   created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
@@ -989,13 +1024,15 @@ Table documento_requisito {
 }
 
 Table expediente_estudiante {
-  id_exe integer [primary key, increment, note: 'Control de recepción física de carpetas']
+  id_exe integer [primary key, increment, note: 'Control de recepción física y digital de documentos']
   fecha_recepcion_exe date [note: 'Cuándo se dejó en taquilla']
   estatus_documento_exe varchar(255) [note: 'Validación visual (Legible, Deteriorado, Válido)']
+  observacion_exe text [note: 'Observaciones o condiciones del documento presentado']
+  ruta_archivo_exe varchar(500) [note: 'Ruta o URL del soporte digitalizado en almacenamiento']
 
-  est_id integer [not null, note: 'Dueño del expediente']
-  dor_id integer [not null, note: 'Papel que está siendo consignado']
-  verificado_por_use_id integer [note: 'Auditoría: ID del empleado de control de estudios que revisó el original']
+  est_id integer [not null, note: 'Dueño del expediente (Ref: estudiante)']
+  dor_id integer [not null, note: 'Papel que está siendo consignado (Ref: documento_requisito)']
+  verificado_por_use_id integer [note: 'Auditoría: ID del empleado de control de estudios que revisó el original (Ref: user)']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
   created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
@@ -1040,7 +1077,7 @@ Table titulo_obtenido {
   resolucion_tio varchar(100) [note: 'Número de Resolución Ministerial']
   fecha_resolucion_tio date [note: 'Fecha de la Resolución Ministerial']
 
-  pnf_id integer [not null, note: 'Carrera que emite el título']
+  prg_id integer [not null, note: 'Carrera que emite el título']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
   created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
@@ -1055,7 +1092,7 @@ Table salida_intermedia {
   nombre_sai varchar(255) [note: 'Ej. Asistente Técnico en Mantenimiento']
   tipo_sai varchar(255) [note: 'Naturaleza del certificado']
 
-  pnf_id integer [not null, note: 'Carrera base']
+  prg_id integer [not null, note: 'Carrera base']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
   created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
@@ -1207,13 +1244,18 @@ Table estatus_solicitud_grado {
 
 Table solicitud_grado {
   id_sog integer [primary key, increment, note: 'Identificador único de la petición formal de grado']
+  codigo_solicitud_sog varchar(50) [unique, note: 'Código correlativo único para tracking del trámite de grado']
   fecha_solicitud_sog date [not null, note: 'Fecha en que el alumno formalizó la petición']
   fecha_cita_sog timestamptz [note: 'Fecha y hora programada para cita presencial/revisión en taquilla']
   fecha_proceso_sog timestamptz [note: 'Fecha y hora exacta en que se procesó/aprobó la solicitud']
+  aprobado_control_estudios_sog boolean [default: false, note: 'Visto bueno del departamento de Control de Estudios']
+  aprobado_control_estudios_en_sog timestamptz [note: 'Marca de tiempo en que Control de Estudios firmó la revisión']
+  aprobado_coordinador_egreso_sog boolean [default: false, note: 'Visto bueno de la Coordinación de Grado y Egreso']
+  aprobado_coordinador_egreso_en_sog timestamptz [note: 'Marca de tiempo en que el Coordinador de Egreso firmó el expediente']
   observacion_sog text [note: 'Observaciones administrativas o motivos de rechazo del expediente']
 
   est_id integer [not null, note: 'Aspirante a título (Ref: estudiante)']
-  pnf_id integer [not null, note: 'Carrera que pretende culminar (Ref: pnf)']
+  prg_id integer [not null, note: 'Programa académico que culmina (Ref: programa)']
   prm_id integer [not null, note: 'Acto de grado/promoción a la que aspira ingresar (Ref: promocion)']
   tio_id integer [not null, note: 'Título académico al que opta el estudiante (Ref: titulo_obtenido)']
   sed_id integer [not null, note: 'Sede/Núcleo donde tramita el grado (Ref: sede)']
@@ -1222,12 +1264,14 @@ Table solicitud_grado {
   aprobada_por_use_id integer [note: 'Auditoría: ID del usuario administrativo que aprobó la solicitud (Ref: user)']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status, 1=Activo, 2=Inactivo)']
-  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  created_at timestamptz [default: `now()`, note: 'Fecha de creación del registro']
   updated_at timestamptz [note: 'Fecha de última actualización']
   deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
   created_id integer [note: 'Usuario que creó el registro']
   updated_id integer [note: 'Usuario que actualizó por última vez']
 }
+
+
 
 // ==========================================
 // MÓDULO 14: SEGUIMIENTO Y EQUIVALENCIAS
@@ -1278,7 +1322,7 @@ Table proceso_admision {
   baremo_opsu_pra numeric [note: 'Puntuación del sistema nacional de ingreso']
 
   laa_id integer [not null, note: 'Periodo objetivo de ingreso']
-  pnf_id integer [not null, note: 'Carrera deseada o asignada']
+  prg_id integer [not null, note: 'Carrera deseada o asignada']
   per_id integer [not null, note: 'Ciudadano registrado temporal o permanentemente en el sistema']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
@@ -1308,15 +1352,18 @@ Table asistencia_clase {
 }
 
 Table perfil_bienestar {
-  id_peb integer [primary key, increment, note: 'Ficha médica y de prevención de emergencias']
+  id_peb integer [primary key, increment, note: 'Ficha médica, antropométrica y de prevención de emergencias']
   tipo_sangre_peb varchar(255) [note: 'Grupo y factor Rh (Vital para prácticas de campo)']
   alergias_peb text [note: 'Alergias medicamentosas o ambientales severas']
   condicion_medica_peb text [note: 'Enfermedades crónicas, discapacidades funcionales o embarazos']
   contacto_emergencia_nombre_peb varchar(255) [note: 'A quién localizar en caso de accidente']
   contacto_emergencia_telefono_peb varchar(20) [note: 'Línea directa del contacto']
   contacto_emergencia_parentesco_peb varchar(255) [note: 'Vínculo con el estudiante (Padre, Esposo)']
+  peso_peb numeric(5,2) [note: 'Peso corporal actual en kilogramos']
+  estatura_peb numeric(5,2) [note: 'Estatura corporal en metros']
+  posee_informe_medico_peb boolean [default: false, note: 'Indica si consignó informe facultativo avalado']
 
-  est_id integer [unique, not null, note: 'Anexo de seguridad 1:1 con el estudiante']
+  est_id integer [unique, not null, note: 'Anexo de seguridad 1:1 con el estudiante (Ref: estudiante)']
   cor_id integer [note: 'Condición habitacional / residencia (Ref: condicion_residencia)']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
@@ -1338,7 +1385,7 @@ Table proyecto_investigacion {
   fecha_defensa_pri date [note: 'Día programado para la evaluación pública']
   calificacion_final_pri numeric [note: 'Nota consensuada por el comité evaluador']
 
-  pnf_id integer [not null, note: 'Carrera matriz del proyecto']
+  prg_id integer [not null, note: 'Carrera matriz del proyecto']
   laa_id integer [not null, note: 'Periodo de inscripción o defensa final']
   tutor_academico_pro_id integer [note: 'Profesor asesor guía de la universidad']
 
@@ -1466,18 +1513,20 @@ Table bloqueo_administrativo {
 // ==========================================
 // MÓDULO 17: SEGURIDAD, AUDITORÍA Y API
 // ==========================================
-Table qr_validated_generated {
-  id_qvg integer [primary key, increment, note: 'Registro de firmas digitales QR para documentos transaccionales']
-  qr_payload_qvg text [note: 'Contenido decodificado de la imagen QR']
-  verification_hash_qvg varchar(255) [note: 'Hash sha256 para validación criptográfica anti-forja']
-  status_qvg varchar(255) [note: 'Estado de validez (Activo, Revocado, Expirado)']
+Table qr_validated_generated_titulo {
+  id_qvt integer [primary key, increment, note: 'Firma digital QR hiper-segura para pergaminos de grado']
+  qr_payload_qvt text [note: 'Contenido decodificado (Folio, Tomo, Cédula, Fecha)']
+  verification_hash_qvt varchar(255) [note: 'Hash de seguridad criptográfica de grado']
+  numero_acta_grado_qvt varchar(50) [note: 'Número oficial de acta de grado ministerial']
+  fecha_registro_ministerio_qvt date [note: 'Fecha de asiento en el libro de títulos universitarios ante el MPPEU']
+  status_qvt varchar(255) [note: 'Estado de validez (Activo, Revocado)']
 
-  tra_id integer [note: 'Petición origen (Ej. Constancia de Estudio)']
-  unique_id_qvg varchar(255) [unique, note: 'UUID v4 generado para la URL pública de validación']
-  generado_por_use_id integer [note: 'Auditoría: ID del user del sistema que imprimió/emitió el PDF']
+  pre_id integer [note: 'Registro matriz del graduando (Ref: promocion_estudiante)']
+  unique_id_qvt varchar(255) [unique, note: 'UUID v4 para portal público de egresados']
+  generado_por_use_id integer [note: 'Autoridad o analista que emitió el lote de diplomas (Ref: user)']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
-  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  created_at timestamptz [default: `now()`, note: 'Fecha de creación del registro']
   updated_at timestamptz [note: 'Fecha de última actualización']
   deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
   created_id integer [note: 'Usuario que creó el registro']
@@ -1600,8 +1649,10 @@ Table api_access_log {
 // ==========================================
 Table rol {
   id_rol integer [primary key, increment, note: 'Perfil macro de agrupación de privilegios']
-  nombre_rol varchar(255) [unique, not null, note: 'Identificador estandarizado (Ej. admin, docente, taquilla)']
+  nombre_rol varchar(255) [unique, not null, note: 'Identificador estandarizado (Ej. admin, docente, taquilla, medico_bienestar)']
   descripcion_rol varchar(255) [note: 'Funciones generales del rol']
+
+  dep_id integer [note: 'Departamento universitario al que se circunscribe el rol si aplica (Ref: departamento)']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
   created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
@@ -1613,7 +1664,12 @@ Table rol {
 
 Table permiso {
   id_pmi integer [primary key, increment, note: 'Operación atómica del sistema']
-  nombre_pmi varchar(255) [unique, not null, note: 'Slug técnico (Ej. usuarios.crear, notas.modificar)']
+  nombre_pmi varchar(255) [unique, not null, note: 'Slug técnico estable (Ej. usuarios.crear, recetas.gestionar, citas.atender)']
+  etiqueta_pmi varchar(150) [note: 'Nombre legible o título de la capacidad funcional']
+  descripcion_pmi text [note: 'Descripción detallada de la acción permitida o módulo']
+
+  mod_id integer [note: 'Módulo principal al que pertenece la acción (Ref: modulo)']
+  vis_id integer [note: 'Vista o pantalla específica a la que está ligada la acción si aplica (Ref: vista)']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
   created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
@@ -1654,6 +1710,106 @@ Table usuario_rol {
 
   indexes {
     (use_id, rol_id) [unique, note: 'Evita asignar el mismo rol a la misma cuenta más de una vez']
+  }
+}
+
+// ==========================================
+// MÓDULO 18: SEGURIDAD (RBAC Y JERARQUÍA VISUAL)
+// ==========================================
+
+Table modulo {
+  id_mod integer [primary key, increment, note: 'Identificador único del módulo de primer nivel']
+  nombre_mod varchar(255) [not null, note: 'Título visible del módulo en la navegación (Ej. Seguridad, Académico, Bienestar)']
+  descripcion_mod text [note: 'Descripción operativa y funcional del módulo']
+  icono_mod varchar(100) [note: 'Identificador del icono en la librería de frontend (Lucide / Heroicons)']
+  orden_mod integer [not null, default: 0, note: 'Posición ordinal para el ordenamiento en el menú']
+  es_sistema_mod boolean [not null, default: false, note: 'Indica si es un módulo protegido del núcleo']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table submodulo {
+  id_smd integer [primary key, increment, note: 'Identificador único del submódulo']
+  nombre_smd varchar(255) [not null, note: 'Denominación visible del submódulo o sección']
+  icono_smd varchar(100) [note: 'Icono representativo de la sección']
+  orden_smd integer [not null, default: 0, note: 'Orden de despliegue relativo dentro del módulo padre']
+
+  mod_id integer [not null, note: 'Módulo contenedor principal (Ref: modulo)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table vista {
+  id_vis integer [primary key, increment, note: 'Identificador único de la pantalla o interfaz registrada']
+  key_vis varchar(100) [unique, note: 'Slug alfanumérico identificador único de la pantalla (Ej. usuarios.index)']
+  nombre_vis varchar(255) [not null, note: 'Nombre descriptivo de la interfaz o formulario']
+  descripcion_vis text [note: 'Detalle funcional de la interfaz']
+  ruta_vis varchar(255) [note: 'Nombre de ruta en Laravel o URL relativa (Ej. seguridad.users.index)']
+  icono_vis varchar(100) [note: 'Icono específico de la pantalla']
+  orden_vis integer [not null, default: 0, note: 'Orden de aparición dentro del listado de vistas']
+
+  mod_id integer [not null, note: 'Módulo principal al que pertenece la vista (Ref: modulo)']
+  smd_id integer [note: 'Submódulo al que pertenece la vista si aplica (Ref: submodulo)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table rol_usuario_contexto {
+  id_ruc integer [primary key, increment, note: 'Asignación contextual de rol a usuario según sede y programa']
+  fecha_inicio_ruc date [note: 'Fecha de inicio de vigencia de la asignación del rol']
+  fecha_fin_ruc date [note: 'Fecha límite de vigencia de la asignación (Nullable = indefinida)']
+
+  use_id integer [not null, note: 'Usuario asignado (Ref: user)']
+  rol_id integer [not null, note: 'Rol otorgado (Ref: rol)']
+  sed_id integer [note: 'Sede universitaria asignada (Nullable = transversal a todas las sedes, Ref: sede)']
+  prg_id integer [note: 'Programa Nacional de Formación asignado (Nullable = transversal a todas las carreras, Ref: pnf)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+
+  indexes {
+    (use_id, rol_id, prg_id, sed_id) [unique, note: 'Evita asignar el mismo rol al mismo usuario bajo el mismo contexto territorial y formativo']
+  }
+}
+
+Table usuario_permiso {
+  id_usp integer [primary key, increment, note: 'Excepciones y anulaciones directas de permisos por usuario']
+  tipo_usp varchar(10) [not null, default: 'grant', note: 'Directiva de autorización: grant = concede expresamente, revoke = deniega expresamente']
+  fecha_inicio_usp date [note: 'Inicio de la vigencia de la excepción']
+  fecha_fin_usp date [note: 'Fin de la vigencia de la excepción (Nullable = permanente)']
+
+  use_id integer [not null, note: 'Usuario beneficiario o afectado por la excepción (Ref: user)']
+  pmi_id integer [not null, note: 'Permiso atómico sobre el que recae la excepción (Ref: permiso)']
+  asignado_por_use_id integer [note: 'Usuario administrador que concedió o revocó el privilegio (Ref: user)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+
+  indexes {
+    (use_id, pmi_id) [unique, note: 'Garantiza una única regla de excepción por usuario y permiso']
   }
 }
 
@@ -1737,7 +1893,7 @@ Table censo_oferta {
 
   laa_id integer [not null, note: 'Periodo de verano o avance destino']
   unc_id integer [not null, note: 'Materia de interés postulada']
-  pnf_id integer [not null, note: 'Carrera que demanda la materia']
+  prg_id integer [not null, note: 'Carrera que demanda la materia']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
   created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
@@ -1783,7 +1939,7 @@ Ref: localidad.par_id > parroquia.id_par [delete: restrict, update: cascade]
 Ref: sede.uni_id > universidad.id_uni [delete: restrict, update: cascade]
 Ref: sede.loc_id > localidad.id_loc [delete: restrict, update: cascade]
 Ref: sede_pnf.sed_id > sede.id_sed [delete: cascade, update: cascade]
-Ref: sede_pnf.pnf_id > pnf.id_pnf [delete: cascade, update: cascade]
+Ref: sede_pnf.prg_id > pnf.id_pnf [delete: cascade, update: cascade]
 Ref: cohorte.laa_id > lapso_academico.id_laa [delete: restrict, update: cascade]
 Ref: cohorte_sede.coh_id > cohorte.id_coh [delete: cascade, update: cascade]
 Ref: cohorte_sede.sep_id > sede_pnf.id_sep [delete: cascade, update: cascade]
@@ -1799,7 +1955,7 @@ Ref: escala_nota.esm_id > escala_medicion.id_esm [delete: cascade, update: casca
 // Académico
 Ref: departamento.jefe_departamento_pro_id > profesor.id_pro [delete: restrict, update: cascade]
 Ref: unidad_curricular.dep_id > departamento.id_dep [delete: restrict, update: cascade]
-Ref: malla_curricular.pnf_id > pnf.id_pnf [delete: restrict, update: cascade]
+Ref: malla_curricular.prg_id > pnf.id_pnf [delete: restrict, update: cascade]
 Ref: trayecto.tpd_id > tipo_periodo.id_tpd [delete: restrict, update: cascade]
 Ref: malla_curricular_detalle.mac_id > malla_curricular.id_mac [delete: cascade, update: cascade]
 Ref: malla_curricular_detalle.unc_id > unidad_curricular.id_unc [delete: restrict, update: cascade]
@@ -1826,7 +1982,7 @@ Ref: profesor.prf_id > profesion.id_prf [delete: restrict, update: cascade]
 // Gestión / Oferta
 Ref: aula.sed_id > sede.id_sed [delete: restrict, update: cascade]
 Ref: seccion.laa_id > lapso_academico.id_laa [delete: restrict, update: cascade]
-Ref: seccion.pnf_id > pnf.id_pnf [delete: restrict, update: cascade]
+Ref: seccion.prg_id > pnf.id_pnf [delete: restrict, update: cascade]
 Ref: seccion.sed_id > sede.id_sed [delete: restrict, update: cascade]
 Ref: carga_academica.sec_id > seccion.id_sec [delete: restrict, update: cascade]
 Ref: carga_academica.unc_id > unidad_curricular.id_unc [delete: restrict, update: cascade]
@@ -1837,7 +1993,7 @@ Ref: horario.aul_id > aula.id_aul [delete: cascade, update: cascade]
 // Inscripción
 Ref: inscripcion.est_id > estudiante.id_est [delete: restrict, update: cascade]
 Ref: inscripcion.laa_id > lapso_academico.id_laa [delete: restrict, update: cascade]
-Ref: inscripcion.pnf_id > pnf.id_pnf [delete: restrict, update: cascade]
+Ref: inscripcion.prg_id > pnf.id_pnf [delete: restrict, update: cascade]
 Ref: inscripcion.tpi_id > tipo_inscripcion.id_tpi [delete: restrict, update: cascade]
 Ref: inscripcion_detalle.ins_id > inscripcion.id_ins [delete: cascade, update: cascade]
 Ref: inscripcion_detalle.caa_id > carga_academica.id_caa [delete: cascade, update: cascade]
@@ -1854,7 +2010,7 @@ Ref: calificacion_corte.ind_id > inscripcion_detalle.id_ind [delete: cascade, up
 Ref: calificacion_corte.col_id > corte_lapso.id_col [delete: restrict, update: cascade]
 
 // Actas
-Ref: libro_acta.pnf_id > pnf.id_pnf [delete: restrict, update: cascade]
+Ref: libro_acta.prg_id > pnf.id_pnf [delete: restrict, update: cascade]
 Ref: acta_calificacion.lia_id > libro_acta.id_lia [delete: cascade, update: cascade]
 Ref: acta_calificacion.caa_id > carga_academica.id_caa [delete: cascade, update: cascade]
 Ref: acta_calificacion.pir_id > programa_especial_recuperacion.id_pir [delete: cascade, update: cascade]
@@ -1867,14 +2023,14 @@ Ref: expediente_estudiante.verificado_por_use_id > user.id_use [delete: restrict
 Ref: tramite_academico.est_id > estudiante.id_est [delete: restrict, update: cascade]
 
 // Egresos
-Ref: titulo_obtenido.pnf_id > pnf.id_pnf [delete: restrict, update: cascade]
-Ref: salida_intermedia.pnf_id > pnf.id_pnf [delete: restrict, update: cascade]
+Ref: titulo_obtenido.prg_id > pnf.id_pnf [delete: restrict, update: cascade]
+Ref: salida_intermedia.prg_id > pnf.id_pnf [delete: restrict, update: cascade]
 Ref: promocion_pnf.prm_id > promocion.id_prm [delete: restrict, update: cascade]
 Ref: promocion_pnf.tio_id > titulo_obtenido.id_tio [delete: restrict, update: cascade]
 Ref: promocion_estudiante.prp_id > promocion_pnf.id_prp [delete: restrict, update: cascade]
 Ref: promocion_estudiante.est_id > estudiante.id_est [delete: restrict, update: cascade]
 Ref: solicitud_grado.est_id > estudiante.id_est [delete: restrict, update: cascade]
-Ref: solicitud_grado.pnf_id > pnf.id_pnf [delete: restrict, update: cascade]
+Ref: solicitud_grado.prg_id > pnf.id_pnf [delete: restrict, update: cascade]
 Ref: solicitud_grado.prm_id > promocion.id_prm [delete: restrict, update: cascade]
 Ref: solicitud_grado.tio_id > titulo_obtenido.id_tio [delete: restrict, update: cascade]
 Ref: solicitud_grado.sed_id > sede.id_sed [delete: restrict, update: cascade]
@@ -1891,7 +2047,7 @@ Ref: equivalencia_academica.unc_id > unidad_curricular.id_unc [delete: restrict,
 // Admisión
 Ref: proceso_admision.per_id > persona.id_per [delete: restrict, update: cascade]
 Ref: proceso_admision.laa_id > lapso_academico.id_laa [delete: restrict, update: cascade]
-Ref: proceso_admision.pnf_id > pnf.id_pnf [delete: restrict, update: cascade]
+Ref: proceso_admision.prg_id > pnf.id_pnf [delete: restrict, update: cascade]
 
 // Asistencia
 Ref: asistencia_clase.hor_id > horario.id_hor [delete: cascade, update: cascade]
@@ -1902,7 +2058,7 @@ Ref: asistencia_clase.registrado_por_use_id > user.id_use [delete: restrict, upd
 Ref: perfil_bienestar.est_id - estudiante.id_est [delete: restrict, update: cascade]
 
 // Proyectos PNF
-Ref: proyecto_investigacion.pnf_id > pnf.id_pnf [delete: restrict, update: cascade]
+Ref: proyecto_investigacion.prg_id > pnf.id_pnf [delete: restrict, update: cascade]
 Ref: proyecto_investigacion.laa_id > lapso_academico.id_laa [delete: restrict, update: cascade]
 Ref: proyecto_investigacion.tutor_academico_pro_id > profesor.id_pro [delete: restrict, update: cascade]
 Ref: integrante_proyecto.pri_id > proyecto_investigacion.id_pri [delete: cascade, update: cascade]
@@ -1944,7 +2100,7 @@ Ref: usuario_rol.use_id > user.id_use [delete: cascade, update: cascade]
 // Censos e Intensivos
 Ref: censo_oferta.laa_id > lapso_academico.id_laa [delete: restrict, update: cascade]
 Ref: censo_oferta.unc_id > unidad_curricular.id_unc [delete: restrict, update: cascade]
-Ref: censo_oferta.pnf_id > pnf.id_pnf [delete: restrict, update: cascade]
+Ref: censo_oferta.prg_id > pnf.id_pnf [delete: restrict, update: cascade]
 Ref: censo_estudiante.ceo_id > censo_oferta.id_ceo [delete: restrict, update: cascade]
 Ref: censo_estudiante.est_id > estudiante.id_est [delete: restrict, update: cascade]
 
@@ -2047,7 +2203,7 @@ Table historico_registro_anual {
 
   est_id integer [not null, note: 'Referencia al estudiante']
   sed_id integer [not null, note: 'Referencia a la sede']
-  pnf_id integer [not null, note: 'Referencia al PNF']
+  prg_id integer [not null, note: 'Referencia al PNF']
   mac_id integer [not null, note: 'Referencia a la malla curricular']
   ana_id integer [note: 'Referencia al trayecto/año académico']
   laa_id integer [not null, note: 'Referencia al lapso académico']
@@ -2070,7 +2226,7 @@ Table promocion_estadistica_pnf {
   fecha_calculo_pep timestamptz [default: \`now()\`, note: 'Marca de tiempo del último cálculo']
 
   prm_id integer [not null, note: 'Referencia a la promoción']
-  pnf_id integer [not null, note: 'Referencia al PNF']
+  prg_id integer [not null, note: 'Referencia al PNF']
   tio_id integer [not null, note: 'Título académico otorgado']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
@@ -2106,12 +2262,15 @@ Table bitacora_sistema {
   modulo_bis varchar(100) [note: 'Módulo o servicio del sistema']
   tipo_evento_bis varchar(50) [not null, note: 'Categoría de evento (INSERT, UPDATE, DELETE, AUTH)']
   tabla_afectada_bis varchar(100) [note: 'Nombre de la tabla modificada']
+  nombre_usuario_bis varchar(255) [note: 'Snapshot del nombre de usuario al momento de la acción para trazabilidad forense']
   datos_anteriores_bis jsonb [note: 'Snapshot en JSON previo al cambio']
   datos_nuevos_bis jsonb [note: 'Snapshot en JSON posterior al cambio']
   direccion_ip_bis varchar(45) [note: 'IP de la petición web']
+  navegador_bis varchar(255) [note: 'User-Agent o navegador web desde el cual se originó la petición']
+  sistema_operativo_bis varchar(100) [note: 'Sistema operativo detectado en la conexión']
   observacion_bis text [note: 'Detalles adicionales']
 
-  use_id integer [note: 'Usuario responsable de la acción']
+  use_id integer [note: 'Usuario responsable de la acción (Ref: user)']
   registro_id_bis integer [note: 'Identificador del registro operado']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
@@ -2167,6 +2326,1384 @@ Table convalidacion {
   deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
   created_id integer [note: 'Usuario que creó el registro']
   updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+
+// ==========================================
+// MÓDULO 23: BIENESTAR - INVENTARIO CENTRALIZADO
+// ==========================================
+Table unidad_medida {
+  id_unm integer [primary key, increment, note: 'Identificador único de la unidad de medida']
+  nombre_unm varchar(50) [not null, note: 'Nombre descriptivo (Kilogramo, Litro, Unidad, Blister)']
+  abreviatura_unm varchar(20) [not null, note: 'Abreviatura estándar (kg, lts, und, blis)']
+  factor_conversion_unm numeric(14,3) [not null, default: 1.000, note: 'Factor respecto a la unidad base']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table tipo_producto {
+  id_tpr integer [primary key, increment, note: 'Identificador único del tipo de bien']
+  nombre_tpr varchar(50) [not null, unique, note: 'Clasificación (Alimento, Medicamento, Utensilio, Repuesto, Material)']
+  modulo_origen_tpr varchar(50) [not null, note: 'Módulo primario de uso (comedor, salud, deporte, transporte)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table categoria_producto {
+  id_cap integer [primary key, increment, note: 'Identificador único de la categoría']
+  nombre_cap varchar(100) [not null, note: 'Nombre de la categoría (Granos, Analgésicos, Balones)']
+  descripcion_cap text [note: 'Descripción del alcance de la categoría']
+
+  tpr_id integer [not null, note: 'Tipo de producto matriz (Ref: tipo_producto)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table envase_primario {
+  id_enp integer [primary key, increment, note: 'Identificador único del tipo de envase']
+  nombre_enp varchar(100) [not null, note: 'Presentación de contención (Caja, Frasco, Blíster, Ampolla, Saco)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table proveedor {
+  id_prv integer [primary key, increment, note: 'Identificador único del proveedor']
+  empresa_prv varchar(150) [not null, note: 'Razón social o nombre comercial']
+  rif_prv varchar(30) [note: 'Registro de información fiscal']
+  nombre_contacto_prv varchar(150) [note: 'Persona de enlace o contacto comercial']
+  telefono_prv varchar(30) [not null, note: 'Teléfono de contacto']
+  email_prv varchar(150) [not null, note: 'Correo electrónico de contacto']
+  direccion_prv text [note: 'Dirección fiscal o de almacén']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table producto {
+  id_pdt integer [primary key, increment, note: 'Identificador único del bien o insumo']
+  codigo_pdt varchar(50) [not null, unique, note: 'Código interno, SKU o código de barra institucional']
+  nombre_pdt varchar(150) [not null, note: 'Denominación completa del producto']
+  descripcion_pdt text [note: 'Ficha técnica o descripción operativa']
+  imagen_pdt text [note: 'Ruta o URL de la imagen del producto']
+  stock_minimo_pdt numeric(14,2) [not null, default: 0, note: 'Umbral de reposición']
+  stock_maximo_pdt numeric(14,2) [not null, default: 0, note: 'Capacidad máxima de almacenaje']
+  peso_contenido_pdt numeric(14,2) [note: 'Peso neto declarado por empaque']
+  unidades_presentacion_pdt numeric(14,3) [not null, default: 1, note: 'Cantidad fraccionable por unidad de compra']
+  presentacion_dispensacion_pdt varchar(50) [note: 'Forma en que se entrega (tabletas, ml, raciones)']
+
+  cap_id integer [not null, note: 'Categoría a la que pertenece (Ref: categoria_producto)']
+  unm_id integer [not null, note: 'Unidad de medida principal (Ref: unidad_medida)']
+  enp_id integer [note: 'Envase primario si aplica (Ref: envase_primario)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table precio_producto {
+  id_ppr integer [primary key, increment, note: 'Identificador único del registro de precio']
+  costo_usd_ppr numeric(10,2) [not null, note: 'Costo base unitario de adquisición']
+  margen_ppr numeric(5,2) [not null, default: 0, note: 'Margen referencial']
+  precio_usd_ppr numeric(10,2) [note: 'Valor tasado vigente']
+
+  pdt_id integer [not null, note: 'Producto al que corresponde el precio (Ref: producto)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table lote {
+  id_lot integer [primary key, increment, note: 'Identificador único del lote']
+  codigo_lote_lot varchar(50) [note: 'Serial o lote emitido por el fabricante']
+  fecha_entrada_lot date [not null, note: 'Fecha en que ingresó a almacén']
+  fecha_vencimiento_lot date [note: 'Fecha de caducidad (Nullable para bienes no perecederos)']
+  cantidad_inicial_lot numeric(14,2) [not null, default: 0, note: 'Cantidad que entró al lote']
+  cantidad_actual_lot numeric(14,2) [not null, default: 0, note: 'Stock remanente del lote']
+  precio_compra_lot numeric(10,2) [note: 'Precio de adquisición específico del lote']
+
+  pdt_id integer [not null, note: 'Producto del lote (Ref: producto)']
+  prv_id integer [note: 'Proveedor de procedencia (Ref: proveedor)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table inventario_sede_lote {
+  id_isl integer [primary key, increment, note: 'Identificador único de la asignación sede-lote']
+  cantidad_isl numeric(14,2) [not null, default: 0, note: 'Existencia física actual del lote en la sede']
+  cantidad_convertida_isl numeric(14,2) [not null, default: 0, note: 'Existencia expresada en unidad mínima fraccional']
+
+  sed_id integer [not null, note: 'Sede universitaria donde reposa el lote (Ref: sede)']
+  lot_id integer [not null, note: 'Lote específico asignado (Ref: lote)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+
+  indexes {
+    (sed_id, lot_id) [unique, note: 'Garantiza un solo balance por lote dentro de cada sede']
+  }
+}
+
+Table inventario_total {
+  id_int integer [primary key, increment, note: 'Snapshot consolidado para lectura de stock']
+  cantidad_total_int numeric(14,2) [not null, default: 0, note: 'Total consolidado del producto en la sede']
+
+  pdt_id integer [not null, note: 'Producto inventariado (Ref: producto)']
+  sed_id integer [not null, note: 'Sede universitaria (Ref: sede)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+
+  indexes {
+    (pdt_id, sed_id) [unique, note: 'Un solo registro de consolidado por producto y sede']
+  }
+}
+
+Table movimiento_inventario {
+  id_moi integer [primary key, increment, note: 'Identificador único del movimiento de almacén']
+  tipo_movimiento_moi varchar(30) [not null, note: 'Tipo (entrada, salida, ajuste, prestamo, devolucion, distribucion)']
+  modulo_origen_moi varchar(30) [not null, note: 'Área origen (comedor, salud, deporte, transporte)']
+  cantidad_moi numeric(14,2) [not null, note: 'Volumen del movimiento']
+  cantidad_convertida_moi numeric(14,2) [not null, note: 'Volumen en unidad base']
+  cantidad_anterior_moi numeric(14,2) [not null, note: 'Stock antes de la transacción']
+  cantidad_final_moi numeric(14,2) [not null, note: 'Stock resultante tras la transacción']
+  referencia_id_moi integer [note: 'ID del comprobante u orden que originó el movimiento']
+  referencia_type_moi varchar(50) [note: 'Entidad polimórfica que respalda el movimiento']
+  observacion_moi text [note: 'Causa o detalle de la operación']
+  fecha_movimiento_moi timestamptz [default: \`now()\`, note: 'Momento de registro']
+
+  pdt_id integer [not null, note: 'Producto manipulado (Ref: producto)']
+  lot_id integer [not null, note: 'Lote afectado (Ref: lote)']
+  sed_id integer [not null, note: 'Sede donde se efectúa el movimiento (Ref: sede)']
+  unm_id integer [not null, note: 'Unidad de medida empleada (Ref: unidad_medida)']
+  use_id integer [note: 'Usuario responsable de la transacción (Ref: user)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table compra {
+  id_cmp integer [primary key, increment, note: 'Identificador de la orden de compra']
+  fecha_compra_cmp timestamptz [default: \`now()\`, note: 'Momento de emisión']
+  total_cmp numeric(12,2) [not null, default: 0, note: 'Monto total de la compra']
+  estado_compra_cmp varchar(20) [not null, default: 'pendiente', note: 'pendiente, recibida, anulada']
+  observacion_cmp text [note: 'Notas de la orden o factura']
+
+  prv_id integer [not null, note: 'Proveedor seleccionado (Ref: proveedor)']
+  sed_id integer [not null, note: 'Sede universitaria receptora (Ref: sede)']
+  use_id integer [not null, note: 'Comprador/Analista responsable (Ref: user)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table detalle_compra {
+  id_dcm integer [primary key, increment, note: 'Línea de detalle de la compra']
+  cantidad_dcm numeric(14,2) [not null, note: 'Cantidad física comprada']
+  cantidad_convertida_dcm numeric(14,2) [not null, note: 'Cantidad convertida a unidad estándar']
+  precio_unitario_dcm numeric(10,2) [not null, note: 'Precio unitario pactado']
+  subtotal_dcm numeric(10,2) [not null, note: 'Subtotal del renglón']
+
+  cmp_id integer [not null, note: 'Cabecera de la compra (Ref: compra)']
+  pdt_id integer [not null, note: 'Producto adquirido (Ref: producto)']
+  lot_id integer [note: 'Lote asignado al recibir (Ref: lote)']
+  unm_id integer [not null, note: 'Unidad de medida de compra (Ref: unidad_medida)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+// ==========================================
+// MÓDULO 24: BIENESTAR - COMEDOR
+// ==========================================
+Table receta {
+  id_rct integer [primary key, increment, note: 'Identificador único del menú o plato']
+  nombre_rct varchar(255) [not null, note: 'Nombre del menú o preparación']
+  descripcion_rct text [note: 'Preparación y modo de cocción']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table receta_ingrediente {
+  id_rci integer [primary key, increment, note: 'Identificador del ingrediente de la receta']
+  cantidad_porcion_rci numeric(14,2) [not null, note: 'Gramos o volumen por cada porción servida']
+  cantidad_convertida_rci numeric(14,2) [not null, note: 'Cantidad en unidad estándar']
+
+  rct_id integer [not null, note: 'Receta a la que pertenece (Ref: receta)']
+  pdt_id integer [not null, note: 'Insumo alimenticio (Ref: producto)']
+  unm_id integer [not null, note: 'Unidad de dosificación (Ref: unidad_medida)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table consumo_diario {
+  id_cnd integer [primary key, increment, note: 'Cabecera de servicio de comida diario']
+  fecha_consumo_cnd date [not null, note: 'Día de servicio']
+  porciones_servidas_cnd integer [not null, default: 0, note: 'Total de platos despachados']
+
+  rct_id integer [not null, note: 'Receta preparada (Ref: receta)']
+  sed_id integer [not null, note: 'Comedor de la sede (Ref: sede)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table consumo_diario_detalle {
+  id_cdd integer [primary key, increment, note: 'Descarga real de insumos por consumo']
+  cantidad_total_cdd numeric(14,2) [not null, note: 'Cantidad total gastada en la jornada']
+
+  cnd_id integer [not null, note: 'Jornada de consumo (Ref: consumo_diario)']
+  pdt_id integer [not null, note: 'Insumo descargado (Ref: producto)']
+  unm_id integer [not null, note: 'Unidad de medida (Ref: unidad_medida)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table registro_comedor {
+  id_rgc integer [primary key, increment, note: 'Acceso y validación del comensal en taquilla']
+  fecha_comedor_rgc date [not null, note: 'Fecha del consumo']
+  hora_comedor_rgc time [not null, note: 'Hora del escaneo o pase']
+
+  per_id integer [not null, note: 'Comensal beneficiado (Ref: persona)']
+  sed_id integer [not null, note: 'Sede del comedor (Ref: sede)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table detalle_registro_comedor {
+  id_drc integer [primary key, increment, note: 'Agregado de raciones despachadas en el turno']
+  cantidad_servida_drc integer [not null, default: 0, note: 'Raciones contabilizadas']
+  fecha_drc date [not null, note: 'Fecha']
+
+  rct_id integer [not null, note: 'Receta entregada (Ref: receta)']
+  sed_id integer [not null, note: 'Sede universitaria (Ref: sede)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table sobrante_comedor {
+  id_sbc integer [primary key, increment, note: 'Control de merma y excedente']
+  fecha_sbc date [not null, note: 'Día del reporte']
+  cantidad_sobrante_sbc integer [not null, note: 'Número de raciones remanentes']
+  motivo_sbc text [not null, note: 'Causa del excedente']
+  accion_tomada_sbc text [not null, note: 'Destino o donación efectuada']
+
+  sed_id integer [not null, note: 'Sede donde ocurrió el excedente (Ref: sede)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+// ==========================================
+// MÓDULO 25: BIENESTAR - SALUD Y ATENCIÓN MÉDICA
+// ==========================================
+Table consultorio {
+  id_csr integer [primary key, increment, note: 'Identificador del espacio médico o tópico']
+  nombre_csr varchar(150) [not null, note: 'Nombre del consultorio o triaje']
+  descripcion_csr text [note: 'Equipamiento o especialidad']
+
+  sed_id integer [not null, note: 'Sede universitaria donde opera (Ref: sede)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table horario_consultorio {
+  id_hrc integer [primary key, increment, note: 'Disponibilidad del consultorio por médico']
+  dia_hrc smallint [not null, note: 'Día de la semana (1=Lunes, ..., 7=Domingo)']
+  hora_inicio_hrc time [not null, note: 'Apertura de turno']
+  hora_fin_hrc time [not null, note: 'Cierre de turno']
+  descripcion_hrc text [note: 'Observaciones de guardia']
+
+  csr_id integer [not null, note: 'Consultorio asignado (Ref: consultorio)']
+  medico_per_id integer [not null, note: 'Profesional de salud a cargo (Ref: persona)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table enfermedad {
+  id_efm integer [primary key, increment, note: 'Catálogo de patologías (CIE-10 o interno)']
+  codigo_efm varchar(50) [not null, unique, note: 'Código estandarizado internacional o interno']
+  nombre_efm varchar(150) [not null, note: 'Nombre de la enfermedad o diagnóstico']
+  categoria_efm smallint [not null, default: 1, note: 'Agrupador patológico']
+  nivel_gravedad_efm integer [note: 'Grado de severidad referencial']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table consulta_medica {
+  id_cme integer [primary key, increment, note: 'Registro atómico de atención médica']
+  fecha_cme timestamptz [not null, note: 'Fecha y hora de la atención']
+  motivo_cme text [note: 'Motivo de consulta declarado por el paciente']
+  observaciones_cme text [note: 'Examen físico y signos vitales']
+  diagnostico_cme text [note: 'Conclusión diagnóstica']
+
+  paciente_per_id integer [not null, note: 'Ciudadano atendido (Ref: persona)']
+  medico_per_id integer [not null, note: 'Médico tratante (Ref: persona)']
+  csr_id integer [not null, note: 'Consultorio donde se prestó la atención (Ref: consultorio)']
+  efm_id integer [note: 'Diagnóstico principal asociado (Ref: enfermedad)']
+  use_id integer [not null, note: 'Usuario del sistema que transcribió la consulta (Ref: user)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table receta_medica {
+  id_rme integer [primary key, increment, note: 'Prescripción emitida en consulta o validada']
+  fecha_emision_rme date [not null, note: 'Día de expedición del récipe']
+  fecha_vigencia_rme date [note: 'Vencimiento de la fórmula']
+  descripcion_rme text [note: 'Recomendaciones médicas generales']
+
+  cme_id integer [note: 'Consulta médica origen si aplica (Ref: consulta_medica)']
+  paciente_per_id integer [not null, note: 'Paciente recetado (Ref: persona)']
+  medico_per_id integer [not null, note: 'Médico facultativo que prescribe (Ref: persona)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table detalle_receta_medica {
+  id_drm integer [primary key, increment, note: 'Renglón prescrito en el récipe']
+  cantidad_drm numeric(14,2) [not null, note: 'Unidades totales indicadas']
+  cantidad_prescrita_drm numeric(10,2) [note: 'Dosis por toma']
+  unidad_prescrita_drm varchar(30) [note: 'mg, ml, gotas, comprimidos']
+  equivalencia_ml_drm numeric(10,2) [note: 'Volumen líquido']
+  frecuencia_drm varchar(100) [note: 'Cada cuántas horas']
+  fecha_inicio_drm date [note: 'Arranque del tratamiento']
+  fecha_fin_drm date [note: 'Fin del tratamiento']
+  instrucciones_drm text [note: 'Modo de administración']
+
+  rme_id integer [not null, note: 'Récipe cabecera (Ref: receta_medica)']
+  pdt_id integer [not null, note: 'Fármaco recetado (Ref: producto)']
+  unm_id integer [not null, note: 'Unidad de medida (Ref: unidad_medida)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table dispensacion_medicamento {
+  id_dsm integer [primary key, increment, note: 'Descarga de farmacia y entrega efectiva']
+  cantidad_dsm numeric(14,2) [not null, note: 'Cantidad entregada']
+  fecha_dispensacion_dsm timestamptz [default: \`now()\`, note: 'Momento de entrega']
+  observaciones_dsm text [note: 'Incidencias en la entrega']
+
+  rme_id integer [note: 'Récipe asociado (Ref: receta_medica)']
+  drm_id integer [note: 'Renglón del récipe cubierto (Ref: detalle_receta_medica)']
+  paciente_per_id integer [not null, note: 'Receptor del fármaco (Ref: persona)']
+  pdt_id integer [not null, note: 'Medicamento entregado (Ref: producto)']
+  lot_id integer [note: 'Lote del cual se descontó (Ref: lote)']
+  unm_id integer [not null, note: 'Unidad de medida (Ref: unidad_medida)']
+  sed_id integer [not null, note: 'Sede/Farmacia dispensadora (Ref: sede)']
+  use_id integer [not null, note: 'Farmacéutico o enfermero que entrega (Ref: user)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+// ==========================================
+// MÓDULO 26: BIENESTAR - PSICOLOGÍA Y SALUD MENTAL
+// ==========================================
+Table estado_animo {
+  id_esa integer [primary key, increment, note: 'Catálogo de estados afectivos']
+  valor_esa integer [note: 'Puntaje numérico escala (ej. 1 a 5)']
+  nombre_esa varchar(100) [not null, note: 'Etiqueta (Feliz, Ansioso, Depresivo, Neutro)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table avance_sesion {
+  id_avs integer [primary key, increment, note: 'Catálogo de métricas de progreso terapéutico']
+  valor_avs integer [note: 'Escala de avance']
+  nombre_avs varchar(150) [not null, note: 'Descripción de la meta alcanzada']
+  descripcion_avs text [note: 'Criterio clínico']
+  es_sistema_avs boolean [default: false, note: 'True si es métrica estándar']
+
+  psicologo_use_id integer [not null, note: 'Psicólogo que define la pauta (Ref: user)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table estado_animo_diario {
+  id_ead integer [primary key, increment, note: 'Bitácora emocional reportada por el paciente']
+  valor_ead integer [not null, note: 'Valor registrado']
+  fecha_ead date [not null, note: 'Día evaluado']
+
+  paciente_per_id integer [not null, note: 'Estudiante/Paciente (Ref: persona)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table grupo_horario_atencion {
+  id_gha integer [primary key, increment, note: 'Bloques de agenda por psicólogo']
+  nombre_gha varchar(100) [not null, note: 'Nombre del bloque (Turno Mañana, Turno Tarde)']
+
+  psicologo_use_id integer [not null, note: 'Profesional titular (Ref: user)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table horario_profesional {
+  id_hpr integer [primary key, increment, note: 'Intervalos semanales disponibles para sesiones']
+  dia_hpr varchar(20) [not null, note: 'Día de atención (Lunes, Martes, etc.)']
+  hora_inicio_hpr time [not null, note: 'Hora de inicio de la sesión']
+  hora_fin_hpr time [not null, note: 'Hora de finalización']
+  descripcion_hpr text [note: 'Modalidad o requerimientos de sesión']
+
+  gha_id integer [not null, note: 'Bloque horario matriz (Ref: grupo_horario_atencion)']
+  psicologo_use_id integer [not null, note: 'Psicólogo que atiende (Ref: user)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table plantilla_historia_clinica {
+  id_phc integer [primary key, increment, note: 'Estructura modelo de historia psicológica']
+  titulo_phc varchar(255) [not null, note: 'Nombre de la plantilla']
+  descripcion_phc text [note: 'Objetivo y contexto clínico']
+  secciones_phc jsonb [note: 'Definición de campos en JSON']
+
+  psicologo_use_id integer [not null, note: 'Psicólogo autor (Ref: user)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table seccion_plantilla_historia {
+  id_sph integer [primary key, increment, note: 'Módulos dinámicos de la historia']
+  titulo_sph varchar(255) [not null, note: 'Título de la sección (Antecedentes, Motivo, Familia)']
+  descripcion_general_sph text [note: 'Instrucciones al evaluador']
+  segmentos_sph jsonb [note: 'Configuración granular']
+
+  psicologo_use_id integer [not null, note: 'Psicólogo autor (Ref: user)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table campo_nota_evolucion {
+  id_cne integer [primary key, increment, note: 'Campos personalizados de seguimiento']
+  titulo_cne varchar(255) [not null, note: 'Etiqueta del parámetro a seguir']
+
+  psicologo_use_id integer [not null, note: 'Psicólogo creador (Ref: user)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table prioridad_atencion {
+  id_pat integer [primary key, increment, note: 'Triage de atención psicológica']
+  nombre_pat varchar(100) [not null, note: 'Nivel (Urgente, Moderada, Leve)']
+  nivel_gravedad_pat integer [not null, default: 1, note: 'Ponderador numérico']
+
+  psicologo_use_id integer [not null, note: 'Psicólogo que tipifica (Ref: user)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table historia_clinica {
+  id_hcl integer [primary key, increment, note: 'Expediente clínico psicológico longitudinal']
+  fecha_apertura_hcl timestamptz [default: \`now()\`, note: 'Apertura del expediente']
+
+  paciente_per_id integer [not null, note: 'Paciente evaluado (Ref: persona)']
+  psicologo_use_id integer [not null, note: 'Psicólogo de cabecera (Ref: user)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+
+  indexes {
+    (paciente_per_id, psicologo_use_id) [unique, note: 'Un expediente activo por paciente y terapeuta']
+  }
+}
+
+Table historia_seccion_personalizada {
+  id_hsp integer [primary key, increment, note: 'Sección adaptada dentro de la historia del paciente']
+  descripcion_general_hsp varchar(255) [note: 'Observaciones de la sección']
+  orden_hsp integer [not null, default: 1, note: 'Orden de despliegue']
+
+  hcl_id integer [not null, note: 'Historia clínica contenedora (Ref: historia_clinica)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table historia_segmento_personalizado {
+  id_hsm integer [primary key, increment, note: 'Bloques de texto o reactivos de la sección']
+  titulo_hsm varchar(255) [not null, note: 'Título del dato']
+  subtitulo_hsm varchar(255) [note: 'Subtítulo o reactivo']
+  icono_hsm varchar(255) [note: 'Ícono visual']
+  contenido_hsm text [note: 'Texto o respuesta']
+  orden_hsm integer [not null, default: 1, note: 'Secuencia']
+
+  hsp_id integer [not null, note: 'Sección contenedora (Ref: historia_seccion_personalizada)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table historia_enfermedad {
+  id_hie integer [primary key, increment, note: 'Trastornos o patologías diagnosticadas en la historia']
+  contexto_hie varchar(255) [note: 'Observaciones diagnósticas o comorbilidad']
+
+  hcl_id integer [not null, note: 'Historia clínica (Ref: historia_clinica)']
+  efm_id integer [not null, note: 'Enfermedad o diagnóstico (Ref: enfermedad)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table cita_psicologica {
+  id_cps integer [primary key, increment, note: 'Identificador único de la cita']
+  motivo_cps text [note: 'Motivo de consulta']
+  fecha_cps date [not null, note: 'Día pactado']
+  hora_cps time [not null, note: 'Hora pactada']
+  confirmado_en_cps timestamptz [note: 'Momento de confirmación']
+  estado_cita_cps varchar(30) [not null, default: 'pendiente', note: 'pendiente, confirmada, realizada, cancelada']
+  prioridad_texto_cps varchar(100) [note: 'Prioridad asignada']
+  notas_cps text [note: 'Anotaciones de la sesión']
+  cancelado_por_cps varchar(50) [note: 'paciente, psicologo, sistema']
+
+  paciente_per_id integer [not null, note: 'Paciente (Ref: persona)']
+  psicologo_use_id integer [not null, note: 'Psicólogo tratante (Ref: user)']
+  esa_id integer [note: 'Estado de ánimo detectado al agendar (Ref: estado_animo)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table cita_nota_evolucion {
+  id_cno integer [primary key, increment, note: 'Anotaciones de evolución por sesión']
+  contenido_cno text [not null, note: 'Texto de la evolución clínica']
+
+  cps_id integer [not null, note: 'Cita a la que pertenece (Ref: cita_psicologica)']
+  cne_id integer [not null, note: 'Campo de evaluación evaluado (Ref: campo_nota_evolucion)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+// ==========================================
+// MÓDULO 27: BIENESTAR - DEPORTES
+// ==========================================
+Table espacio_deportivo {
+  id_epd integer [primary key, increment, note: 'Instalación o cancha deportiva']
+  nombre_epd varchar(150) [not null, note: 'Cancha de Voleibol, Gimnasio, Pista']
+  descripcion_epd text [note: 'Superficie y condiciones']
+  ubicacion_epd varchar(255) [note: 'Ubicación física en el núcleo']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table actividad_deportiva {
+  id_acd integer [primary key, increment, note: 'Disciplina deportiva o recreativa']
+  nombre_acd varchar(150) [not null, note: 'Voleibol, Fútbol Sala, Baloncesto, Tenis de Mesa']
+  descripcion_acd text [note: 'Reglamento y objetivos']
+  tipo_acd varchar(30) [not null, default: 'programada', note: 'libre, programada, torneo']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table calendario_deportivo {
+  id_cld integer [primary key, increment, note: 'Ciclo o período deportivo']
+  nombre_cld varchar(255) [not null, note: 'Torneo Inter-PNF 2026, Liga Universitaria']
+  descripcion_cld text [note: 'Bases generales']
+  fecha_inicio_cld date [not null, note: 'Arranque de actividades']
+  fecha_fin_cld date [not null, note: 'Clausura']
+
+  sed_id integer [not null, note: 'Sede anfitriona (Ref: sede)']
+  use_id integer [not null, note: 'Coordinador deportivo (Ref: user)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table horario_deportivo {
+  id_hde integer [primary key, increment, note: 'Planificación semanal o de evento']
+  dia_semana_hde varchar(20) [note: 'Lunes, Martes (Nullable si es fecha puntual)']
+  fecha_especifica_hde date [note: 'Fecha única si aplica']
+  hora_inicio_hde time [not null, note: 'Hora de inicio']
+  hora_fin_hde time [not null, note: 'Hora de término']
+  cupo_maximo_hde integer [note: 'Límite de atletas']
+  observaciones_hde text [note: 'Notas de utilería']
+  estado_hde varchar(20) [not null, default: 'activo', note: 'activo, cancelado, completado']
+
+  cld_id integer [not null, note: 'Calendario matriz (Ref: calendario_deportivo)']
+  acd_id integer [not null, note: 'Disciplina a practicar (Ref: actividad_deportiva)']
+  epd_id integer [not null, note: 'Espacio físico asignado (Ref: espacio_deportivo)']
+  use_id integer [not null, note: 'Entrenador o monitor deportivo (Ref: user)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table inscripcion_deportiva {
+  id_ide integer [primary key, increment, note: 'Matrícula de atleta a una disciplina']
+  fecha_registro_ide date [not null, note: 'Fecha de inscripción']
+  estado_ide varchar(20) [not null, default: 'inscrito', note: 'inscrito, asistio, no_asistio, retirado']
+  observaciones_ide text [note: 'Condición médica del atleta']
+
+  hde_id integer [not null, note: 'Horario deportivo (Ref: horario_deportivo)']
+  per_id integer [not null, note: 'Estudiante o atleta (Ref: persona)']
+  use_id integer [note: 'Usuario registrador (Ref: user)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+
+  indexes {
+    (hde_id, per_id) [unique, note: 'Una inscripción por atleta y horario']
+  }
+}
+
+Table torneo_deportivo {
+  id_tde integer [primary key, increment, note: 'Campeonato o competencia formal']
+  nombre_tde varchar(255) [not null, note: 'Copa Aniversario, Torneo Clausura']
+  descripcion_tde text [note: 'Formato de eliminatoria o todos contra todos']
+  modalidad_tde varchar(100) [note: 'Masculino, Femenino, Mixto']
+  estado_tde varchar(20) [not null, default: 'abierto', note: 'abierto, en_curso, finalizado, cancelado']
+
+  hde_id integer [not null, note: 'Horario base del torneo (Ref: horario_deportivo)']
+  use_id integer [not null, note: 'Coordinador del torneo (Ref: user)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table equipo_torneo_deportivo {
+  id_etd integer [primary key, increment, note: 'Plantel competidor']
+  nombre_equipo_etd varchar(150) [not null, note: 'Nombre del equipo']
+  estado_etd varchar(20) [not null, default: 'inscrito', note: 'inscrito, eliminado, campeon']
+
+  tde_id integer [not null, note: 'Torneo en disputa (Ref: torneo_deportivo)']
+  prg_id integer [not null, note: 'Carrera que representa el equipo (Ref: pnf)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+
+  indexes {
+    (tde_id, prg_id) [unique, note: 'Un equipo por PNF en cada torneo']
+  }
+}
+
+Table integrante_equipo_deporte {
+  id_ied integer [primary key, increment, note: 'Jugador del equipo']
+
+  etd_id integer [not null, note: 'Equipo (Ref: equipo_torneo_deportivo)']
+  per_id integer [not null, note: 'Jugador/Estudiante (Ref: persona)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+
+  indexes {
+    (etd_id, per_id) [unique, note: 'El estudiante no puede repetirse en el mismo equipo']
+  }
+}
+
+Table prestamo_deportivo {
+  id_prd integer [primary key, increment, note: 'Control de utilería prestada (balones, mallas, petos)']
+  fecha_prestamo_prd timestamptz [not null, default: \`now()\`, note: 'Momento de entrega']
+  fecha_devolucion_esperada_prd timestamptz [not null, note: 'Límite para devolver']
+  fecha_devolucion_real_prd timestamptz [note: 'Momento de retorno físico']
+  estado_prd varchar(20) [not null, default: 'activo', note: 'activo, devuelto, vencido, sancionado']
+  observaciones_prd text [note: 'Condición del material al prestar o recibir']
+
+  pdt_id integer [not null, note: 'Material prestado (Ref: producto)']
+  lot_id integer [not null, note: 'Lote del producto (Ref: lote)']
+  per_id integer [not null, note: 'Estudiante o profesor receptor (Ref: persona)']
+  registrado_por_use_id integer [not null, note: 'Usuario que entregó (Ref: user)']
+  recibido_por_use_id integer [note: 'Usuario que recibió (Ref: user)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table sancion_deportiva {
+  id_snd integer [primary key, increment, note: 'Suspensión o penalidad por utilería extraviada o dañada']
+  motivo_snd text [not null, note: 'Causa de la sanción']
+  descripcion_snd text [note: 'Detalle o costo de reposición']
+  fecha_sancion_snd date [not null, note: 'Fecha de imposición']
+  fecha_levantamiento_snd date [note: 'Fecha en que solventó']
+  estado_snd varchar(20) [not null, default: 'activa', note: 'activa, levantada']
+
+  prd_id integer [not null, note: 'Préstamo causante (Ref: prestamo_deportivo)']
+  per_id integer [not null, note: 'Sancionado (Ref: persona)']
+  aplicada_por_use_id integer [not null, note: 'Usuario que sanciona (Ref: user)']
+  levantada_por_use_id integer [note: 'Usuario que solventa (Ref: user)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+// ==========================================
+// MÓDULO 28: BIENESTAR - TRANSPORTE UNIVERSITARIO
+// ==========================================
+Table marca_vehiculo {
+  id_mav integer [primary key, increment, note: 'Identificador único de la marca']
+  nombre_mav varchar(100) [not null, note: 'Yutong, Encava, Toyota, Chevrolet']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table modelo_vehiculo {
+  id_mov integer [primary key, increment, note: 'Identificador único del modelo']
+  nombre_mov varchar(100) [not null, note: 'ZK6129H, ENT-610, Coaster']
+
+  mav_id integer [not null, note: 'Marca del vehículo (Ref: marca_vehiculo)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table tipo_combustible {
+  id_tcb integer [primary key, increment, note: 'Identificador único del carburante']
+  nombre_tcb varchar(100) [not null, note: 'Gasoil / Diésel, Gasolina 91, Gasolina 95, GNV']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table parada_transporte {
+  id_ptr integer [primary key, increment, note: 'Punto de ascenso y descenso en la ruta']
+  nombre_ptr varchar(100) [not null, note: 'Parada Redoma de Araure, Terminal Acarigua']
+  lat_ptr numeric(11,7) [note: 'Latitud GPS']
+  lng_ptr numeric(11,7) [note: 'Longitud GPS']
+  direccion_ptr text [note: 'Punto de referencia']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table ruta_transporte {
+  id_rtr integer [primary key, increment, note: 'Itinerario de transporte']
+  nombre_rtr varchar(150) [not null, note: 'Ruta Acarigua - Villa Araure']
+  distancia_km_rtr numeric(10,2) [not null, default: 0, note: 'Distancia total del recorrido']
+  descripcion_rtr text [note: 'Horas punta y especificaciones']
+
+  sed_id integer [not null, note: 'Sede base del servicio (Ref: sede)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table ruta_parada_transporte {
+  id_rpt integer [primary key, increment, note: 'Orden de paradas por ruta']
+  orden_rpt integer [not null, note: 'Secuencia de visita (1, 2, 3...)']
+
+  rtr_id integer [not null, note: 'Ruta (Ref: ruta_transporte)']
+  ptr_id integer [not null, note: 'Parada (Ref: parada_transporte)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+
+  indexes {
+    (rtr_id, ptr_id) [unique, note: 'No repetir la misma parada en la ruta']
+  }
+}
+
+Table horario_ruta_transporte {
+  id_hrt integer [primary key, increment, note: 'Frecuencia de salida del autobús']
+  hora_salida_hrt time [not null, note: 'Hora programada']
+  tipo_viaje_hrt varchar(30) [not null, default: 'ida', note: 'ida, retorno, circular']
+
+  rtr_id integer [not null, note: 'Ruta programada (Ref: ruta_transporte)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table vehiculo_transporte {
+  id_vtr integer [primary key, increment, note: 'Ficha técnica del autobús o unidad']
+  placa_vtr varchar(20) [not null, unique, note: 'Número de matrícula o placa oficial']
+  anio_vtr integer [not null, note: 'Año de fabricación']
+  color_vtr varchar(50) [note: 'Color de la unidad']
+  peso_vtr numeric(8,2) [note: 'Tonelaje o peso tara']
+  capacidad_pasajeros_vtr integer [not null, default: 0, note: 'Puestos sentados y de pie']
+  cantidad_cilindros_vtr integer [not null, default: 6, note: 'Configuración de motor']
+  capacidad_tanque_litros_vtr numeric(8,2) [not null, default: 0, note: 'Capacidad máxima de combustible']
+  nivel_combustible_actual_vtr numeric(8,2) [note: 'Nivel reportado']
+  consumo_urbano_vtr numeric(6,3) [not null, default: 0, note: 'Litros/km en ciudad']
+  consumo_carretera_vtr numeric(6,3) [not null, default: 0, note: 'Litros/km en autopista']
+  consumo_ralenti_vtr numeric(6,3) [not null, default: 0, note: 'Litros/hora estacionado']
+  km_actual_vtr numeric(10,2) [not null, default: 0, note: 'Odómetro actual']
+  km_proximo_mantenimiento_vtr numeric(10,2) [not null, default: 0, note: 'Odómetro para el siguiente servicio']
+  estado_operativo_vtr varchar(20) [not null, default: 'disponible', note: 'disponible, en_ruta, mantenimiento, inactivo']
+
+  mov_id integer [not null, note: 'Modelo del vehículo (Ref: modelo_vehiculo)']
+  tcb_id integer [not null, note: 'Combustible requerido (Ref: tipo_combustible)']
+  sed_id integer [not null, note: 'Sede a la que está adscrita la unidad (Ref: sede)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table viaje_transporte {
+  id_vjt integer [primary key, increment, note: 'Despacho de viaje y recorrido']
+  turno_vjt varchar(20) [note: 'Mañana, Tarde, Noche']
+  firebase_id_vjt varchar(100) [note: 'ID de sincronización telemática']
+  fecha_inicio_vjt timestamptz [note: 'Salida de patio']
+  km_inicio_vjt numeric(10,2) [not null, default: 0, note: 'Odómetro inicial']
+  km_fin_vjt numeric(10,2) [not null, default: 0, note: 'Odómetro de llegada']
+  distancia_km_vjt numeric(8,2) [not null, default: 0, note: 'Kilómetros recorridos']
+  litros_gastados_vjt numeric(8,2) [not null, default: 0, note: 'Combustible consumido']
+  total_pasajeros_vjt integer [not null, default: 0, note: 'Pasajeros transportados']
+  hubo_desvio_vjt boolean [default: false, note: 'True si salió de la poligonal']
+  motivo_desvio_vjt varchar(255) [note: 'Tráfico, avería, cierre vial']
+  estado_viaje_vjt varchar(20) [not null, default: 'programado', note: 'programado, en_curso, finalizado, cancelado']
+
+  vtr_id integer [not null, note: 'Autobús utilizado (Ref: vehiculo_transporte)']
+  rtr_id integer [not null, note: 'Ruta trazada (Ref: ruta_transporte)']
+  conductor_use_id integer [note: 'Conductor asignado (Ref: user)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table pasajero_viaje_transporte {
+  id_pvt integer [primary key, increment, note: 'Registro de embarque de pasajero por código o carnet']
+  escaneado_at_pvt timestamptz [not null, note: 'Instante del escaneo']
+
+  vjt_id integer [not null, note: 'Viaje en tránsito (Ref: viaje_transporte)']
+  per_id integer [not null, note: 'Estudiante o trabajador pasajero (Ref: persona)']
+  ptr_id integer [note: 'Parada en la que subió a la unidad (Ref: parada_transporte)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table log_gps_transporte {
+  id_lgt integer [primary key, increment, note: 'Traza telemática del autobús']
+  local_id_lgt uuid [note: 'Identificador único móvil']
+  lat_lgt numeric(11,7) [not null, note: 'Latitud']
+  lng_lgt numeric(11,7) [not null, note: 'Longitud']
+  velocidad_lgt numeric(6,2) [note: 'Velocidad en km/h']
+  heading_lgt numeric(6,2) [note: 'Rumbo / Brújula en grados']
+  tipo_via_lgt varchar(20) [note: 'urbano, carretera, ralenti']
+  registrado_en_lgt time [not null, note: 'Hora del pulso GPS']
+  origen_lgt varchar(50) [not null, default: 'app_conductor', note: 'Dispositivo emisor']
+
+  vjt_id integer [not null, note: 'Viaje rastreado (Ref: viaje_transporte)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table carga_combustible {
+  id_ccb integer [primary key, increment, note: 'Registro de abastecimiento en estación de servicio']
+  fecha_ccb date [not null, note: 'Fecha de suministro']
+  litros_ccb numeric(8,2) [not null, note: 'Cantidad de litros repostados']
+  precio_litro_ccb numeric(10,2) [not null, note: 'Costo por litro']
+  total_ccb numeric(12,2) [not null, note: 'Costo total del repostaje']
+  km_al_cargar_ccb numeric(10,2) [not null, note: 'Kilometraje que marcaba el vehículo']
+  observaciones_ccb text [note: 'Nombre de la bomba o convenio']
+
+  vtr_id integer [not null, note: 'Unidad abastecida (Ref: vehiculo_transporte)']
+  tcb_id integer [not null, note: 'Tipo de combustible (Ref: tipo_combustible)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table mantenimiento_vehiculo {
+  id_mnv integer [primary key, increment, note: 'Orden de taller preventivo o correctivo']
+  tipo_mnv varchar(20) [not null, default: 'preventivo', note: 'preventivo, correctivo']
+  titulo_mnv varchar(150) [not null, note: 'Cambio de aceite, Frenos, Neumáticos, Motor']
+  descripcion_mnv text [note: 'Detalle de la reparación']
+  costo_mnv numeric(10,2) [note: 'Monto total invertido']
+  fecha_mnv date [not null, note: 'Fecha de ingreso al taller']
+  km_al_servicio_mnv numeric(10,2) [note: 'Odómetro al entrar a taller']
+  proximo_km_mnv numeric(10,2) [note: 'Odómetro para el siguiente mantenimiento']
+  proxima_fecha_mnv date [note: 'Fecha máxima estimada del siguiente mantenimiento']
+  estado_mnv varchar(20) [not null, default: 'pendiente', note: 'pendiente, en_proceso, completado']
+
+  vtr_id integer [not null, note: 'Unidad intervenida (Ref: vehiculo_transporte)']
+  use_id integer [note: 'Mecánico o supervisor de flota (Ref: user)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+// ==========================================
+// MÓDULO 29: BIENESTAR - BECAS Y AYUDAS ESTUDIANTILES
+// ==========================================
+Table tipo_beneficio_estudiantil {
+  id_tbe integer [primary key, increment, note: 'Identificador del tipo de beca o ayuda']
+  nombre_tbe varchar(255) [not null, note: 'Beca Académica, Beca Ayudantía, Beca Deportiva, Beca Comedor']
+  descripcion_tbe text [note: 'Alcance del programa de asistencia']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table beneficio_estudiantil {
+  id_bes integer [primary key, increment, note: 'Catálogo institucional de beneficios activos']
+  nombre_beneficio_bes varchar(255) [not null, note: 'Nombre del beneficio']
+  descripcion_bes text [note: 'Bases y montos o cupos']
+  slug_bes varchar(255) [note: 'Identificador amigable URL']
+  cupones_disponibles_bes integer [not null, default: 0, note: 'Cupos ofertados']
+  cupones_ocupados_bes integer [not null, default: 0, note: 'Cupos actualmente asignados']
+
+  tbe_id integer [not null, note: 'Tipo de beneficio asociado (Ref: tipo_beneficio_estudiantil)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table pregunta_beneficio {
+  id_pgb integer [primary key, increment, note: 'Cuestionario socioeconómico parametrizable']
+  codigo_pgb varchar(100) [note: 'Variable interna de cálculo (ej. INGRESO_FAMILIAR)']
+  etiqueta_pgb varchar(255) [not null, note: 'Pregunta formulada al estudiante']
+  placeholder_pgb varchar(255) [note: 'Texto de ayuda en el formulario']
+  ayuda_pgb text [note: 'Instrucciones ampliadas']
+  tipo_campo_pgb varchar(50) [not null, default: 'texto', note: 'texto, numero, seleccion, radio, booleano, archivo']
+  obligatoria_pgb boolean [default: true, note: 'True si es campo obligatorio']
+  valor_min_pgb integer [note: 'Valor mínimo permitido']
+  valor_max_pgb integer [note: 'Valor máximo permitido']
+  min_length_pgb integer [note: 'Largo mínimo']
+  max_length_pgb integer [note: 'Largo máximo']
+  regex_pgb varchar(255) [note: 'Regla de validación por expresión regular']
+  orden_pgb integer [not null, default: 1, note: 'Posición de visualización']
+
+  bes_id integer [not null, note: 'Beneficio evaluado (Ref: beneficio_estudiantil)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table opcion_pregunta_beneficio {
+  id_opb integer [primary key, increment, note: 'Opciones de selección en preguntas cerradas']
+  etiqueta_opb varchar(255) [not null, note: 'Texto visible de la opción']
+  valor_opb varchar(255) [not null, note: 'Valor procesado']
+  orden_opb integer [not null, default: 1, note: 'Secuencia']
+
+  pgb_id integer [not null, note: 'Pregunta asociada (Ref: pregunta_beneficio)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table criterio_beneficio {
+  id_crb integer [primary key, increment, note: 'Regla automática de evaluación o baremo del beneficio']
+  es_eliminatoria_crb boolean [default: false, note: 'True si el incumplimiento descarta la postulación']
+  operador_crb varchar(20) [not null, default: 'igual', note: 'igual, mayor_que, menor_que, contiene, diferente']
+  valor_esperado_crb varchar(255) [not null, note: 'Respuesta o umbral comparativo']
+  peso_crb integer [not null, default: 0, note: 'Puntuación otorgada al baremo']
+
+  bes_id integer [not null, note: 'Beneficio asociado (Ref: beneficio_estudiantil)']
+  pgb_id integer [not null, note: 'Pregunta evaluada (Ref: pregunta_beneficio)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table jornada_beneficio {
+  id_jnb integer [primary key, increment, note: 'Convocatoria o censo temporal de postulaciones']
+  nombre_jornada_jnb varchar(255) [not null, note: 'Convocatoria Becas 2026-I']
+  descripcion_jornada_jnb text [note: 'Requisitos y lapsos de apelación']
+  fecha_inicio_solicitud_jnb date [not null, note: 'Apertura de la recepción']
+  fecha_fin_solicitud_jnb date [not null, note: 'Cierre del sistema']
+  cupos_maximos_jnb integer [not null, default: 0, note: 'Capacidad de becarios']
+  cupos_asignados_jnb integer [not null, default: 0, note: 'Beneficiarios seleccionados']
+
+  bes_id integer [not null, note: 'Beneficio ofertado (Ref: beneficio_estudiantil)']
+  laa_id integer [not null, note: 'Periodo académico lectivo donde aplica (Ref: lapso_academico)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table criterio_jornada_beneficio {
+  id_cjb integer [primary key, increment, note: 'Criterio puntual ajustado a una convocatoria específica']
+  es_eliminatoria_cjb boolean [default: false, note: 'True si descarta al postulante']
+  operador_cjb varchar(20) [not null, default: 'igual', note: 'igual, mayor_que, menor_que, contiene']
+  valor_esperado_cjb varchar(255) [not null, note: 'Valor de corte']
+  peso_cjb integer [not null, default: 0, note: 'Ponderación']
+
+  jnb_id integer [not null, note: 'Jornada evaluada (Ref: jornada_beneficio)']
+  pgb_id integer [not null, note: 'Pregunta evaluada (Ref: pregunta_beneficio)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table solicitud_beneficio {
+  id_sob integer [primary key, increment, note: 'Expediente digital de postulación de beca']
+  tipo_solicitud_sob varchar(20) [not null, default: 'nueva', note: 'nueva, renovacion']
+  estado_solicitud_sob varchar(20) [not null, default: 'pendiente', note: 'pendiente, aprobada, rechazada']
+  comentario_verificador_sob text [note: 'Dictamen del trabajador social']
+  fecha_verificacion_sob timestamptz [note: 'Momento del dictamen']
+
+  per_id integer [not null, note: 'Estudiante postulante (Ref: persona)']
+  bes_id integer [not null, note: 'Beneficio solicitado (Ref: beneficio_estudiantil)']
+  jnb_id integer [not null, note: 'Convocatoria respectiva (Ref: jornada_beneficio)']
+  laa_id integer [not null, note: 'Lapso académico de la solicitud (Ref: lapso_academico)']
+  verificado_por_use_id integer [note: 'Trabajador social que revisó (Ref: user)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table beneficio_asignado {
+  id_bfa integer [primary key, increment, note: 'Registro formal de disfrute del beneficio']
+  fecha_inicio_bfa date [not null, note: 'Inicio del goce de beca']
+  fecha_fin_bfa date [note: 'Culminación de la beca']
+  estado_bfa varchar(30) [not null, default: 'activo', note: 'activo, suspendido, revocado, culminado']
+  motivo_revocacion_bfa text [note: 'Causa legal de cese']
+
+  sob_id integer [not null, note: 'Solicitud aprobada (Ref: solicitud_beneficio)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table documento_solicitud_beneficio {
+  id_dsb integer [primary key, increment, note: 'Recaudos y soportes de la postulación']
+  nombre_documento_dsb varchar(255) [not null, note: 'Carta de Residencia, Constancia de Ingresos']
+  ruta_archivo_dsb varchar(500) [not null, note: 'Ruta de almacenamiento en disco o S3']
+  tipo_archivo_dsb varchar(50) [note: 'pdf, jpg, png']
+
+  sob_id integer [not null, note: 'Solicitud que sustenta (Ref: solicitud_beneficio)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table documento_aspirante {
+  id_dap integer [primary key, increment, note: 'Identificador único del documento digital consignado por el aspirante']
+  ruta_archivo_dap varchar(500) [not null, note: 'Ruta de almacenamiento físico en disco o bucket S3']
+  estado_validacion_dap varchar(30) [not null, default: 'pendiente', note: 'Estado: pendiente, aprobado, rechazado']
+  observacion_dap text [note: 'Motivo de rechazo o notas de validación por taquilla']
+  fecha_subida_dap timestamptz [default: `now()`, note: 'Fecha y hora exacta de carga digital']
+
+  pra_id integer [not null, note: 'Proceso de admisión del aspirante (Ref: proceso_admision)']
+  dor_id integer [not null, note: 'Tipo de documento o recaudo legal exigido (Ref: documento_requisito)']
+  validado_por_use_id integer [note: 'Auditoría: Usuario analista que validó el soporte (Ref: user)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: `now()`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+
+  indexes {
+    (pra_id, dor_id) [unique, note: 'Impide duplicar la consignación del mismo requisito por aspirante']
+  }
 }
 
 TableGroup geografia {
@@ -2317,6 +3854,116 @@ TableGroup censos {
   censo_estudiante
 }
 
+
+TableGroup bienestar_inventario {
+  unidad_medida
+  tipo_producto
+  categoria_producto
+  envase_primario
+  proveedor
+  producto
+  precio_producto
+  lote
+  inventario_sede_lote
+  inventario_total
+  movimiento_inventario
+  compra
+  detalle_compra
+}
+
+TableGroup bienestar_comedor {
+  receta
+  receta_ingrediente
+  consumo_diario
+  consumo_diario_detalle
+  registro_comedor
+  detalle_registro_comedor
+  sobrante_comedor
+}
+
+TableGroup bienestar_salud {
+  consultorio
+  horario_consultorio
+  enfermedad
+  consulta_medica
+  receta_medica
+  detalle_receta_medica
+  dispensacion_medicamento
+}
+
+TableGroup bienestar_psicologia {
+  estado_animo
+  avance_sesion
+  estado_animo_diario
+  grupo_horario_atencion
+  horario_profesional
+  plantilla_historia_clinica
+  seccion_plantilla_historia
+  campo_nota_evolucion
+  prioridad_atencion
+  historia_clinica
+  historia_seccion_personalizada
+  historia_segmento_personalizado
+  historia_enfermedad
+  cita_psicologica
+  cita_nota_evolucion
+}
+
+TableGroup bienestar_deportes {
+  espacio_deportivo
+  actividad_deportiva
+  calendario_deportivo
+  horario_deportivo
+  inscripcion_deportiva
+  torneo_deportivo
+  equipo_torneo_deportivo
+  integrante_equipo_deporte
+  prestamo_deportivo
+  sancion_deportiva
+}
+
+TableGroup bienestar_transporte {
+  marca_vehiculo
+  modelo_vehiculo
+  tipo_combustible
+  parada_transporte
+  ruta_transporte
+  ruta_parada_transporte
+  horario_ruta_transporte
+  vehiculo_transporte
+  viaje_transporte
+  pasajero_viaje_transporte
+  log_gps_transporte
+  carga_combustible
+  mantenimiento_vehiculo
+}
+
+TableGroup bienestar_becas {
+  tipo_beneficio_estudiantil
+  beneficio_estudiantil
+  pregunta_beneficio
+  opcion_pregunta_beneficio
+  criterio_beneficio
+  jornada_beneficio
+  criterio_jornada_beneficio
+  solicitud_beneficio
+  beneficio_asignado
+  documento_solicitud_beneficio
+}
+
+TableGroup rbac_seguridad {
+  rol
+  permiso
+  rol_permiso
+  usuario_rol
+  rol_usuario_contexto
+  usuario_permiso
+  modulo
+  submodulo
+  vista
+  rol_mensaje_configuracion
+}
+
 // Relaciones de Módulo 17 (Trámites e Integración Heredada)
 Ref: tramite_cambio_sede.tra_id > tramite_academico.id_tra
 Ref: tramite_cambio_sede.sed_origen_id > sede.id_sed
@@ -2338,7 +3985,7 @@ Ref: tramite_reingreso.mac_id > malla_curricular.id_mac
 
 Ref: historico_registro_anual.est_id > estudiante.id_est
 Ref: historico_registro_anual.sed_id > sede.id_sed
-Ref: historico_registro_anual.pnf_id > pnf.id_pnf
+Ref: historico_registro_anual.prg_id > pnf.id_pnf
 Ref: historico_registro_anual.mac_id > malla_curricular.id_mac
 Ref: historico_registro_anual.ana_id > ano_academico.id_ana
 Ref: historico_registro_anual.laa_id > lapso_academico.id_laa
@@ -2346,7 +3993,7 @@ Ref: historico_registro_anual.unc_id > unidad_curricular.id_unc
 Ref: historico_registro_anual.esm_id > escala_medicion.id_esm
 
 Ref: promocion_estadistica_pnf.prm_id > promocion.id_prm
-Ref: promocion_estadistica_pnf.pnf_id > pnf.id_pnf
+Ref: promocion_estadistica_pnf.prg_id > pnf.id_pnf
 Ref: promocion_estadistica_pnf.tio_id > titulo_obtenido.id_tio
 
 Ref: experiencia_laboral_docente.pro_id > profesor.id_pro
@@ -2499,4 +4146,302 @@ Ref: aula.tia_id > tipo_aula.id_tia
 Ref: tipo_aula.status_id > status.id_sta
 Ref: notificacion_correo.use_id > user.id_use
 Ref: notificacion_correo.status_id > status.id_sta
+
+
+// ==========================================
+// RELACIONES MÓDULOS DE BIENESTAR ESTUDIANTIL
+// ==========================================
+
+// Inventario
+Ref: categoria_producto.tpr_id > tipo_producto.id_tpr [delete: restrict, update: cascade]
+Ref: producto.cap_id > categoria_producto.id_cap [delete: restrict, update: cascade]
+Ref: producto.unm_id > unidad_medida.id_unm [delete: restrict, update: cascade]
+Ref: producto.enp_id > envase_primario.id_enp [delete: restrict, update: cascade]
+Ref: precio_producto.pdt_id > producto.id_pdt [delete: cascade, update: cascade]
+Ref: lote.pdt_id > producto.id_pdt [delete: restrict, update: cascade]
+Ref: lote.prv_id > proveedor.id_prv [delete: restrict, update: cascade]
+Ref: inventario_sede_lote.sed_id > sede.id_sed [delete: restrict, update: cascade]
+Ref: inventario_sede_lote.lot_id > lote.id_lot [delete: restrict, update: cascade]
+Ref: inventario_total.pdt_id > producto.id_pdt [delete: cascade, update: cascade]
+Ref: inventario_total.sed_id > sede.id_sed [delete: restrict, update: cascade]
+Ref: movimiento_inventario.pdt_id > producto.id_pdt [delete: restrict, update: cascade]
+Ref: movimiento_inventario.lot_id > lote.id_lot [delete: restrict, update: cascade]
+Ref: movimiento_inventario.sed_id > sede.id_sed [delete: restrict, update: cascade]
+Ref: movimiento_inventario.unm_id > unidad_medida.id_unm [delete: restrict, update: cascade]
+Ref: movimiento_inventario.use_id > user.id_use [delete: restrict, update: cascade]
+Ref: compra.prv_id > proveedor.id_prv [delete: restrict, update: cascade]
+Ref: compra.sed_id > sede.id_sed [delete: restrict, update: cascade]
+Ref: compra.use_id > user.id_use [delete: restrict, update: cascade]
+Ref: detalle_compra.cmp_id > compra.id_cmp [delete: cascade, update: cascade]
+Ref: detalle_compra.pdt_id > producto.id_pdt [delete: restrict, update: cascade]
+Ref: detalle_compra.lot_id > lote.id_lot [delete: restrict, update: cascade]
+Ref: detalle_compra.unm_id > unidad_medida.id_unm [delete: restrict, update: cascade]
+
+// Comedor
+Ref: receta_ingrediente.rct_id > receta.id_rct [delete: cascade, update: cascade]
+Ref: receta_ingrediente.pdt_id > producto.id_pdt [delete: restrict, update: cascade]
+Ref: receta_ingrediente.unm_id > unidad_medida.id_unm [delete: restrict, update: cascade]
+Ref: consumo_diario.rct_id > receta.id_rct [delete: restrict, update: cascade]
+Ref: consumo_diario.sed_id > sede.id_sed [delete: restrict, update: cascade]
+Ref: consumo_diario_detalle.cnd_id > consumo_diario.id_cnd [delete: cascade, update: cascade]
+Ref: consumo_diario_detalle.pdt_id > producto.id_pdt [delete: restrict, update: cascade]
+Ref: consumo_diario_detalle.unm_id > unidad_medida.id_unm [delete: restrict, update: cascade]
+Ref: registro_comedor.per_id > persona.id_per [delete: restrict, update: cascade]
+Ref: registro_comedor.sed_id > sede.id_sed [delete: restrict, update: cascade]
+Ref: detalle_registro_comedor.rct_id > receta.id_rct [delete: restrict, update: cascade]
+Ref: detalle_registro_comedor.sed_id > sede.id_sed [delete: restrict, update: cascade]
+Ref: sobrante_comedor.sed_id > sede.id_sed [delete: restrict, update: cascade]
+
+// Salud
+Ref: consultorio.sed_id > sede.id_sed [delete: restrict, update: cascade]
+Ref: horario_consultorio.csr_id > consultorio.id_csr [delete: cascade, update: cascade]
+Ref: horario_consultorio.medico_per_id > persona.id_per [delete: restrict, update: cascade]
+Ref: consulta_medica.paciente_per_id > persona.id_per [delete: restrict, update: cascade]
+Ref: consulta_medica.medico_per_id > persona.id_per [delete: restrict, update: cascade]
+Ref: consulta_medica.csr_id > consultorio.id_csr [delete: restrict, update: cascade]
+Ref: consulta_medica.efm_id > enfermedad.id_efm [delete: restrict, update: cascade]
+Ref: consulta_medica.use_id > user.id_use [delete: restrict, update: cascade]
+Ref: receta_medica.cme_id > consulta_medica.id_cme [delete: restrict, update: cascade]
+Ref: receta_medica.paciente_per_id > persona.id_per [delete: restrict, update: cascade]
+Ref: receta_medica.medico_per_id > persona.id_per [delete: restrict, update: cascade]
+Ref: detalle_receta_medica.rme_id > receta_medica.id_rme [delete: cascade, update: cascade]
+Ref: detalle_receta_medica.pdt_id > producto.id_pdt [delete: restrict, update: cascade]
+Ref: detalle_receta_medica.unm_id > unidad_medida.id_unm [delete: restrict, update: cascade]
+Ref: dispensacion_medicamento.rme_id > receta_medica.id_rme [delete: restrict, update: cascade]
+Ref: dispensacion_medicamento.drm_id > detalle_receta_medica.id_drm [delete: restrict, update: cascade]
+Ref: dispensacion_medicamento.paciente_per_id > persona.id_per [delete: restrict, update: cascade]
+Ref: dispensacion_medicamento.pdt_id > producto.id_pdt [delete: restrict, update: cascade]
+Ref: dispensacion_medicamento.lot_id > lote.id_lot [delete: restrict, update: cascade]
+Ref: dispensacion_medicamento.unm_id > unidad_medida.id_unm [delete: restrict, update: cascade]
+Ref: dispensacion_medicamento.sed_id > sede.id_sed [delete: restrict, update: cascade]
+Ref: dispensacion_medicamento.use_id > user.id_use [delete: restrict, update: cascade]
+
+// Psicología
+Ref: avance_sesion.psicologo_use_id > user.id_use [delete: restrict, update: cascade]
+Ref: estado_animo_diario.paciente_per_id > persona.id_per [delete: restrict, update: cascade]
+Ref: grupo_horario_atencion.psicologo_use_id > user.id_use [delete: restrict, update: cascade]
+Ref: horario_profesional.gha_id > grupo_horario_atencion.id_gha [delete: cascade, update: cascade]
+Ref: horario_profesional.psicologo_use_id > user.id_use [delete: restrict, update: cascade]
+Ref: plantilla_historia_clinica.psicologo_use_id > user.id_use [delete: restrict, update: cascade]
+Ref: seccion_plantilla_historia.psicologo_use_id > user.id_use [delete: restrict, update: cascade]
+Ref: campo_nota_evolucion.psicologo_use_id > user.id_use [delete: restrict, update: cascade]
+Ref: prioridad_atencion.psicologo_use_id > user.id_use [delete: restrict, update: cascade]
+Ref: historia_clinica.paciente_per_id > persona.id_per [delete: restrict, update: cascade]
+Ref: historia_clinica.psicologo_use_id > user.id_use [delete: restrict, update: cascade]
+Ref: historia_seccion_personalizada.hcl_id > historia_clinica.id_hcl [delete: cascade, update: cascade]
+Ref: historia_segmento_personalizado.hsp_id > historia_seccion_personalizada.id_hsp [delete: cascade, update: cascade]
+Ref: historia_enfermedad.hcl_id > historia_clinica.id_hcl [delete: cascade, update: cascade]
+Ref: historia_enfermedad.efm_id > enfermedad.id_efm [delete: restrict, update: cascade]
+Ref: cita_psicologica.paciente_per_id > persona.id_per [delete: restrict, update: cascade]
+Ref: cita_psicologica.psicologo_use_id > user.id_use [delete: restrict, update: cascade]
+Ref: cita_psicologica.esa_id > estado_animo.id_esa [delete: restrict, update: cascade]
+Ref: cita_nota_evolucion.cps_id > cita_psicologica.id_cps [delete: cascade, update: cascade]
+Ref: cita_nota_evolucion.cne_id > campo_nota_evolucion.id_cne [delete: restrict, update: cascade]
+
+// Deportes
+Ref: calendario_deportivo.sed_id > sede.id_sed [delete: restrict, update: cascade]
+Ref: calendario_deportivo.use_id > user.id_use [delete: restrict, update: cascade]
+Ref: horario_deportivo.cld_id > calendario_deportivo.id_cld [delete: cascade, update: cascade]
+Ref: horario_deportivo.acd_id > actividad_deportiva.id_acd [delete: restrict, update: cascade]
+Ref: horario_deportivo.epd_id > espacio_deportivo.id_epd [delete: restrict, update: cascade]
+Ref: horario_deportivo.use_id > user.id_use [delete: restrict, update: cascade]
+Ref: inscripcion_deportiva.hde_id > horario_deportivo.id_hde [delete: cascade, update: cascade]
+Ref: inscripcion_deportiva.per_id > persona.id_per [delete: restrict, update: cascade]
+Ref: inscripcion_deportiva.use_id > user.id_use [delete: restrict, update: cascade]
+Ref: torneo_deportivo.hde_id > horario_deportivo.id_hde [delete: restrict, update: cascade]
+Ref: torneo_deportivo.use_id > user.id_use [delete: restrict, update: cascade]
+Ref: equipo_torneo_deportivo.tde_id > torneo_deportivo.id_tde [delete: cascade, update: cascade]
+Ref: equipo_torneo_deportivo.prg_id > pnf.id_pnf [delete: restrict, update: cascade]
+Ref: integrante_equipo_deporte.etd_id > equipo_torneo_deportivo.id_etd [delete: cascade, update: cascade]
+Ref: integrante_equipo_deporte.per_id > persona.id_per [delete: restrict, update: cascade]
+Ref: prestamo_deportivo.pdt_id > producto.id_pdt [delete: restrict, update: cascade]
+Ref: prestamo_deportivo.lot_id > lote.id_lot [delete: restrict, update: cascade]
+Ref: prestamo_deportivo.per_id > persona.id_per [delete: restrict, update: cascade]
+Ref: prestamo_deportivo.registrado_por_use_id > user.id_use [delete: restrict, update: cascade]
+Ref: prestamo_deportivo.recibido_por_use_id > user.id_use [delete: restrict, update: cascade]
+Ref: sancion_deportiva.prd_id > prestamo_deportivo.id_prd [delete: cascade, update: cascade]
+Ref: sancion_deportiva.per_id > persona.id_per [delete: restrict, update: cascade]
+Ref: sancion_deportiva.aplicada_por_use_id > user.id_use [delete: restrict, update: cascade]
+Ref: sancion_deportiva.levantada_por_use_id > user.id_use [delete: restrict, update: cascade]
+
+// Transporte
+Ref: modelo_vehiculo.mav_id > marca_vehiculo.id_mav [delete: restrict, update: cascade]
+Ref: ruta_transporte.sed_id > sede.id_sed [delete: restrict, update: cascade]
+Ref: ruta_parada_transporte.rtr_id > ruta_transporte.id_rtr [delete: cascade, update: cascade]
+Ref: ruta_parada_transporte.ptr_id > parada_transporte.id_ptr [delete: restrict, update: cascade]
+Ref: horario_ruta_transporte.rtr_id > ruta_transporte.id_rtr [delete: cascade, update: cascade]
+Ref: vehiculo_transporte.mov_id > modelo_vehiculo.id_mov [delete: restrict, update: cascade]
+Ref: vehiculo_transporte.tcb_id > tipo_combustible.id_tcb [delete: restrict, update: cascade]
+Ref: vehiculo_transporte.sed_id > sede.id_sed [delete: restrict, update: cascade]
+Ref: viaje_transporte.vtr_id > vehiculo_transporte.id_vtr [delete: restrict, update: cascade]
+Ref: viaje_transporte.rtr_id > ruta_transporte.id_rtr [delete: restrict, update: cascade]
+Ref: viaje_transporte.conductor_use_id > user.id_use [delete: restrict, update: cascade]
+Ref: pasajero_viaje_transporte.vjt_id > viaje_transporte.id_vjt [delete: cascade, update: cascade]
+Ref: pasajero_viaje_transporte.per_id > persona.id_per [delete: restrict, update: cascade]
+Ref: pasajero_viaje_transporte.ptr_id > parada_transporte.id_ptr [delete: restrict, update: cascade]
+Ref: log_gps_transporte.vjt_id > viaje_transporte.id_vjt [delete: cascade, update: cascade]
+Ref: carga_combustible.vtr_id > vehiculo_transporte.id_vtr [delete: restrict, update: cascade]
+Ref: carga_combustible.tcb_id > tipo_combustible.id_tcb [delete: restrict, update: cascade]
+Ref: mantenimiento_vehiculo.vtr_id > vehiculo_transporte.id_vtr [delete: restrict, update: cascade]
+Ref: mantenimiento_vehiculo.use_id > user.id_use [delete: restrict, update: cascade]
+
+// Becas
+Ref: beneficio_estudiantil.tbe_id > tipo_beneficio_estudiantil.id_tbe [delete: restrict, update: cascade]
+Ref: pregunta_beneficio.bes_id > beneficio_estudiantil.id_bes [delete: cascade, update: cascade]
+Ref: opcion_pregunta_beneficio.pgb_id > pregunta_beneficio.id_pgb [delete: cascade, update: cascade]
+Ref: criterio_beneficio.bes_id > beneficio_estudiantil.id_bes [delete: cascade, update: cascade]
+Ref: criterio_beneficio.pgb_id > pregunta_beneficio.id_pgb [delete: cascade, update: cascade]
+Ref: jornada_beneficio.bes_id > beneficio_estudiantil.id_bes [delete: restrict, update: cascade]
+Ref: jornada_beneficio.laa_id > lapso_academico.id_laa [delete: restrict, update: cascade]
+Ref: criterio_jornada_beneficio.jnb_id > jornada_beneficio.id_jnb [delete: cascade, update: cascade]
+Ref: criterio_jornada_beneficio.pgb_id > pregunta_beneficio.id_pgb [delete: cascade, update: cascade]
+Ref: solicitud_beneficio.per_id > persona.id_per [delete: restrict, update: cascade]
+Ref: solicitud_beneficio.bes_id > beneficio_estudiantil.id_bes [delete: restrict, update: cascade]
+Ref: solicitud_beneficio.jnb_id > jornada_beneficio.id_jnb [delete: restrict, update: cascade]
+Ref: solicitud_beneficio.laa_id > lapso_academico.id_laa [delete: restrict, update: cascade]
+Ref: solicitud_beneficio.verificado_por_use_id > user.id_use [delete: restrict, update: cascade]
+Ref: beneficio_asignado.sob_id > solicitud_beneficio.id_sob [delete: cascade, update: cascade]
+Ref: documento_solicitud_beneficio.sob_id > solicitud_beneficio.id_sob [delete: cascade, update: cascade]
+
+// Relaciones a status para todas las tablas nuevas
+Ref: unidad_medida.status_id > status.id_sta
+Ref: tipo_producto.status_id > status.id_sta
+Ref: categoria_producto.status_id > status.id_sta
+Ref: envase_primario.status_id > status.id_sta
+Ref: proveedor.status_id > status.id_sta
+Ref: producto.status_id > status.id_sta
+Ref: precio_producto.status_id > status.id_sta
+Ref: lote.status_id > status.id_sta
+Ref: inventario_sede_lote.status_id > status.id_sta
+Ref: inventario_total.status_id > status.id_sta
+Ref: movimiento_inventario.status_id > status.id_sta
+Ref: compra.status_id > status.id_sta
+Ref: detalle_compra.status_id > status.id_sta
+Ref: receta.status_id > status.id_sta
+Ref: receta_ingrediente.status_id > status.id_sta
+Ref: consumo_diario.status_id > status.id_sta
+Ref: consumo_diario_detalle.status_id > status.id_sta
+Ref: registro_comedor.status_id > status.id_sta
+Ref: detalle_registro_comedor.status_id > status.id_sta
+Ref: sobrante_comedor.status_id > status.id_sta
+Ref: consultorio.status_id > status.id_sta
+Ref: horario_consultorio.status_id > status.id_sta
+Ref: enfermedad.status_id > status.id_sta
+Ref: consulta_medica.status_id > status.id_sta
+Ref: receta_medica.status_id > status.id_sta
+Ref: detalle_receta_medica.status_id > status.id_sta
+Ref: dispensacion_medicamento.status_id > status.id_sta
+Ref: estado_animo.status_id > status.id_sta
+Ref: avance_sesion.status_id > status.id_sta
+Ref: estado_animo_diario.status_id > status.id_sta
+Ref: grupo_horario_atencion.status_id > status.id_sta
+Ref: horario_profesional.status_id > status.id_sta
+Ref: plantilla_historia_clinica.status_id > status.id_sta
+Ref: seccion_plantilla_historia.status_id > status.id_sta
+Ref: campo_nota_evolucion.status_id > status.id_sta
+Ref: prioridad_atencion.status_id > status.id_sta
+Ref: historia_clinica.status_id > status.id_sta
+Ref: historia_seccion_personalizada.status_id > status.id_sta
+Ref: historia_segmento_personalizado.status_id > status.id_sta
+Ref: historia_enfermedad.status_id > status.id_sta
+Ref: cita_psicologica.status_id > status.id_sta
+Ref: cita_nota_evolucion.status_id > status.id_sta
+Ref: espacio_deportivo.status_id > status.id_sta
+Ref: actividad_deportiva.status_id > status.id_sta
+Ref: calendario_deportivo.status_id > status.id_sta
+Ref: horario_deportivo.status_id > status.id_sta
+Ref: inscripcion_deportiva.status_id > status.id_sta
+Ref: torneo_deportivo.status_id > status.id_sta
+Ref: equipo_torneo_deportivo.status_id > status.id_sta
+Ref: integrante_equipo_deporte.status_id > status.id_sta
+Ref: prestamo_deportivo.status_id > status.id_sta
+Ref: sancion_deportiva.status_id > status.id_sta
+Ref: marca_vehiculo.status_id > status.id_sta
+Ref: modelo_vehiculo.status_id > status.id_sta
+Ref: tipo_combustible.status_id > status.id_sta
+Ref: parada_transporte.status_id > status.id_sta
+Ref: ruta_transporte.status_id > status.id_sta
+Ref: ruta_parada_transporte.status_id > status.id_sta
+Ref: horario_ruta_transporte.status_id > status.id_sta
+Ref: vehiculo_transporte.status_id > status.id_sta
+Ref: viaje_transporte.status_id > status.id_sta
+Ref: pasajero_viaje_transporte.status_id > status.id_sta
+Ref: log_gps_transporte.status_id > status.id_sta
+Ref: carga_combustible.status_id > status.id_sta
+Ref: mantenimiento_vehiculo.status_id > status.id_sta
+Ref: tipo_beneficio_estudiantil.status_id > status.id_sta
+Ref: beneficio_estudiantil.status_id > status.id_sta
+Ref: pregunta_beneficio.status_id > status.id_sta
+Ref: opcion_pregunta_beneficio.status_id > status.id_sta
+Ref: criterio_beneficio.status_id > status.id_sta
+Ref: jornada_beneficio.status_id > status.id_sta
+Ref: criterio_jornada_beneficio.status_id > status.id_sta
+Ref: solicitud_beneficio.status_id > status.id_sta
+Ref: beneficio_asignado.status_id > status.id_sta
+Ref: documento_solicitud_beneficio.status_id > status.id_sta
+
+
+Ref: persona.sed_id > sede.id_sed [delete: restrict, update: cascade]
+Ref: rol.dep_id > departamento.id_dep [delete: restrict, update: cascade]
+
+
+// ==========================================
+// RELACIONES DEL SUBSISTEMA DE ACCESOS Y CONTEXTO
+// ==========================================
+
+// Jerarquía Visual (Módulo -> Submódulo -> Vista -> Permiso)
+Ref: submodulo.mod_id > modulo.id_mod [delete: cascade, update: cascade]
+Ref: vista.mod_id > modulo.id_mod [delete: cascade, update: cascade]
+Ref: vista.smd_id > submodulo.id_smd [delete: restrict, update: cascade]
+Ref: permiso.mod_id > modulo.id_mod [delete: restrict, update: cascade]
+Ref: permiso.vis_id > vista.id_vis [delete: restrict, update: cascade]
+
+// Asignación Contextual de Roles
+Ref: rol_usuario_contexto.use_id > user.id_use [delete: cascade, update: cascade]
+Ref: rol_usuario_contexto.rol_id > rol.id_rol [delete: cascade, update: cascade]
+Ref: rol_usuario_contexto.sed_id > sede.id_sed [delete: restrict, update: cascade]
+Ref: rol_usuario_contexto.prg_id > pnf.id_pnf [delete: restrict, update: cascade]
+
+// Excepciones Directas de Permisos (Overrides)
+Ref: usuario_permiso.use_id > user.id_use [delete: cascade, update: cascade]
+Ref: usuario_permiso.pmi_id > permiso.id_pmi [delete: cascade, update: cascade]
+Ref: usuario_permiso.asignado_por_use_id > user.id_use [delete: restrict, update: cascade]
+
+// Vínculos a Status Base
+Ref: modulo.status_id > status.id_sta
+Ref: submodulo.status_id > status.id_sta
+Ref: vista.status_id > status.id_sta
+Ref: rol_usuario_contexto.status_id > status.id_sta
+Ref: usuario_permiso.status_id > status.id_sta
+
+// Relación para la nueva tabla Documento Aspirante
+Ref: documento_aspirante.pra_id > proceso_admision.id_pra [delete: cascade, update: cascade]
+Ref: documento_aspirante.dor_id > documento_requisito.id_dor [delete: restrict, update: cascade]
+Ref: documento_aspirante.validado_por_use_id > user.id_use [delete: restrict, update: cascade]
+Ref: documento_aspirante.status_id > status.id_sta
+
+// Actualización de PNF -> Programa en las relaciones maestras
+Ref: sede_pnf.prg_id > programa.id_prg [delete: cascade, update: cascade]
+Ref: malla_curricular.prg_id > programa.id_prg [delete: restrict, update: cascade]
+Ref: seccion.prg_id > programa.id_prg [delete: restrict, update: cascade]
+Ref: inscripcion.prg_id > programa.id_prg [delete: restrict, update: cascade]
+Ref: libro_acta.prg_id > programa.id_prg [delete: restrict, update: cascade]
+Ref: titulo_obtenido.prg_id > programa.id_prg [delete: restrict, update: cascade]
+Ref: salida_intermedia.prg_id > programa.id_prg [delete: restrict, update: cascade]
+Ref: promocion_pnf.prg_id > programa.id_prg [delete: restrict, update: cascade]
+Ref: promocion_estadistica_pnf.prg_id > programa.id_prg [delete: restrict, update: cascade]
+Ref: solicitud_grado.prg_id > programa.id_prg [delete: restrict, update: cascade]
+Ref: proceso_admision.prg_id > programa.id_prg [delete: restrict, update: cascade]
+Ref: proyecto_investigacion.prg_id > programa.id_prg [delete: restrict, update: cascade]
+Ref: censo_oferta.prg_id > programa.id_prg [delete: restrict, update: cascade]
+Ref: tramite_cambio_pnf.prg_origen_id > programa.id_prg [delete: restrict, update: cascade]
+Ref: tramite_cambio_pnf.prg_destino_id > programa.id_prg [delete: restrict, update: cascade]
+Ref: historico_registro_anual.prg_id > programa.id_prg [delete: restrict, update: cascade]
+Ref: convalidacion.prg_origen_id > programa.id_prg [delete: restrict, update: cascade]
+Ref: convalidacion.prg_destino_id > programa.id_prg [delete: restrict, update: cascade]
+Ref: equipo_torneo_deportivo.prg_id > programa.id_prg [delete: restrict, update: cascade]
+Ref: rol_usuario_contexto.prg_id > programa.id_prg [delete: restrict, update: cascade]
+Ref: programa.status_id > status.id_sta
+
+
 \n`;

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Modelo Entidad-Relación - SOGAC</title>
-  <script src="Nuevo-SOGAC.js?v=9"></script>
+  <script src="Nuevo-SOGAC.js?v=11"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; }
@@ -16,7 +16,6 @@
       background-color: #f1f5f9;
       background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
       background-size: 20px 20px;
-      background-attachment: fixed;
       scroll-behavior: auto !important;
     }
 
@@ -24,7 +23,7 @@
     .btn {
       display: inline-flex; align-items: center; justify-content: center;
       padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: 600;
-      cursor: pointer; border: none; transition: background-color 0.15s, transform 0.15s;
+      cursor: pointer; border: none; transition: background-color 0.15s;
     }
     .btn-slate { background: #334155; color: #fff; }
     .btn-slate:hover { background: #475569; }
@@ -43,12 +42,12 @@
     #sidebar {
       position: fixed;
       top: 50px; left: 0; height: calc(100vh - 50px);
-      width: 0; /* Default closed */
+      width: 0;
       background: #0f172a;
       color: #cbd5e1;
       overflow-y: auto;
       overflow-x: auto;
-      transition: width 0.3s ease;
+      transition: width 0.25s ease;
       font-family: monospace;
       font-size: 13px;
       z-index: 900;
@@ -59,44 +58,48 @@
 
     /* Canvas Area */
     #canvas-container {
-      width: 6000px; height: 6000px; position: absolute;
+      width: 3600px; height: 6000px; position: absolute;
       top: 50px; left: 0;
       cursor: grab;
       transform-origin: 0 0;
       z-index: 10;
     }
-    #canvas-container:active { cursor: grabbing; }
+    body.is-panning #canvas-container,
+    body.is-dragging * {
+      cursor: grabbing !important;
+      user-select: none !important;
+    }
     
     #canvas {
-      position: absolute; top: 0; left: 0; width: 6000px; height: 6000px; transform-origin: 0 0;
-      will-change: transform;
-      backface-visibility: hidden;
+      position: absolute; top: 0; left: 0; width: 3600px; height: 6000px;
+      transform-origin: 0 0;
     }
 
     /* SVG Connector Lines */
     #svg-canvas {
-      position: absolute; top: 0; left: 0; width: 6000px; height: 6000px;
+      position: absolute; top: 0; left: 0; width: 3600px; height: 6000px;
       pointer-events: none; z-index: 5;
+      overflow: visible;
     }
     .er-path {
       stroke: #64748b;
       stroke-width: 1.5;
       stroke-dasharray: 6, 4;
       fill: none;
-      transition: stroke 0.2s, stroke-width 0.2s, opacity 0.2s;
       opacity: 0.55;
+      shape-rendering: optimizeSpeed;
     }
     body.has-line-selection .er-path {
-      opacity: 0.1;
+      opacity: 0.12;
       stroke: #94a3b8;
     }
     body.has-line-selection .er-path.line-active {
       stroke: #f59e0b !important;
-      stroke-width: 3.5 !important;
+      stroke-width: 3 !important;
       stroke-dasharray: 8, 4;
-      animation: strokeDash 1s linear infinite;
+      animation: strokeDash 0.8s linear infinite;
       opacity: 1 !important;
-      filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.8));
+      shape-rendering: geometricPrecision;
     }
     @keyframes strokeDash {
       to { stroke-dashoffset: -12; }
@@ -108,10 +111,9 @@
       font-weight: bold;
       pointer-events: none;
       user-select: none;
-      transition: opacity 0.2s;
     }
     body.has-line-selection .er-path-label {
-      opacity: 0.1;
+      opacity: 0.12;
     }
     body.has-line-selection .er-path-label.line-active {
       fill: #d97706 !important;
@@ -121,14 +123,18 @@
 
     /* Tables */
     .er-table {
-      position: absolute; min-width: 250px; width: max-content; background: white;
-      border: 1px solid #94a3b8; border-radius: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+      position: absolute; left: 0; top: 0;
+      min-width: 250px; width: max-content; background: white;
+      border: 1px solid #94a3b8; border-radius: 4px; box-shadow: 2px 2px 5px rgba(0,0,0,0.08);
       display: flex; flex-direction: column; user-select: none;
-      transition: box-shadow 0.2s, transform 0.1s;
       z-index: 20;
-      contain: layout style;
+      contain: layout style paint;
     }
-    .er-table.dragging { opacity: 0.95; box-shadow: 4px 4px 12px rgba(0,0,0,0.2); }
+    .er-table.dragging {
+      opacity: 0.92;
+      box-shadow: 0 12px 24px rgba(0,0,0,0.22);
+      will-change: left, top;
+    }
     .er-table-header {
       padding: 8px 12px; font-weight: 700; font-size: 13px; color: #fff;
       text-shadow: 0 1px 2px rgba(0,0,0,0.4); border-bottom: 1px solid #94a3b8;
@@ -138,11 +144,11 @@
     .er-col {
       display: flex; align-items: center; justify-content: space-between;
       padding: 6px 12px; font-size: 11px; border-bottom: 1px solid #e2e8f0;
-      transition: background-color 0.15s;
     }
-    .er-col:hover { background-color: #e2e8f0; }
+    body:not(.is-dragging):not(.is-panning) .er-col:hover { background-color: #e2e8f0; }
     .col-name { font-weight: 600; color: #334155; display: flex; align-items: center; gap: 6px; }
     .col-type { color: #94a3b8; font-family: monospace; font-size: 10px; margin-left: 16px; }
+    .col-active-highlight { background-color: rgba(245, 158, 11, 0.25) !important; }
 
     /* Legend Modal */
     #legend-modal {
@@ -151,24 +157,23 @@
       width: 300px; z-index: 1100; display: none; border: 1px solid #cbd5e1;
     }
     #legend-modal.show { display: block; }
-    .legend-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid #f1f5f9; font-size: 12.5px; font-weight: 600; color: #334155; cursor: pointer; transition: background 0.15s, color 0.15s; }
+    .legend-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid #f1f5f9; font-size: 12.5px; font-weight: 600; color: #334155; cursor: pointer; }
     .legend-item:hover { background-color: #f1f5f9; color: #4f46e5; }
     .legend-color { width: 14px; height: 14px; border-radius: 50%; }
 
-    /* Right Panel Drawer (dbdiagram.io style) */
+    /* Right Panel Drawer */
     #right-panel {
       position: fixed; top: 50px; right: 0; height: calc(100vh - 50px);
       width: 0; background: white; color: #1e293b; box-shadow: -4px 0 25px rgba(0,0,0,0.15);
-      z-index: 1040; transition: width 0.3s ease-in-out; overflow: hidden;
+      z-index: 1040; transition: width 0.25s ease-in-out; overflow: hidden;
       border-left: 1px solid #e2e8f0; display: flex; flex-direction: column;
     }
     #right-panel.open { width: 320px; }
 
     /* Golden Glow for Module Selection */
     @keyframes goldPulse {
-      0% { box-shadow: 0 0 0 3px #f59e0b, 0 0 14px rgba(245, 158, 11, 0.5); }
-      50% { box-shadow: 0 0 0 4px #fbbf24, 0 0 22px rgba(251, 191, 36, 0.75); }
-      100% { box-shadow: 0 0 0 3px #f59e0b, 0 0 14px rgba(245, 158, 11, 0.5); }
+      0%, 100% { box-shadow: 0 0 0 3px #f59e0b, 0 0 12px rgba(245, 158, 11, 0.5); }
+      50% { box-shadow: 0 0 0 4px #fbbf24, 0 0 20px rgba(251, 191, 36, 0.75); }
     }
     .er-table.gold-highlight {
       animation: goldPulse 1.2s ease-in-out infinite;
@@ -176,7 +181,7 @@
       z-index: 500 !important;
     }
     .er-table.relation-highlight {
-      box-shadow: 0 0 0 3px #f59e0b, 0 0 18px rgba(245, 158, 11, 0.6) !important;
+      box-shadow: 0 0 0 3px #f59e0b, 0 0 14px rgba(245, 158, 11, 0.5) !important;
       border-color: #f59e0b !important;
       z-index: 450 !important;
     }
@@ -184,7 +189,7 @@
     #btnToggleRightPanel {
       position: fixed; top: 65px; right: 16px; background: #fff; color: #334155;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 1px solid #e2e8f0; border-radius: 8px;
-      padding: 8px; z-index: 1050; cursor: pointer; transition: all 0.3s ease;
+      padding: 8px; z-index: 1050; cursor: pointer; transition: right 0.25s ease;
       display: flex; align-items: center; justify-content: center;
     }
     #btnToggleRightPanel.shifted { right: 336px; }
@@ -206,90 +211,66 @@
       line-height: 1.4;
     }
     #dbml-tooltip b { color: #0f172a; display: block; margin-bottom: 4px; }
-    .col-note-icon { transition: color 0.15s; }
+    .col-note-icon { color: #cbd5e1; cursor: pointer; margin-left: 6px; flex-shrink: 0; width: 12px; height: 12px; }
     .col-note-icon:hover { color: #f59e0b !important; }
     
-    /* Responsive Styles for index-med.html */
+    /* Responsive Styles */
     .hamburger { display: none; background: none; border: none; color: white; cursor: pointer; padding: 8px; }
     .nav-links { display: flex; gap: 16px; align-items: center; }
     
     @media (max-width: 768px) {
       html, body { overflow-x: hidden !important; width: 100vw !important; max-width: 100vw !important; }
-      
       #toolbar {
-        flex-direction: row !important;
-        flex-wrap: wrap;
-        height: auto !important;
-        padding: 10px 14px !important;
-        align-items: center !important;
-        justify-content: space-between !important;
-        width: 100%;
-        box-sizing: border-box;
+        flex-direction: row !important; flex-wrap: wrap; height: auto !important;
+        padding: 10px 14px !important; align-items: center !important;
+        justify-content: space-between !important; width: 100%;
       }
-      
       .hamburger { display: block; }
       .nav-links {
-        display: none;
-        flex-direction: column;
-        width: 100%;
-        margin-top: 10px;
-        align-items: stretch !important;
-        gap: 10px;
+        display: none; flex-direction: column; width: 100%;
+        margin-top: 10px; align-items: stretch !important; gap: 10px;
       }
       .nav-links.open { display: flex; }
-      
       .nav-links > div { justify-content: space-between; width: 100%; }
       .nav-links .btn { width: 100%; text-align: center; justify-content: center; }
-      
       #right-panel {
-        width: 100vw !important;
-        max-width: 100vw !important;
-        right: 0 !important;
-        transform: translateX(100%) !important;
-        top: 60px !important;
-        height: calc(100vh - 60px) !important;
+        width: 100vw !important; max-width: 100vw !important; right: 0 !important;
+        transform: translateX(100%) !important; top: 60px !important; height: calc(100vh - 60px) !important;
       }
-      #right-panel.open {
-        transform: translateX(0) !important;
-      }
-      
+      #right-panel.open { transform: translateX(0) !important; }
       #sidebar {
-        width: 100vw !important;
-        height: 40vh !important;
-        top: auto !important;
-        bottom: 0 !important;
-        z-index: 1000;
-        transform: translateY(100%) !important;
+        width: 100vw !important; height: 40vh !important; top: auto !important;
+        bottom: 0 !important; z-index: 1000; transform: translateY(100%) !important;
       }
-      #sidebar.open {
-        transform: translateY(0) !important;
-      }
-      
-      #canvas-container {
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-        margin-top: 60px !important; 
-        width: 100vw !important;
-      }
-      
+      #sidebar.open { transform: translateY(0) !important; }
+      #canvas-container { margin-top: 60px !important; }
       #legend-modal {
-        width: 95vw !important;
-        left: 2.5vw !important;
-        transform: none !important;
-        bottom: 80px !important;
-        top: auto !important;
-        box-sizing: border-box;
+        width: 95vw !important; left: 2.5vw !important; transform: none !important;
+        bottom: 80px !important; top: auto !important;
       }
-      
-      #btnToggleRightPanel {
-        bottom: 16px !important;
-        right: 16px !important;
-        z-index: 1100;
-      }
+      #btnToggleRightPanel { bottom: 16px !important; right: 16px !important; top: auto !important; z-index: 1100; }
     }
   </style>
 </head>
 <body>
+  <!-- OPTIMIZACIÓN: Sprite SVG global para ahorrar +6,000 nodos DOM -->
+  <svg style="display: none;" aria-hidden="true">
+    <defs>
+      <symbol id="icon-pk" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+      </symbol>
+      <symbol id="icon-fk" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+      </symbol>
+      <symbol id="icon-note" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+      </symbol>
+      <symbol id="icon-table" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+      </symbol>
+    </defs>
+  </svg>
+
   <!-- Topbar -->
   <div id="toolbar">
     <h1 style="font-size: 18px; font-weight: 700; letter-spacing: 0.5px; margin: 0; color: white;">SOGAC ER Model</h1>
@@ -309,14 +290,13 @@
 
   <!-- Floating Toggle Button for Right Panel Explorer -->
   <button id="btnToggleRightPanel" title="Vistas del Diagrama & Búsqueda de Tablas">
-    <svg id="arrowIcon" style="width: 20px; height: 20px; transition: transform 0.3s;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg id="arrowIcon" style="width: 20px; height: 20px; transition: transform 0.25s;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
     </svg>
   </button>
 
-  <!-- Right Drawer Panel (dbdiagram.io style) -->
+  <!-- Right Drawer Panel -->
   <div id="right-panel">
-    <!-- Header -->
     <div style="padding: 14px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #f8fafc;">
       <div style="display: flex; align-items: center; gap: 8px;">
         <svg style="width: 16px; height: 16px; color: #4f46e5;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -327,7 +307,6 @@
       <span id="tablesCounterBadge" style="font-size: 10px; background: #e0e7ff; color: #4338ca; font-weight: 700; padding: 2px 8px; border-radius: 12px; font-family: monospace;">0 / 0</span>
     </div>
 
-    <!-- Search Input -->
     <div style="padding: 12px; border-bottom: 1px solid #e2e8f0; background: #fff;">
       <div style="position: relative;">
         <svg style="width: 16px; height: 16px; color: #94a3b8; position: absolute; left: 10px; top: 10px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -338,10 +317,7 @@
       </div>
     </div>
 
-    <!-- Grouped Table List Tree -->
-    <div id="rightPanelList" style="flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 10px;">
-      <!-- Populated dynamically by JS -->
-    </div>
+    <div id="rightPanelList" style="flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 10px;"></div>
   </div>
 
   <!-- Sidebar -->
@@ -369,7 +345,6 @@
   </div>
 
   <script>
-    // Modules Configuration
     const modulesDef = [
       { name: 'Geográfico', color: '#10b981', tables: ['pais', 'estado', 'municipio', 'parroquia', 'localidad'] },
       { name: 'Institucional', color: '#3b82f6', tables: ['universidad', 'sede', 'departamento', 'dependencia_institucion', 'condicion', 'tipo_condicion'] },
@@ -381,110 +356,104 @@
       { name: 'Censo y Trámites', color: '#14b8a6', tables: ['censo_estudiante', 'censo_oferta', 'censo_intensivo', 'programa_especial_recuperacion', 'inscripcion_per', 'tramite_academico', 'tipo_tramite', 'causa_retiro', 'tramite_cambio_pnf', 'tramite_cambio_sede', 'tramite_cambio_turno', 'tramite_reingreso'] },
       { name: 'Proyectos', color: '#6366f1', tables: ['proyecto_investigacion', 'integrante_proyecto', 'jurado_proyecto'] },
       { name: 'Grados y Promociones', color: '#d946ef', tables: ['solicitud_grado', 'estatus_solicitud_grado', 'promocion', 'promocion_estudiante', 'promocion_pnf', 'promocion_estadistica_pnf', 'qr_validated_generated', 'qr_validated_generated_titulo'] },
-      { name: 'Seguridad y Usuarios', color: '#64748b', tables: ['user', 'rol', 'usuario_rol', 'permiso', 'rol_permiso', 'autoridad', 'tipo_autoridad', 'documento_requisito', 'rol_mensaje_configuracion', 'noticia', 'notificacion_correo', 'status', 'bitacora_sistema', 'configuracion_sistema', 'evento'] },
-      { name: 'API y Logs', color: '#84cc16', tables: ['api_system', 'api_key', 'api_allowed_table', 'api_permission', 'api_access_log'] }
+      { name: 'Seguridad y Usuarios', color: '#64748b', tables: ['user', 'rol', 'usuario_rol', 'permiso', 'rol_permiso', 'autoridad', 'tipo_autoridad', 'documento_requisito', 'rol_mensaje_configuracion', 'noticia', 'notificacion_correo', 'status', 'bitacora_sistema', 'configuracion_sistema', 'evento', 'modulo', 'submodulo', 'vista', 'rol_usuario_contexto', 'usuario_permiso'] },
+      { name: 'API y Logs', color: '#84cc16', tables: ['api_system', 'api_key', 'api_allowed_table', 'api_permission', 'api_access_log'] },
+      
+      // MÓDULOS DE BIENESTAR ESTUDIANTIL
+      { name: 'Bienestar: Inventario', color: '#059669', tables: ['unidad_medida', 'tipo_producto', 'categoria_producto', 'envase_primario', 'proveedor', 'producto', 'precio_producto', 'lote', 'inventario_sede_lote', 'inventario_total', 'movimiento_inventario', 'compra', 'detalle_compra'] },
+      { name: 'Bienestar: Comedor', color: '#ea580c', tables: ['receta', 'receta_ingrediente', 'consumo_diario', 'consumo_diario_detalle', 'registro_comedor', 'detalle_registro_comedor', 'sobrante_comedor'] },
+      { name: 'Bienestar: Salud', color: '#dc2626', tables: ['consultorio', 'horario_consultorio', 'enfermedad', 'consulta_medica', 'receta_medica', 'detalle_receta_medica', 'dispensacion_medicamento'] },
+      { name: 'Bienestar: Psicología', color: '#7c3aed', tables: ['estado_animo', 'avance_sesion', 'estado_animo_diario', 'grupo_horario_atencion', 'horario_profesional', 'plantilla_historia_clinica', 'seccion_plantilla_historia', 'campo_nota_evolucion', 'prioridad_atencion', 'historia_clinica', 'historia_seccion_personalizada', 'historia_segmento_personalizado', 'historia_enfermedad', 'cita_psicologica', 'cita_nota_evolucion'] },
+      { name: 'Bienestar: Deportes', color: '#2563eb', tables: ['espacio_deportivo', 'actividad_deportiva', 'calendario_deportivo', 'horario_deportivo', 'inscripcion_deportiva', 'torneo_deportivo', 'equipo_torneo_deportivo', 'integrante_equipo_deporte', 'prestamo_deportivo', 'sancion_deportiva'] },
+      { name: 'Bienestar: Transporte', color: '#0891b2', tables: ['marca_vehiculo', 'modelo_vehiculo', 'tipo_combustible', 'parada_transporte', 'ruta_transporte', 'ruta_parada_transporte', 'horario_ruta_transporte', 'vehiculo_transporte', 'viaje_transporte', 'pasajero_viaje_transporte', 'log_gps_transporte', 'carga_combustible', 'mantenimiento_vehiculo'] },
+      { name: 'Bienestar: Becas', color: '#ca8a04', tables: ['tipo_beneficio_estudiantil', 'beneficio_estudiantil', 'pregunta_beneficio', 'opcion_pregunta_beneficio', 'criterio_beneficio', 'jornada_beneficio', 'criterio_jornada_beneficio', 'solicitud_beneficio', 'beneficio_asignado', 'documento_solicitud_beneficio'] }
     ];
 
-    // Group Info Definitions
     const groupInfo = {
       1: { groupNum: 1, name: 'Isaac Rosales', label: 'Grupo 1: Isaac Rosales', color: '#8b5cf6' },
       2: { groupNum: 2, name: 'Mauricio Rodríguez', label: 'Grupo 2: Mauricio Rodríguez', color: '#06b6d4' },
       3: { groupNum: 3, name: 'Ángel Gonzales', label: 'Grupo 3: Ángel Gonzales', color: '#ef4444' },
-      4: { groupNum: 4, name: 'Luis Araguren', label: 'Grupo 4: Luis Araguren', color: '#f59e0b' }
+      4: { groupNum: 4, name: 'Luis Araguren', label: 'Grupo 4: Luis Araguren', color: '#f59e0b' },
+      5: { groupNum: 5, name: 'Enmanuel Medina', label: 'Grupo 5: Enmanuel Medina', color: '#10b981' }
     };
 
-    // Table Group Assignments Configuration
     const tableGroupMap = {
-      // Grupo 1: Isaac Rosales (Purple)
-      'user': groupInfo[1],
-      'rol': groupInfo[1],
-      'usuario_rol': groupInfo[1],
-      'permiso': groupInfo[1],
-      'rol_permiso': groupInfo[1],
-      'noticia': groupInfo[1],
-      'bitacora_sistema': groupInfo[1],
-      'tipo_inscripcion': groupInfo[1],
-      'inscripcion': groupInfo[1],
-      'inscripcion_detalle': groupInfo[1],
-      'tipo_tramite': groupInfo[1],
-      'causa_retiro': groupInfo[1],
-      'tramite_academico': groupInfo[1],
-      'tramite_cambio_pnf': groupInfo[1],
-      'tramite_cambio_sede': groupInfo[1],
-      'tramite_cambio_turno': groupInfo[1],
-      'tramite_reingreso': groupInfo[1],
-      'censo_estudiante': groupInfo[1],
-      'censo_oferta': groupInfo[1],
-      'censo_intensivo': groupInfo[1],
-      'programa_especial_recuperacion': groupInfo[1],
+      // Grupo 1: Isaac Rosales
+      'user': groupInfo[1], 'rol': groupInfo[1], 'usuario_rol': groupInfo[1], 'permiso': groupInfo[1],
+      'rol_permiso': groupInfo[1], 'noticia': groupInfo[1], 'bitacora_sistema': groupInfo[1],
+      'tipo_inscripcion': groupInfo[1], 'inscripcion': groupInfo[1], 'inscripcion_detalle': groupInfo[1],
+      'tipo_tramite': groupInfo[1], 'causa_retiro': groupInfo[1], 'tramite_academico': groupInfo[1],
+      'tramite_cambio_pnf': groupInfo[1], 'tramite_cambio_sede': groupInfo[1], 'tramite_cambio_turno': groupInfo[1],
+      'tramite_reingreso': groupInfo[1], 'censo_estudiante': groupInfo[1], 'censo_oferta': groupInfo[1],
+      'censo_intensivo': groupInfo[1], 'programa_especial_recuperacion': groupInfo[1],
+      'modulo': groupInfo[1], 'submodulo': groupInfo[1], 'vista': groupInfo[1],
+      'rol_usuario_contexto': groupInfo[1], 'usuario_permiso': groupInfo[1],
 
-      // Grupo 2: Mauricio Rodríguez (Cyan)
-      'estudiante': groupInfo[2],
-      'profesor': groupInfo[2],
-      'persona': groupInfo[2],
-      'autoridad': groupInfo[2],
-      'tipo_autoridad': groupInfo[2],
-      'cargo': groupInfo[2],
-      'categoria_docente': groupInfo[2],
-      'condicion_residencia': groupInfo[2],
-      'condicion_laboral': groupInfo[2],
-      'dedicacion_docente': groupInfo[2],
-      'etnia': groupInfo[2],
-      'profesion': groupInfo[2],
-      'perfil_bienestar': groupInfo[2],
-      'expediente_estudiante': groupInfo[2],
-      'historial_estatus_estudiante': groupInfo[2],
-      'plan_evaluacion': groupInfo[2],
-      'calificacion': groupInfo[2],
-      'calificacion_corte': groupInfo[2],
-      'acta_calificacion': groupInfo[2],
-      'libro_acta': groupInfo[2],
-      'historico_registro_anual': groupInfo[2],
-      'promocion': groupInfo[2],
-      'promocion_estudiante': groupInfo[2],
-      'promocion_pnf': groupInfo[2],
+      // Grupo 2: Mauricio Rodríguez
+      'estudiante': groupInfo[2], 'profesor': groupInfo[2], 'persona': groupInfo[2], 'autoridad': groupInfo[2],
+      'tipo_autoridad': groupInfo[2], 'cargo': groupInfo[2], 'categoria_docente': groupInfo[2],
+      'condicion_residencia': groupInfo[2], 'condicion_laboral': groupInfo[2], 'dedicacion_docente': groupInfo[2],
+      'etnia': groupInfo[2], 'profesion': groupInfo[2], 'perfil_bienestar': groupInfo[2],
+      'expediente_estudiante': groupInfo[2], 'historial_estatus_estudiante': groupInfo[2],
+      'plan_evaluacion': groupInfo[2], 'calificacion': groupInfo[2], 'calificacion_corte': groupInfo[2],
+      'acta_calificacion': groupInfo[2], 'libro_acta': groupInfo[2], 'historico_registro_anual': groupInfo[2],
+      'promocion': groupInfo[2], 'promocion_estudiante': groupInfo[2], 'promocion_pnf': groupInfo[2],
       'solicitud_grado': groupInfo[2],
 
-      // Grupo 3: Ángel Gonzales (Red)
-      'pais': groupInfo[3],
-      'estado': groupInfo[3],
-      'municipio': groupInfo[3],
-      'parroquia': groupInfo[3],
-      'localidad': groupInfo[3],
-      'universidad': groupInfo[3],
-      'sede': groupInfo[3],
-      'pnf': groupInfo[3],
-      'malla_curricular': groupInfo[3],
-      'malla_curricular_detalle': groupInfo[3],
-      'unidad_curricular': groupInfo[3],
-      'tipo_unidad_curricular': groupInfo[3],
-      'eje_curricular': groupInfo[3],
-      'trayecto': groupInfo[3],
-      'tipo_periodo': groupInfo[3],
-      'ano_academico': groupInfo[3],
-      'lapso_academico': groupInfo[3],
-      'corte_lapso': groupInfo[3],
-      'cohorte': groupInfo[3],
-      'cohorte_sede': groupInfo[3],
-      'seccion': groupInfo[3],
-      'carga_academica': groupInfo[3],
-      'aula': groupInfo[3],
-      'tipo_aula': groupInfo[3],
-      'horario': groupInfo[3],
+      // Grupo 3: Ángel Gonzales
+      'pais': groupInfo[3], 'estado': groupInfo[3], 'municipio': groupInfo[3], 'parroquia': groupInfo[3],
+      'localidad': groupInfo[3], 'universidad': groupInfo[3], 'sede': groupInfo[3], 'pnf': groupInfo[3],
+      'malla_curricular': groupInfo[3], 'malla_curricular_detalle': groupInfo[3], 'unidad_curricular': groupInfo[3],
+      'tipo_unidad_curricular': groupInfo[3], 'eje_curricular': groupInfo[3], 'trayecto': groupInfo[3],
+      'tipo_periodo': groupInfo[3], 'ano_academico': groupInfo[3], 'lapso_academico': groupInfo[3],
+      'corte_lapso': groupInfo[3], 'cohorte': groupInfo[3], 'cohorte_sede': groupInfo[3],
+      'seccion': groupInfo[3], 'carga_academica': groupInfo[3], 'aula': groupInfo[3],
+      'tipo_aula': groupInfo[3], 'horario': groupInfo[3],
 
-      // Grupo 4: Luis Araguren (Amber)
-      'telefono_persona': groupInfo[4],
-      'tipo_telefono': groupInfo[4],
-      'sistema_estudio_bachiller': groupInfo[4],
-      'rama_estudio_bachiller': groupInfo[4],
-      'proceso_admision': groupInfo[4],
-      'documento_requisito': groupInfo[4],
-      'notificacion_correo': groupInfo[4],
-      'proyecto_investigacion': groupInfo[4],
-      'integrante_proyecto': groupInfo[4],
-      'jurado_proyecto': groupInfo[4],
-      'qr_validated_generated_titulo': groupInfo[4],
-      'configuracion_sistema': groupInfo[4]
+      // Grupo 4: Luis Araguren
+      'telefono_persona': groupInfo[4], 'tipo_telefono': groupInfo[4], 'sistema_estudio_bachiller': groupInfo[4],
+      'rama_estudio_bachiller': groupInfo[4], 'proceso_admision': groupInfo[4], 'documento_requisito': groupInfo[4],
+      'notificacion_correo': groupInfo[4], 'proyecto_investigacion': groupInfo[4], 'integrante_proyecto': groupInfo[4],
+      'jurado_proyecto': groupInfo[4], 'qr_validated_generated_titulo': groupInfo[4], 'configuracion_sistema': groupInfo[4],
+
+      // Grupo 5: Enmanuel Medina (Bienestar Estudiantil: 100% de las tablas nuevas)
+      'unidad_medida': groupInfo[5], 'tipo_producto': groupInfo[5], 'categoria_producto': groupInfo[5],
+      'envase_primario': groupInfo[5], 'proveedor': groupInfo[5], 'producto': groupInfo[5],
+      'precio_producto': groupInfo[5], 'lote': groupInfo[5], 'inventario_sede_lote': groupInfo[5],
+      'inventario_total': groupInfo[5], 'movimiento_inventario': groupInfo[5], 'compra': groupInfo[5],
+      'detalle_compra': groupInfo[5],
+
+      'receta': groupInfo[5], 'receta_ingrediente': groupInfo[5], 'consumo_diario': groupInfo[5],
+      'consumo_diario_detalle': groupInfo[5], 'registro_comedor': groupInfo[5],
+      'detalle_registro_comedor': groupInfo[5], 'sobrante_comedor': groupInfo[5],
+
+      'consultorio': groupInfo[5], 'horario_consultorio': groupInfo[5], 'enfermedad': groupInfo[5],
+      'consulta_medica': groupInfo[5], 'receta_medica': groupInfo[5], 'detalle_receta_medica': groupInfo[5],
+      'dispensacion_medicamento': groupInfo[5],
+
+      'estado_animo': groupInfo[5], 'avance_sesion': groupInfo[5], 'estado_animo_diario': groupInfo[5],
+      'grupo_horario_atencion': groupInfo[5], 'horario_profesional': groupInfo[5],
+      'plantilla_historia_clinica': groupInfo[5], 'seccion_plantilla_historia': groupInfo[5],
+      'campo_nota_evolucion': groupInfo[5], 'prioridad_atencion': groupInfo[5], 'historia_clinica': groupInfo[5],
+      'historia_seccion_personalizada': groupInfo[5], 'historia_segmento_personalizado': groupInfo[5],
+      'historia_enfermedad': groupInfo[5], 'cita_psicologica': groupInfo[5], 'cita_nota_evolucion': groupInfo[5],
+
+      'espacio_deportivo': groupInfo[5], 'actividad_deportiva': groupInfo[5], 'calendario_deportivo': groupInfo[5],
+      'horario_deportivo': groupInfo[5], 'inscripcion_deportiva': groupInfo[5], 'torneo_deportivo': groupInfo[5],
+      'equipo_torneo_deportivo': groupInfo[5], 'integrante_equipo_deporte': groupInfo[5],
+      'prestamo_deportivo': groupInfo[5], 'sancion_deportiva': groupInfo[5],
+
+      'marca_vehiculo': groupInfo[5], 'modelo_vehiculo': groupInfo[5], 'tipo_combustible': groupInfo[5],
+      'parada_transporte': groupInfo[5], 'ruta_transporte': groupInfo[5], 'ruta_parada_transporte': groupInfo[5],
+      'horario_ruta_transporte': groupInfo[5], 'vehiculo_transporte': groupInfo[5], 'viaje_transporte': groupInfo[5],
+      'pasajero_viaje_transporte': groupInfo[5], 'log_gps_transporte': groupInfo[5], 'carga_combustible': groupInfo[5],
+      'mantenimiento_vehiculo': groupInfo[5],
+
+      'tipo_beneficio_estudiantil': groupInfo[5], 'beneficio_estudiantil': groupInfo[5],
+      'pregunta_beneficio': groupInfo[5], 'opcion_pregunta_beneficio': groupInfo[5],
+      'criterio_beneficio': groupInfo[5], 'jornada_beneficio': groupInfo[5],
+      'criterio_jornada_beneficio': groupInfo[5], 'solicitud_beneficio': groupInfo[5],
+      'beneficio_asignado': groupInfo[5], 'documento_solicitud_beneficio': groupInfo[5]
     };
 
     function getTableGroup(tName) {
@@ -494,9 +463,16 @@
     let tables = {};
     let refsData = [];
     let lines = [];
-    let tableLinesMap = {}; // Fast index of SVG paths per table
+    let tableLinesMap = {};
     let zoomLevel = 1;
     let maxZIndex = 100;
+    let baseCanvasWidth = 3600;
+    let baseCanvasHeight = 6000;
+
+    // Estructuras de caché en RAM para 0 consultas al DOM durante arrastre
+    let tableMeta = {};      // { [tName]: { el, x, y, width } }
+    let colOffsets = {};     // { [tName-colName]: centerOffsetY }
+    let colElements = {};    // { [tName-colName]: HTMLElement }
 
     // Build Legend
     const legendContent = document.getElementById('legend-content');
@@ -517,19 +493,15 @@
           window.scrollTo({ left: 0, top: Math.max(0, targetY), behavior: 'auto' });
 
           mod.tables.forEach(tName => {
-            const el = document.getElementById('table-' + tName);
-            if (el) {
-              el.classList.add('gold-highlight');
-              setTimeout(() => {
-                el.classList.remove('gold-highlight');
-              }, 2500);
+            const meta = tableMeta[tName];
+            if (meta && meta.el) {
+              meta.el.classList.add('gold-highlight');
+              setTimeout(() => meta.el.classList.remove('gold-highlight'), 2500);
             }
           });
-
           document.getElementById('legend-modal').classList.remove('show');
         }
       });
-
       legendContent.appendChild(item);
     });
 
@@ -539,13 +511,11 @@
     document.getElementById('btnCloseLegend').addEventListener('click', () => {
       document.getElementById('legend-modal').classList.remove('show');
     });
-    
-    // Sidebar Toggle (Left Code Panel)
     document.getElementById('btnToggleSidebar').addEventListener('click', () => {
       document.getElementById('sidebar').classList.toggle('open');
     });
 
-    // Right Panel Drawer Logic (dbdiagram.io style)
+    // Right Panel Drawer Logic
     const btnToggleRightPanel = document.getElementById('btnToggleRightPanel');
     const rightPanel = document.getElementById('right-panel');
     const arrowIcon = document.getElementById('arrowIcon');
@@ -554,33 +524,20 @@
 
     function toggleRightPanel(forceState) {
       const isOpen = forceState !== undefined ? forceState : !rightPanel.classList.contains('open');
-      if (isOpen) {
-        rightPanel.classList.add('open');
-        arrowIcon.style.transform = 'rotate(180deg)';
-        btnToggleRightPanel.classList.add('shifted');
-      } else {
-        rightPanel.classList.remove('open');
-        arrowIcon.style.transform = 'rotate(0deg)';
-        btnToggleRightPanel.classList.remove('shifted');
-      }
+      rightPanel.classList.toggle('open', isOpen);
+      arrowIcon.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+      btnToggleRightPanel.classList.toggle('shifted', isOpen);
     }
 
     btnToggleRightPanel.addEventListener('click', () => toggleRightPanel());
 
+    // Debounce ligero para el buscador de tablas
+    let searchTimeout = null;
     panelSearchInput.addEventListener('input', (e) => {
       const val = e.target.value;
-      if (val.trim()) {
-        btnClearSearch.style.display = 'block';
-      } else {
-        btnClearSearch.style.display = 'none';
-      }
-      buildRightPanelTree(val);
-    });
-
-    panelSearchInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        buildRightPanelTree(panelSearchInput.value.trim());
-      }
+      btnClearSearch.style.display = val.trim() ? 'block' : 'none';
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => buildRightPanelTree(val), 80);
     });
 
     btnClearSearch.addEventListener('click', () => {
@@ -595,22 +552,22 @@
       if (!listContainer) return;
 
       listContainer.innerHTML = '';
-      const q = query.toLowerCase().trim();
+      const rawQ = query.toLowerCase().trim();
+      const normQ = rawQ.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
       let totalMatched = 0;
       let totalAll = 0;
+      const frag = document.createDocumentFragment();
 
       modulesDef.forEach(mod => {
+        const modNorm = mod.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
         const matchedTables = mod.tables.filter(t => {
           totalAll++;
-          if (!q) return true;
+          if (!normQ) return true;
 
           const grp = getTableGroup(t);
-          const rawQ = q.toLowerCase().trim();
-          const normQ = rawQ.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-
           const tNorm = t.toLowerCase();
-          const modNorm = mod.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
           const grpNameNorm = grp.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
           const grpLabelNorm = grp.label ? grp.label.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : "";
           const gNumStr = grp.groupNum ? `grupo ${grp.groupNum}` : '';
@@ -630,8 +587,7 @@
 
         if (matchedTables.length > 0) {
           totalMatched += matchedTables.length;
-
-          const isExpanded = !!q;
+          const isExpanded = !!normQ;
 
           const groupEl = document.createElement('div');
           groupEl.style.cssText = 'border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; background: #f8fafc; flex-shrink: 0;';
@@ -664,12 +620,10 @@
           matchedTables.forEach(tName => {
             const grp = getTableGroup(tName);
             const item = document.createElement('div');
-            item.style.cssText = 'display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; transition: background 0.15s;';
+            item.style.cssText = 'display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 12px;';
             item.innerHTML = `
               <div style="display: flex; align-items: center; gap: 8px; overflow: hidden;">
-                <svg style="width: 14px; height: 14px; color: #94a3b8; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
+                <svg style="width: 14px; height: 14px; color: #94a3b8; flex-shrink: 0;"><use href="#icon-table"></use></svg>
                 <span style="font-family: monospace; font-size: 11.5px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">${tName}</span>
               </div>
               <div style="display: flex; align-items: center; gap: 6px;">
@@ -679,33 +633,30 @@
             `;
             item.addEventListener('mouseenter', () => item.style.background = '#e0e7ff');
             item.addEventListener('mouseleave', () => item.style.background = 'transparent');
-
             item.addEventListener('click', (e) => {
               e.stopPropagation();
               jumpToTable(tName);
             });
-
             groupBody.appendChild(item);
           });
 
           groupEl.appendChild(groupHeader);
           groupEl.appendChild(groupBody);
-          listContainer.appendChild(groupEl);
+          frag.appendChild(groupEl);
         }
       });
 
-      if (counterBadge) {
-        counterBadge.innerText = `${totalMatched} / ${totalAll}`;
-      }
+      listContainer.appendChild(frag);
+      if (counterBadge) counterBadge.innerText = `${totalMatched} / ${totalAll}`;
     }
 
-    let globalNodePositions = {};
     let activeLines = [];
     let activeCols = [];
+    let activeTables = [];
 
     function clearLineHighlights() {
       document.body.classList.remove('has-line-selection');
-      
+
       for (let i = 0; i < activeLines.length; i++) {
         const line = activeLines[i];
         if (line.pathEl) line.pathEl.classList.remove('line-active');
@@ -715,13 +666,14 @@
       activeLines = [];
 
       for (let i = 0; i < activeCols.length; i++) {
-        activeCols[i].style.backgroundColor = '';
+        activeCols[i].classList.remove('col-active-highlight');
       }
       activeCols = [];
 
-      document.querySelectorAll('.er-table.highlighted, .er-table.relation-highlight').forEach(t => {
-        t.classList.remove('highlighted', 'relation-highlight');
-      });
+      for (let i = 0; i < activeTables.length; i++) {
+        activeTables[i].classList.remove('highlighted', 'relation-highlight');
+      }
+      activeTables = [];
     }
 
     function highlightTableRelations(tName, tableElement) {
@@ -732,51 +684,47 @@
 
       clearLineHighlights();
       tableElement.classList.add('highlighted', 'relation-highlight');
+      activeTables.push(tableElement);
       document.body.classList.add('has-line-selection');
 
-      // Solo relaciones donde esta tabla aporta la PK (lado "1")
-      const connected = (tableLinesMap[tName] || []).filter(l =>
-        (l.relType === '>' && l.toTable === tName) ||
-        (l.relType === '<' && l.fromTable === tName) ||
-        (l.relType === '-' && l.toTable === tName)
-      );
-      connected.forEach(line => {
+      // Resalta tanto las relaciones donde la tabla es PK como donde es FK
+      const connected = tableLinesMap[tName] || [];
+      for (let i = 0; i < connected.length; i++) {
+        const line = connected[i];
         if (line.pathEl) line.pathEl.classList.add('line-active');
         if (line.labelStartEl) line.labelStartEl.classList.add('line-active');
         if (line.labelEndEl) line.labelEndEl.classList.add('line-active');
         activeLines.push(line);
 
-        const col1 = document.getElementById('col-' + line.fromTable + '-' + line.fromCol);
-        const col2 = document.getElementById('col-' + line.toTable + '-' + line.toCol);
-        if (col1) { col1.style.backgroundColor = 'rgba(245, 158, 11, 0.25)'; activeCols.push(col1); }
-        if (col2) { col2.style.backgroundColor = 'rgba(245, 158, 11, 0.25)'; activeCols.push(col2); }
+        const col1 = colElements[line.fromTable + '-' + line.fromCol];
+        const col2 = colElements[line.toTable + '-' + line.toCol];
+        if (col1) { col1.classList.add('col-active-highlight'); activeCols.push(col1); }
+        if (col2) { col2.classList.add('col-active-highlight'); activeCols.push(col2); }
 
         const otherTableName = line.fromTable === tName ? line.toTable : line.fromTable;
-        const otherEl = document.getElementById('table-' + otherTableName);
-        if (otherEl) otherEl.classList.add('relation-highlight');
-      });
-    }
-
-    function jumpToTable(tName) {
-      if (!globalNodePositions[tName]) return;
-      const pos = globalNodePositions[tName];
-      const targetX = (pos.x - 120) * zoomLevel;
-      const targetY = (pos.y - 100) * zoomLevel;
-
-      window.scrollTo({ left: Math.max(0, targetX), top: Math.max(0, targetY), behavior: 'auto' });
-
-      const el = document.getElementById('table-' + tName);
-      if (el) {
-        el.classList.add('gold-highlight');
-        setTimeout(() => {
-          el.classList.remove('gold-highlight');
-        }, 2500);
-
-        highlightTableRelations(tName, el);
+        const otherMeta = tableMeta[otherTableName];
+        if (otherMeta && otherMeta.el) {
+          otherMeta.el.classList.add('relation-highlight');
+          activeTables.push(otherMeta.el);
+        }
       }
     }
 
-    // Initialize and Parse DBML
+    function jumpToTable(tName) {
+      const meta = tableMeta[tName];
+      if (!meta) return;
+      const targetX = (meta.x - 120) * zoomLevel;
+      const targetY = (meta.y - 100) * zoomLevel;
+
+      window.scrollTo({ left: Math.max(0, targetX), top: Math.max(0, targetY), behavior: 'auto' });
+
+      if (meta.el) {
+        meta.el.classList.add('gold-highlight');
+        setTimeout(() => meta.el.classList.remove('gold-highlight'), 2500);
+        highlightTableRelations(tName, meta.el);
+      }
+    }
+
     function init() {
       try {
         const text = window.SOGAC_DBML;
@@ -793,18 +741,29 @@
     }
 
     function parseDBML(dbml) {
+      // 1. Extraer primero todas las referencias reales para marcar las FK con exactitud
+      const fkSet = new Set();
+      const refRegex = /Ref:\s*([a-zA-Z0-9_]+)\.([a-zA-Z0-9_]+)\s*([<>-]+)\s*([a-zA-Z0-9_]+)\.([a-zA-Z0-9_]+)/g;
+      let refMatch;
+      while ((refMatch = refRegex.exec(dbml)) !== null) {
+        const fromT = refMatch[1], fromC = refMatch[2], rel = refMatch[3], toT = refMatch[4], toC = refMatch[5];
+        refsData.push({ fromTable: fromT, fromCol: fromC, relType: rel, toTable: toT, toCol: toC });
+        if (rel === '>' || rel === '-') fkSet.add(`${fromT}.${fromC}`);
+        else if (rel === '<') fkSet.add(`${toT}.${toC}`);
+      }
+
+      // 2. Extraer tablas y columnas
       const tableRegex = /Table\s+([a-zA-Z0-9_]+)\s*\{([\s\S]*?)\n\}/g;
       let match;
       while ((match = tableRegex.exec(dbml)) !== null) {
         const tName = match[1];
         const tBody = match[2];
-        // Clean multi-line notes by removing newlines inside brackets
         let cleanedBody = tBody.replace(/\[([\s\S]*?)\]/g, (m) => m.replace(/\r?\n/g, ' '));
         const fileLines = cleanedBody.split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('//') && !l.startsWith('indexes'));
         
         const cols = [];
         for (const line of fileLines) {
-          if (line.startsWith('{') || line.startsWith('}')) continue;
+          if (line.startsWith('{') || line.startsWith('}') || line.startsWith('(')) continue;
           const parts = line.split(/\s+/);
           const cName = parts[0];
           const cType = parts[1] || '';
@@ -812,7 +771,7 @@
           let note = '';
           const noteMatch = line.match(/note:\s*'([^']+)'/i) || line.match(/note:\s*"([^"]+)"/i);
           if (noteMatch) {
-             note = noteMatch[1].replace(/\\'/g, "'").replace(/\\"/g, '"');
+            note = noteMatch[1].replace(/\\'/g, "'").replace(/\\"/g, '"');
           }
 
           if (cName && !cName.includes('{')) {
@@ -821,22 +780,12 @@
               type: cType,
               note: note,
               isPk: /\b(pk|primary key)\b/i.test(line),
-              isFk: cName.endsWith('_id') && !cName.startsWith('id_') && cName !== 'status_id',
+              isFk: fkSet.has(`${tName}.${cName}`) && cName !== 'status_id',
               isNn: /not[\s_]*null/i.test(line)
             });
           }
         }
         tables[tName] = { name: tName, cols: cols };
-      }
-
-      const refRegex = /Ref:\s*([a-zA-Z0-9_]+)\.([a-zA-Z0-9_]+)\s*([<>-]+)\s*([a-zA-Z0-9_]+)\.([a-zA-Z0-9_]+)/g;
-      let refMatch;
-      while ((refMatch = refRegex.exec(dbml)) !== null) {
-        refsData.push({
-          fromTable: refMatch[1], fromCol: refMatch[2],
-          relType: refMatch[3],
-          toTable: refMatch[4], toCol: refMatch[5]
-        });
       }
     }
 
@@ -875,25 +824,15 @@
         currentY += maxY + 160; 
       });
 
-      // ==========================================
-      // CORRECCIÓN: Ajuste dinámico del tamaño del lienzo
-      // ==========================================
-      // Aseguramos que el SVG y los contenedores tengan el tamaño suficiente 
-      // para abarcar todas las tablas calculadas (currentY) y un margen inferior.
-      const maxCanvasHeight = currentY + 500;
-      const maxCanvasWidth = 3600; // Ancho máximo antes de hacer el salto de línea en X
+      baseCanvasHeight = currentY + 500;
+      baseCanvasWidth = 3600;
       
-      document.getElementById('canvas-container').style.width = maxCanvasWidth + 'px';
-      document.getElementById('canvas-container').style.height = maxCanvasHeight + 'px';
-      document.getElementById('canvas').style.width = maxCanvasWidth + 'px';
-      document.getElementById('canvas').style.height = maxCanvasHeight + 'px';
-      document.getElementById('svg-canvas').style.width = maxCanvasWidth + 'px';
-      document.getElementById('svg-canvas').style.height = maxCanvasHeight + 'px';
-      
-      // Permitimos que el SVG dibuje más allá de sus límites por seguridad
-      document.getElementById('svg-canvas').style.overflow = 'visible';
-
-      globalNodePositions = nodePositions;
+      document.getElementById('canvas-container').style.width = baseCanvasWidth + 'px';
+      document.getElementById('canvas-container').style.height = baseCanvasHeight + 'px';
+      document.getElementById('canvas').style.width = baseCanvasWidth + 'px';
+      document.getElementById('canvas').style.height = baseCanvasHeight + 'px';
+      document.getElementById('svg-canvas').style.width = baseCanvasWidth + 'px';
+      document.getElementById('svg-canvas').style.height = baseCanvasHeight + 'px';
 
       let tablesHtml = bannersHtml;
       Object.keys(tables).forEach((tName, idx) => {
@@ -902,15 +841,18 @@
         
         let colsHtml = '';
         t.cols.forEach(c => {
-          let pkIcon = c.isPk ? `<svg style="width: 12px; height: 12px; color: #f59e0b; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24" title="Primary Key"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>` : '';
-          let fkIcon = c.isFk ? `<svg style="width: 12px; height: 12px; color: #94a3b8; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24" title="Foreign Key"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>` : '';
+          let iconHtml = '<span style="width: 12px; height: 12px; display: inline-block; flex-shrink: 0;"></span>';
+          if (c.isPk) {
+            iconHtml = `<svg style="width: 12px; height: 12px; color: #f59e0b; flex-shrink: 0;"><use href="#icon-pk"></use></svg>`;
+          } else if (c.isFk) {
+            iconHtml = `<svg style="width: 12px; height: 12px; color: #94a3b8; flex-shrink: 0;"><use href="#icon-fk"></use></svg>`;
+          }
           let nnBadge = c.isNn ? '<span style="font-size: 9px; font-weight: 700; background: #e2e8f0; color: #64748b; padding: 1px 4px; border-radius: 3px; margin-left: 4px;">NN</span>' : '';
-          let noteIcon = c.note ? `<svg class="col-note-icon" data-note="${c.note.replace(/"/g, '&quot;')}" style="width: 12px; height: 12px; color: #cbd5e1; cursor: pointer; margin-left: 6px; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>` : '';
-          let spacer = (!c.isPk && !c.isFk) ? '<div style="width: 12px; height: 12px;"></div>' : '';
+          let noteIcon = c.note ? `<svg class="col-note-icon" data-note="${c.note.replace(/"/g, '&quot;')}"><use href="#icon-note"></use></svg>` : '';
 
           colsHtml += `
             <div class="er-col" id="col-${t.name}-${c.name}">
-              <div class="col-name">${c.isPk ? pkIcon : c.isFk ? fkIcon : spacer}${c.name} ${nnBadge} ${noteIcon}</div>
+              <div class="col-name">${iconHtml}${c.name}${nnBadge}${noteIcon}</div>
               <div class="col-type">${c.type}</div>
             </div>
           `;
@@ -919,7 +861,7 @@
         const grp = getTableGroup(tName);
 
         tablesHtml += `
-          <div class="er-table" id="table-${t.name}" style="left: ${pos.x}px; top: ${pos.y}px; z-index: ${idx + 20};">
+          <div class="er-table" id="table-${t.name}" data-table="${t.name}" style="left: ${pos.x}px; top: ${pos.y}px; z-index: ${idx + 20};">
             <div class="er-table-header" style="background-color: ${pos.color};">
               <span>${t.name}</span>
               <span style="font-size: 10px; opacity: 0.9; font-weight: 400;">${pos.module || ''}</span>
@@ -934,36 +876,45 @@
           </div>
         `;
       });
+
       canvas.insertAdjacentHTML('beforeend', tablesHtml);
+
+      // OPTIMIZACIÓN: Lectura por lotes (Batch Read) de dimensiones una sola vez al iniciar
+      Object.keys(tables).forEach(tName => {
+        const el = document.getElementById('table-' + tName);
+        const pos = nodePositions[tName] || { x: 50, y: 50 };
+        if (el) {
+          tableMeta[tName] = {
+            el: el,
+            x: pos.x,
+            y: pos.y,
+            width: el.offsetWidth || 250
+          };
+          tables[tName].cols.forEach(c => {
+            const key = tName + '-' + c.name;
+            const colEl = document.getElementById('col-' + key);
+            if (colEl) {
+              colElements[key] = colEl;
+              colOffsets[key] = colEl.offsetTop + (colEl.offsetHeight / 2);
+            }
+          });
+        }
+      });
+
       attachEvents();
     }
 
-    // High-Performance SVG Renderer & Caching
-    let metricsCache = {};
+    // Cálculo 100% en memoria RAM (Cero accesos al DOM durante el movimiento)
     function getColAnchor(tableName, colName) {
-      const tableEl = document.getElementById('table-' + tableName);
-      if (!tableEl) return null;
-      
-      const tLeft = parseFloat(tableEl.style.left) || 0;
-      const tTop = parseFloat(tableEl.style.top) || 0;
-      
-      const cacheKey = tableName + '-' + colName;
-      if (!metricsCache[cacheKey]) {
-        const colEl = document.getElementById('col-' + tableName + '-' + colName);
-        metricsCache[cacheKey] = {
-          tWidth: tableEl.offsetWidth || 250,
-          cOffTop: colEl ? colEl.offsetTop : 0,
-          cOffHeight: colEl ? colEl.offsetHeight : 36
-        };
-      }
-
-      const { tWidth, cOffTop, cOffHeight } = metricsCache[cacheKey];
-      let colY = tTop + 18;
-      if (cOffTop) {
-        colY = tTop + cOffTop + (cOffHeight / 2);
-      }
-      
-      return { leftX: tLeft, rightX: tLeft + tWidth, y: colY, tLeft, tWidth };
+      const meta = tableMeta[tableName];
+      if (!meta) return null;
+      const offsetY = colOffsets[tableName + '-' + colName] || 18;
+      return {
+        leftX: meta.x,
+        rightX: meta.x + meta.width,
+        y: meta.y + offsetY,
+        tLeft: meta.x
+      };
     }
 
     function updatePathD(lineObj) {
@@ -973,25 +924,18 @@
 
       let x1, x2;
       if (a1.rightX + 20 < a2.leftX) {
-        x1 = a1.rightX;
-        x2 = a2.leftX;
+        x1 = a1.rightX; x2 = a2.leftX;
       } else if (a2.rightX + 20 < a1.leftX) {
-        x1 = a1.leftX;
-        x2 = a2.rightX;
+        x1 = a1.leftX; x2 = a2.rightX;
+      } else if (a1.tLeft <= a2.tLeft) {
+        x1 = a1.rightX; x2 = a2.rightX;
       } else {
-        if (a1.tLeft <= a2.tLeft) {
-          x1 = a1.rightX;
-          x2 = a2.rightX;
-        } else {
-          x1 = a1.leftX;
-          x2 = a2.leftX;
-        }
+        x1 = a1.leftX; x2 = a2.leftX;
       }
 
       const y1 = a1.y;
       const y2 = a2.y;
 
-      // Ruta ortogonal (estilo Navicat / Workbench) con carriles para no solapar verticales
       const lane = ((lineObj.idx || 0) % 8) * 6;
       const sameSide = (x1 === a1.rightX) === (x2 === a2.rightX);
       let mx;
@@ -1000,8 +944,8 @@
       } else {
         mx = Math.round((x1 + x2) / 2) + (x1 < x2 ? lane - 21 : 21 - lane);
       }
-      const d = `M ${x1} ${y1} H ${mx} V ${y2} H ${x2}`;
-      lineObj.pathEl.setAttribute('d', d);
+
+      lineObj.pathEl.setAttribute('d', `M ${x1} ${y1} H ${mx} V ${y2} H ${x2}`);
 
       if (lineObj.labelStartEl && lineObj.labelEndEl) {
         const lx1 = (x1 <= x2) ? x1 + 8 : x1 - 14;
@@ -1062,75 +1006,107 @@
 
     function updateTableLines(tName) {
       const connected = tableLinesMap[tName];
-      if (connected) {
-        for (let i = 0; i < connected.length; i++) {
-          updatePathD(connected[i]);
-        }
+      if (!connected) return;
+      for (let i = 0; i < connected.length; i++) {
+        updatePathD(connected[i]);
       }
     }
 
-    // Interaction Events & 60 FPS Dragging
-    function attachEvents() {
-      let draggedElement = null;
-      let draggedTableName = null;
-      let startX = 0, startY = 0, initialLeft = 0, initialTop = 0;
-      let isDraggingTicking = false;
+    // Eventos de Arrastre y Selección sin Input Lag
+    let draggedMeta = null;
+    let draggedTableName = null;
+    let dragStartX = 0, dragStartY = 0, initialLeft = 0, initialTop = 0;
+    let currentMouseX = 0, currentMouseY = 0;
+    let isDraggingTicking = false;
+    let hasMovedDuringDrag = false;
 
+    function attachEvents() {
       document.querySelectorAll('.er-table').forEach(table => {
+        const tName = table.getAttribute('data-table');
         const header = table.querySelector('.er-table-header');
-        header.addEventListener('click', () => {
-          const tName = table.id.replace('table-', '');
+
+        header.addEventListener('click', (e) => {
+          // Evita que soltar un arrastre dispare el resaltado de relaciones por error
+          if (hasMovedDuringDrag) {
+            e.stopPropagation();
+            return;
+          }
           highlightTableRelations(tName, table);
         });
 
         table.addEventListener('mousedown', (e) => {
-          draggedElement = table;
-          draggedTableName = table.id.replace('table-', '');
-          startX = e.clientX; startY = e.clientY;
-          initialLeft = parseFloat(table.style.left) || 0;
-          initialTop = parseFloat(table.style.top) || 0;
+          if (e.button !== 0) return;
+          draggedTableName = tName;
+          draggedMeta = tableMeta[tName];
+          if (!draggedMeta) return;
+
+          hasMovedDuringDrag = false;
+          dragStartX = e.clientX;
+          dragStartY = e.clientY;
+          currentMouseX = e.clientX;
+          currentMouseY = e.clientY;
+          initialLeft = draggedMeta.x;
+          initialTop = draggedMeta.y;
+
           table.classList.add('dragging');
-          maxZIndex++; table.style.zIndex = maxZIndex;
+          document.body.classList.add('is-dragging');
+          maxZIndex++;
+          table.style.zIndex = maxZIndex;
         });
       });
 
-      document.addEventListener('mousemove', (e) => {
-        if (!draggedElement) return;
-        
+      window.addEventListener('mousemove', (e) => {
+        if (!draggedMeta) return;
+        currentMouseX = e.clientX;
+        currentMouseY = e.clientY;
+
+        if (!hasMovedDuringDrag && (Math.abs(currentMouseX - dragStartX) > 3 || Math.abs(currentMouseY - dragStartY) > 3)) {
+          hasMovedDuringDrag = true;
+          tooltip.style.display = 'none';
+        }
+
         if (!isDraggingTicking) {
+          isDraggingTicking = true;
           requestAnimationFrame(() => {
-            if (draggedElement) {
-              const dx = (e.clientX - startX) / zoomLevel;
-              const dy = (e.clientY - startY) / zoomLevel;
-              draggedElement.style.left = Math.max(0, initialLeft + dx) + 'px';
-              draggedElement.style.top = Math.max(0, initialTop + dy) + 'px';
-              
+            if (draggedMeta) {
+              const dx = (currentMouseX - dragStartX) / zoomLevel;
+              const dy = (currentMouseY - dragStartY) / zoomLevel;
+              const newX = Math.max(0, Math.round(initialLeft + dx));
+              const newY = Math.max(0, Math.round(initialTop + dy));
+
+              draggedMeta.x = newX;
+              draggedMeta.y = newY;
+              draggedMeta.el.style.left = newX + 'px';
+              draggedMeta.el.style.top = newY + 'px';
+
               updateTableLines(draggedTableName);
             }
             isDraggingTicking = false;
           });
-          isDraggingTicking = true;
         }
-      });
+      }, { passive: true });
 
-      document.addEventListener('mouseup', () => {
-        if (draggedElement) {
-          draggedElement.classList.remove('dragging');
-          draggedElement = null;
+      window.addEventListener('mouseup', () => {
+        if (draggedMeta) {
+          draggedMeta.el.classList.remove('dragging');
+          document.body.classList.remove('is-dragging');
+          draggedMeta = null;
           draggedTableName = null;
         }
       });
     }
 
     document.addEventListener('click', (e) => {
+      if (hasMovedDuringDrag || hasPanned) return;
       if (!e.target.closest('.er-table') && !e.target.closest('#toolbar') && !e.target.closest('#legend-modal') && !e.target.closest('#right-panel') && !e.target.closest('#btnToggleRightPanel')) {
         clearLineHighlights();
       }
     });
 
-    // Tooltip Logic for Notes
+    // Tooltip Logic (Se desactiva durante arrastre o panning)
     const tooltip = document.getElementById('dbml-tooltip');
     document.addEventListener('mouseover', (e) => {
+      if (draggedMeta || isPanning) return;
       const icon = e.target.closest('.col-note-icon');
       if (icon) {
         tooltip.innerHTML = '<b>Nota / Comentario:</b>' + icon.getAttribute('data-note');
@@ -1138,62 +1114,89 @@
         
         const rect = icon.getBoundingClientRect();
         let top = rect.bottom + 8;
-        let left = rect.left - 100;
-        if (left < 10) left = 10;
+        let left = Math.max(10, rect.left - 100);
         
         tooltip.style.top = top + 'px';
         tooltip.style.left = left + 'px';
-      } else {
+      } else if (tooltip.style.display === 'block') {
         tooltip.style.display = 'none';
       }
-    });
+    }, { passive: true });
 
-    // Zoom and Pan
+    // Zoom y Panning corregidos
     document.getElementById('btnZoomIn').addEventListener('click', () => {
-      zoomLevel = Math.min(zoomLevel + 0.1, 2);
+      zoomLevel = Math.min(+(zoomLevel + 0.1).toFixed(2), 2);
       applyZoom();
     });
     document.getElementById('btnZoomOut').addEventListener('click', () => {
-      zoomLevel = Math.max(zoomLevel - 0.1, 0.2);
+      zoomLevel = Math.max(+(zoomLevel - 0.1).toFixed(2), 0.2);
       applyZoom();
     });
 
+    // Soporte de Zoom con Ctrl + Rueda del ratón
+    window.addEventListener('wheel', (e) => {
+      if (e.ctrlKey) {
+        e.preventDefault();
+        const delta = e.deltaY < 0 ? 0.1 : -0.1;
+        zoomLevel = Math.min(Math.max(+(zoomLevel + delta).toFixed(2), 0.2), 2);
+        applyZoom();
+      }
+    }, { passive: false });
+
     function applyZoom() {
-      document.getElementById('canvas').style.transform = 'scale(' + zoomLevel + ')';
+      const canvas = document.getElementById('canvas');
+      const container = document.getElementById('canvas-container');
+      canvas.style.transform = `scale(${zoomLevel})`;
+      container.style.width = Math.round(baseCanvasWidth * zoomLevel) + 'px';
+      container.style.height = Math.round(baseCanvasHeight * zoomLevel) + 'px';
       document.getElementById('zoomDisplay').innerText = Math.round(zoomLevel * 100) + '%';
     }
 
-    let isPanning = false, panStartX, panStartY;
+    let isPanning = false, hasPanned = false;
+    let panLastX = 0, panLastY = 0, panCurrX = 0, panCurrY = 0;
     let isPanTicking = false;
 
     window.addEventListener('mousedown', (e) => {
-      if (e.target.closest('.er-table') || e.target.closest('#sidebar') || e.target.closest('#toolbar') || e.target.closest('#right-panel') || e.target.closest('#legend-modal')) return;
+      if (e.button !== 0) return;
+      if (e.target.closest('.er-table') || e.target.closest('#sidebar') || e.target.closest('#toolbar') || e.target.closest('#right-panel') || e.target.closest('#legend-modal') || e.target.closest('#btnToggleRightPanel')) return;
       isPanning = true;
-      panStartX = e.clientX; panStartY = e.clientY;
+      hasPanned = false;
+      panLastX = e.clientX;
+      panLastY = e.clientY;
+      panCurrX = e.clientX;
+      panCurrY = e.clientY;
+      document.body.classList.add('is-panning');
     });
 
     window.addEventListener('mousemove', (e) => {
       if (!isPanning) return;
+      panCurrX = e.clientX;
+      panCurrY = e.clientY;
+
       if (!isPanTicking) {
+        isPanTicking = true;
         requestAnimationFrame(() => {
           if (isPanning) {
-            const dx = e.clientX - panStartX;
-            const dy = e.clientY - panStartY;
+            const dx = panCurrX - panLastX;
+            const dy = panCurrY - panLastY;
+            if (Math.abs(dx) > 2 || Math.abs(dy) > 2) hasPanned = true;
             window.scrollBy(-dx, -dy);
-            panStartX = e.clientX;
-            panStartY = e.clientY;
+            panLastX = panCurrX;
+            panLastY = panCurrY;
           }
           isPanTicking = false;
         });
-        isPanTicking = true;
+      }
+    }, { passive: true });
+
+    window.addEventListener('mouseup', () => {
+      if (isPanning) {
+        isPanning = false;
+        document.body.classList.remove('is-panning');
+        setTimeout(() => { hasPanned = false; }, 50);
       }
     });
 
-    window.addEventListener('mouseup', () => {
-      isPanning = false;
-    });
-
-    // Initialize on load
     window.onload = init;
   </script>
 </body>

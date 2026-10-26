@@ -201,6 +201,9 @@ Table sede {
 
 Table sede_pnf {
   id_sep integer [primary key, increment, note: 'Tabla puente para definir la oferta académica por núcleo']
+  codigo_ministerio_sep varchar(20) [note: 'Código oficial ministerial o de la OPSU asignado a la carrera en este núcleo']
+  cupos_asignados_sep integer [note: 'Cuota máxima de cupos autorizados por el CNU para este programa en esta sede']
+
   sed_id integer [not null, note: 'Núcleo donde se imparte el programa']
   prg_id integer [not null, note: 'Programa Nacional de Formación ofertado']
 
@@ -383,7 +386,7 @@ Table becado {
   organismo_beca_bec varchar(255) [note: 'Ente financiador (Ej. Fundayacucho, Gobernación)']
   interno_bec boolean [default: false, note: 'True si la beca es otorgada por la misma universidad (Ej. Ayudantía)']
 
-  est_id integer [not null, note: 'Alumno receptor de la beca']
+  per_id integer [not null, note: 'Alumno receptor de la beca']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
   created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
@@ -401,7 +404,7 @@ Table departamento {
   nombre_dep varchar(255) [not null, note: 'Nombre oficial del departamento (Ej. Dpto. de Informática, Bienestar Estudiantil)']
   descripcion_dep text [note: 'Descripción del alcance, competencias y objetivos del departamento']
 
-  jefe_departamento_pro_id integer [note: 'Profesor responsable de avalar procesos del área (Ref: profesor)']
+  jefe_departamento_per_id integer [note: 'Profesor responsable de avalar procesos del área (Ref: profesor)']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
   created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
@@ -456,19 +459,73 @@ Table eje_curricular {
   updated_id integer [note: 'Usuario que actualizó por última vez']
 }
 
+
+Table modalidad_estudio {
+  id_moe integer [primary key, increment, note: 'Identificador único de la modalidad de impartición']
+  codigo_moe varchar(20) [unique, not null, note: 'Código referencial de la modalidad (Ej. PRES, SEMIPRES, DIST)']
+  nombre_moe varchar(100) [not null, note: 'Nombre oficial (Ej. Presencial, Semipresencial, A Distancia / Virtual)']
+  descripcion_moe text [note: 'Normativa de asistencia y mediación tecnológica aplicable']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table regimen_estudio {
+  id_ree integer [primary key, increment, note: 'Identificador único del régimen de estudio académico']
+  codigo_ree varchar(20) [unique, not null, note: 'Código alfanumérico referencial (Ej. REG-ANUAL, REG-SEM, REG-MOD)']
+  nombre_ree varchar(100) [not null, note: 'Denominación oficial del régimen (Ej. Regular Anual, Semestralizado, Modular)']
+  descripcion_ree text [note: 'Descripción reglamentaria y características operativas del régimen']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table tipo_programa {
+  id_tpg integer [primary key, increment, note: 'Identificador único de la categoría de programa académico']
+  codigo_tpg varchar(20) [unique, not null, note: 'Código alfanumérico referencial (Ej. PNF, PNFT, PNFA, TRAD, EXT)']
+  nombre_tpg varchar(100) [not null, note: 'Denominación oficial (Ej. Programa Nacional de Formación, Formación Avanzada, Carrera Tradicional, Extensión)']
+  descripcion_tpg text [note: 'Marco legal, naturaleza formativa y directrices ministeriales']
+  conducente_grado_tpg boolean [default: true, note: 'Indica si este tipo de programa otorga título formal de grado universitario']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
 Table programa {
   id_prg integer [primary key, increment, note: 'Identificador único del programa académico o carrera matriz']
   codigo_prg varchar(30) [unique, not null, note: 'Código correlativo interno o ministerial (Ej. INF, AGRO)']
   codigo_ministerio_prg varchar(30) [note: 'Código específico asignado por la OPSU o el MPPEU']
   nombre_prg varchar(255) [not null, note: 'Denominación completa (Ej. Programa Nacional de Formación en Informática)']
   siglas_prg varchar(20) [note: 'Abreviatura oficial del programa (Ej. PNFI)']
+  tipo_prg varchar(30) [default: 'PNF', note: 'Tipo de programa académico (Ej. PNF, PNFT, Carrera Tradicional, Postgrado)']
   gaceta_prg varchar(100) [note: 'Número de Gaceta Oficial de creación o resolución']
   fecha_gaceta_prg date [note: 'Fecha de publicación oficial en Gaceta']
   resolucion_prg varchar(100) [note: 'Número de resolución del Consejo o CNU']
   fecha_resolucion_prg date [note: 'Fecha de la resolución ministerial']
   tiene_salida_intermedia_prg boolean [default: true, note: 'Indica si otorga certificaciones o TSU intermedio']
   arancel_prg numeric(10,2) [default: 0.00, note: 'Costo por concepto de trámite o matrícula si aplica']
+  nombre_carnet_prg varchar(50) [note: 'Denominación abreviada oficial para impresión en el carnet estudiantil']
+  color_fondo_carnet_prg varchar(7) [note: 'Color de fondo hexadecimal institucional para carnetización (Ej. #1E40AF)']
+  color_texto_carnet_prg varchar(7) [note: 'Color de texto o contraste hexadecimal para carnetización (Ej. #FFFFFF)']
   comentario_prg text [note: 'Observaciones o notas administrativas del programa']
+
+  tpg_id integer [note: 'Tipo o categoría de programa académico (Ref: tipo_programa)']
+  uni_id integer [note: 'Universidad matriz a la que está adscrito el programa (Ref: universidad)']
+  ree_id integer [note: 'Régimen académico en el que se oferta el programa (Ref: regimen_estudio)']
+  moe_id integer [note: 'Modalidad de impartición de la carrera (Ref: modalidad_estudio)']
+  esm_id integer [note: 'Escala de medición institucional por defecto del programa (Ref: escala_medicion)']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
   created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
@@ -493,6 +550,7 @@ Table tipo_unidad_curricular {
 Table unidad_curricular {
   id_unc integer [primary key, increment, note: 'Identificador de la materia base del catálogo universal']
   codigo_unc varchar(30) [note: 'Alfanumérico referencial único (Ej. ALG-101)']
+  codigo_anterior_unc varchar(30) [note: 'Código correlativo histórico en el sistema de gestión anterior para migración y homologaciones']
   nombre_unc varchar(255) [not null, note: 'Título descriptivo de la materia']
   
   tuc_id integer [note: 'Tipo de Unidad Curricular (Ref: tipo_unidad_curricular)']
@@ -511,6 +569,11 @@ Table malla_curricular {
   nombre_mac varchar(255) [not null, note: 'Nombre oficial de la malla (Ej. Malla PNF Informática 2024)']
   codigo_gaceta_mac varchar(100) [note: 'Número de Gaceta Oficial o Resolución ministerial que aprueba el pénsum']
   fecha_aprobacion_mac date [note: 'Fecha de aprobación u oficialización del plan de estudios']
+  creditos_minimos_tsu_mac integer [note: 'Unidades de crédito mínimas normativas requeridas para optar a salida intermedia TSU']
+  creditos_minimos_ing_mac integer [note: 'Unidades de crédito mínimas normativas requeridas para optar al título de grado terminal']
+  creditos_minimos_prosecucion_mac integer [note: 'Unidades de crédito requeridas para egresados TSU que ingresan por prosecución']
+  horas_minimas_tsu_mac integer [note: 'Total mínimo de horas académicas reglamentarias para TSU']
+  horas_minimas_ing_mac integer [note: 'Total mínimo de horas académicas reglamentarias para título terminal']
   observacion_mac text [note: 'Notas sobre la vigencia, modalidad de estudio o transición de la malla']
 
   prg_id integer [not null, note: 'Carrera o PNF al que pertenece este plan de estudios (Ref: pnf)']
@@ -530,6 +593,7 @@ Table malla_curricular_detalle {
   htei_mcd integer [note: 'Horas de Trabajo Estudiantil Independiente / Estudio autónomo semanales']
   thte_mcd integer [note: 'Total de Horas de Trabajo Estudiantil semanales (HTEA + HTEI)']
   duracion_semanas_mcd integer [note: 'Duración en semanas lectivas de la materia en esta malla (Ej. 12, 16, 36 semanas)']
+  nota_minima_aprobatoria_mcd numeric(4,2) [note: 'Calificación mínima aprobatoria requerida específicamente para esta unidad (Ej. 12.00 para regular, 16.00 para Proyecto)']
 
   mac_id integer [not null, note: 'Plan de estudios cabecera al que pertenece esta materia (Ref: malla_curricular)']
   unc_id integer [not null, note: 'Materia universal del catálogo maestro (Ref: unidad_curricular)']
@@ -604,6 +668,20 @@ Table evento_calendario {
 // ==========================================
 // MÓDULO 8: ACTORES E INFRAESTRUCTURA
 // ==========================================
+Table operadora {
+  id_ope integer [primary key, increment, note: 'Identificador único del prefijo u operadora de telecomunicaciones']
+  codigo_ope varchar(10) [unique, not null, note: 'Prefijo oficial de discado asignado por Conatel (Ej. 0412, 0414, 0424, 0416, 0426, 0255, 0257)']
+  nombre_ope varchar(100) [not null, note: 'Nombre comercial de la empresa operadora o región fija (Ej. Digitel, Movistar, Movilnet, CANTV - Portuguesa)']
+  tipo_servicio_ope varchar(30) [default: 'Móvil', note: 'Naturaleza del servicio (Móvil, Fijo Residencial, Fijo Comercial, Satelital)']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
 Table tipo_telefono {
   id_tte integer [primary key, increment, note: 'Identificador único del tipo de teléfono (Ej. Móvil, Habitación, Trabajo)']
   nombre_tte varchar(100) [not null, note: 'Nombre o clasificación del teléfono (Ej. Móvil Personal, Fijo Habitación, Trabajo/Oficina, Emergencia)']
@@ -625,6 +703,7 @@ Table telefono_persona {
 
   per_id integer [not null, note: 'Persona a la cual pertenece o está asociada la línea telefónica (Ref: persona)']
   tte_id integer [not null, note: 'Clasificación del tipo de teléfono (Ref: tipo_telefono)']
+  ope_id integer [note: 'Operadora o prefijo de telecomunicaciones asignado (Ref: operadora)']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status, 1=Activo, 2=Inactivo)']
   created_at timestamptz [default: \`now()\`, note: 'Fecha y hora de creación del registro en el sistema']
@@ -634,12 +713,12 @@ Table telefono_persona {
   updated_id integer [note: 'ID del usuario del sistema que realizó la última actualización']
 
   indexes {
-    (per_id, numero_tpe, tte_id) [unique, note: 'Evita asociar el mismo número y tipo más de una vez a la misma persona']
+    (per_id, ope_id, numero_tpe, tte_id) [unique, note: 'Evita asociar el mismo número y tipo más de una vez a la misma persona']
   }
 }
 
 Table persona {
-  id_per integer [primary key, increment, note: 'Identidad base compartida para evitar duplicación demográfica de cualquier ciudadano físico en el sistema']
+  id_per integer [primary key, increment, note: 'Identidad base compartida y unificada del ciudadano físico (estudiante, docente o personal) en el sistema']
   cedula_per varchar(15) [unique, not null, note: 'Número de Cédula de Identidad o Pasaporte con prefijo (Ej. V-12345678, E-87654321)']
   nacionalidad_per varchar(1) [default: 'V', note: 'Nacionalidad de origen de la persona (V=Venezolano, E=Extranjero)']
   documento_per varchar(50) [note: 'Número alternativo de documento de identificación (Ej. RIF personal, número de pasaporte o carnet de extranjería)']
@@ -655,17 +734,46 @@ Table persona {
   foto_per text [note: 'Ruta o URL del archivo con la imagen/fotografía de perfil o carnet del ciudadano']
   antecedentes_penales_per boolean [default: false, note: 'Indica si la persona posee constancia/registro de antecedentes penales']
 
+  // --- Atributos de Extensión: Perfil Estudiante (Nullable) ---
+  fecha_ingreso_est_per date [note: 'Fecha oficial de primera matriculación institucional si es estudiante']
+  sni_per varchar(30) [note: 'Código asignado por el Sistema Nacional de Ingreso de la OPSU si es estudiante (Ej. SNI-2024-102938)']
+  ano_egreso_bachiller_per integer [note: 'Año oficial de graduación de Educación Media / Bachillerato (Ej. 2023)']
+  privado_libertad_per boolean [default: false, note: 'Indica si cursa estudios bajo régimen de reclusión o centro penitenciario']
+  ira_historico_per numeric(5,2) [note: 'Índice de Rendimiento Académico (IRA) acumulado histórico proveniente de la base anterior']
+  ira_actual_per numeric(4,2) [note: 'Índice de Rendimiento Académico (IRA) consolidado actualizado del estudiante (RF-004)']
+  semestre_per varchar(50) [note: 'Semestre, trayecto o año formativo declarado en servicios estudiantiles']
+  solvencia_adm_per boolean [default: true, note: 'Solvencia administrativa y de aranceles del alumno']
+  solvencia_aca_per boolean [default: true, note: 'Solvencia de notas y expediente académico del alumno']
+  solvencia_bib_per boolean [default: true, note: 'Solvencia de biblioteca y entrega de textos del alumno']
 
-  reb_id integer [note: 'Clave foránea a rama_estudio_bachiller para la mención de educación media (Ref: rama_estudio_bachiller)']
-  seb_id integer [note: 'Clave foránea a sistema_estudio_bachiller para la modalidad de secundaria (Ref: sistema_estudio_bachiller)']
-  bachillerato_loc_id integer [note: 'Clave foránea a la localidad geográfica donde el alumno cursó el bachillerato (Ref: localidad)']
+  // --- Atributos de Extensión: Perfil Docente (Nullable) ---
+  especialidad_docente_per varchar(255) [note: 'Dominio de conocimiento o especialidad académica principal del docente']
 
-  etn_id integer [note: 'Clave foránea a etnia para clasificación de pueblos originarios (Ref: etnia)']
-  dis_id integer [note: 'Clave foránea a discapacidad para requerimientos de accesibilidad o reportes (Ref: discapacidad)']
-  nacimiento_loc_id integer [note: 'Clave foránea a la localidad geográfica de nacimiento para perfil sociodemográfico (Ref: localidad)']
-  loc_id integer [note: 'Clave foránea a la localidad de residencia actual del ciudadano (Ref: localidad)']
+  // --- Claves Foráneas de la Persona (Orden Canónico) ---
+  use_id integer [unique, note: 'Cuenta técnica de acceso al sistema asignada al ciudadano (Inversión 1:1, Ref: user)']
+  reb_id integer [note: 'Mención de educación media (Ref: rama_estudio_bachiller)']
+  seb_id integer [note: 'Modalidad de secundaria (Ref: sistema_estudio_bachiller)']
+  bachillerato_loc_id integer [note: 'Localidad geográfica donde cursó el bachillerato (Ref: localidad)']
+  etn_id integer [note: 'Etnia para clasificación de pueblos originarios (Ref: etnia)']
+  dis_id integer [note: 'Discapacidad para requerimientos de accesibilidad o reportes (Ref: discapacidad)']
+  nacimiento_loc_id integer [note: 'Localidad geográfica de nacimiento para perfil sociodemográfico (Ref: localidad)']
+  loc_id integer [note: 'Localidad de residencia actual del ciudadano (Ref: localidad)']
 
-  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status, 1=Activo, 2=Inactivo)']
+  // FKs de Ámbito Estudiante
+  cos_ingreso_id integer [note: 'Cohorte y oferta de sede con la que ingresó el estudiante (Ref: cohorte_sede)']
+  laa_ingreso_id integer [note: 'Lapso académico inicial en el que arrancó el estudiante (Ref: lapso_academico)']
+  laa_egreso_id integer [note: 'Lapso académico en el cual egresó (Nullable, Ref: lapso_academico)']
+  sed_id integer [note: 'Sede universitaria principal de adscripción académica (Ref: sede)']
+
+  // FKs de Ámbito Docente
+  dep_id integer [note: 'Área académica o departamento al que reporta el docente (Ref: departamento)']
+  cla_id integer [note: 'Tipo de contrato institucional del docente (Ref: condicion_laboral)']
+  cad_id integer [note: 'Nivel en el escalafón universitario del docente (Ref: categoria_docente)']
+  ded_id integer [note: 'Régimen horario o dedicación docente (Ref: dedicacion_docente)']
+  prf_id integer [note: 'Título de pregrado o profesión habilitante del docente (Ref: profesion)']
+
+  // --- Campos Estándar de Sistema y Auditoría ---
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status, 1=Activo, 2=Inactivo, 3=Egresado, etc.)']
   created_at timestamptz [default: \`now()\`, note: 'Fecha y hora de creación del registro en el sistema']
   updated_at timestamptz [note: 'Fecha y hora de la última modificación del registro']
   deleted_at timestamptz [note: 'Fecha y hora del borrado lógico (Soft Delete)']
@@ -692,8 +800,6 @@ Table user {
   ultima_actividad_chat_use timestamptz [note: 'Marca de tiempo de última interacción en el módulo de chat o mensajería']
   infracciones_reset_at_use timestamptz [note: 'Fecha programada para reiniciar el historial de infracciones o penalizaciones']
 
-  per_id integer [not null, unique, note: 'Enlace estricto 1:1 con el ciudadano físico (Ref: persona)']
-
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
   created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
   updated_at timestamptz [note: 'Fecha de última actualización']
@@ -703,51 +809,6 @@ Table user {
 }
 
 
-
-Table estudiante {
-  id_est integer [primary key, increment, note: 'Identificador autoincremental único del perfil académico del alumno']
-  fecha_ingreso_est date [not null, note: 'Fecha oficial de la primera matriculación o ingreso institucional del alumno']
-  sni_est varchar(30) [note: 'Código asignado por el Sistema Nacional de Ingreso de la OPSU (Ej. SNI-2024-102938)']
-  ano_egreso_bachiller_est integer [note: 'Año oficial de graduación de Educación Media / Bachillerato (Ej. 2023)']
-  privado_libertad_est boolean [default: false, note: 'Indica si el estudiante cursa estudios bajo régimen de reclusión o centro penitenciario (true/false)']
-  ira_historico_est numeric(5,2) [note: 'Índice de Rendimiento Académico (IRA) acumulado histórico proveniente de la base de datos anterior']
-  semestre_est varchar(50) [note: 'Semestre, trayecto o año formativo declarado en servicios de bienestar']
-  solvencia_adm_est boolean [default: true, note: 'Solvencia administrativa y de aranceles del alumno']
-  solvencia_aca_est boolean [default: true, note: 'Solvencia de notas y expediente académico del alumno']
-  solvencia_bib_est boolean [default: true, note: 'Solvencia de biblioteca y entrega de textos del alumno']
-
-  per_id integer [unique, not null, note: 'Clave foránea 1:1 a persona para los datos demográficos y de identidad (Ref: persona)']
-  cos_ingreso_id integer [note: 'Clave foránea a la cohorte y oferta de sede con la que ingresó el estudiante (Ref: cohorte_sede)']
-  laa_ingreso_id integer [note: 'Clave foránea al lapso académico inicial en el que arrancó el estudiante (Ref: lapso_academico)']
-  laa_egreso_id integer [note: 'Clave foránea al lapso académico en el cual egresó o culminó sus estudios (Nullable, Ref: lapso_academico)']
-  sed_id integer [note: 'Sede universitaria principal de adscripción académica del estudiante (Ref: sede)']
-
-  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status, 1=Activo, 2=Inactivo, 3=Egresado, etc.)']
-  created_at timestamptz [default: \`now()\`, note: 'Fecha y hora de creación del registro en el sistema']
-  updated_at timestamptz [note: 'Fecha y hora de la última modificación del registro']
-  deleted_at timestamptz [note: 'Fecha y hora del borrado lógico (Soft Delete)']
-  created_id integer [note: 'ID del usuario del sistema que creó el registro']
-  updated_id integer [note: 'ID del usuario del sistema que realizó la última actualización']
-}
-
-Table profesor {
-  id_pro integer [primary key, increment, note: 'Perfil laboral y académico del docente']
-  especialidad_pro varchar(255) [note: 'Dominio de conocimiento principal']
-
-  per_id integer [unique, not null, note: 'Ciudadano que asume el rol de profesor']
-  dep_id integer [note: 'Área a la que reporta administrativamente']
-  cla_id integer [note: 'Tipo de contrato institucional']
-  cad_id integer [note: 'Nivel en el escalafón universitario']
-  ded_id integer [note: 'Régimen horario detallado']
-  prf_id integer [note: 'Título de pregrado o posgrado habilitante']
-
-  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
-  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
-  updated_at timestamptz [note: 'Fecha de última actualización']
-  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
-  created_id integer [note: 'Usuario que creó el registro']
-  updated_id integer [note: 'Usuario que actualizó por última vez']
-}
 
 Table aula {
   id_aul integer [primary key, increment, note: 'Espacio físico para planificación de horarios']
@@ -769,6 +830,37 @@ Table aula {
 // ==========================================
 // MÓDULO 9: OFERTA, PLANIFICACIÓN E INSCRIPCIÓN
 // ==========================================
+
+Table tipo_seccion {
+  id_tis integer [primary key, increment, note: 'Identificador único de la naturaleza operativa de la sección']
+  codigo_tis varchar(20) [unique, not null, note: 'Código administrativo (Ej. REG, T-INI, REP, INT, PROS)']
+  nombre_tis varchar(100) [not null, note: 'Denominación de la sección (Ej. Regular, Trayecto Inicial, Repitencia / Arrastre, Intensivo, Prosecución)']
+  descripcion_tis text [note: 'Criterios de asignación y administración de la sección']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
+Table turno {
+  id_tur integer [primary key, increment, note: 'Identificador único del bloque de franja horaria institucional']
+  codigo_tur varchar(20) [unique, not null, note: 'Código referencial del turno (Ej. DIU, VES, NOC, SAB)']
+  nombre_tur varchar(100) [not null, note: 'Denominación oficial (Ej. Diurno / Mañana, Vespertino / Tarde, Nocturno, Sabatino)']
+  hora_inicio_tur time [note: 'Hora estándar de inicio del turno (Formato 24h, Ej. 07:30)']
+  hora_fin_tur time [note: 'Hora estándar de fin del turno (Formato 24h, Ej. 12:30)']
+  descripcion_tur text [note: 'Notas operativas de funcionamiento del turno']
+
+  status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
+  created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
+  updated_at timestamptz [note: 'Fecha de última actualización']
+  deleted_at timestamptz [note: 'Fecha de borrado lógico (Soft Delete)']
+  created_id integer [note: 'Usuario que creó el registro']
+  updated_id integer [note: 'Usuario que actualizó por última vez']
+}
+
 Table seccion {
   id_sec integer [primary key, increment, note: 'Agrupación macro de alumnos para un trayecto']
   nivel_sec integer [note: 'Semestre o trayecto base esperado (Ej. Trayecto 1)']
@@ -779,6 +871,8 @@ Table seccion {
   laa_id integer [not null, note: 'Periodo lectivo de existencia de la sección']
   prg_id integer [not null, note: 'Carrera a la que pertenece el grupo']
   sed_id integer [not null, note: 'Núcleo donde verán clases físicamente']
+  tis_id integer [note: 'Naturaleza o tipo de sección (Ref: tipo_seccion)']
+  tur_id integer [note: 'Turno institucional asignado (Ref: turno)']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
   created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
@@ -792,7 +886,7 @@ Table carga_academica {
   id_caa integer [primary key, increment, note: 'Triangulación de la unidad mínima de enseñanza']
   sec_id integer [not null, note: 'Bloque de alumnos receptor']
   unc_id integer [not null, note: 'Materia específica impartida']
-  pro_id integer [not null, note: 'Docente responsable de evaluar']
+  docente_per_id integer [not null, note: 'Docente responsable de evaluar']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
   created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
@@ -843,7 +937,7 @@ Table inscripcion {
   observacion_ins text [note: 'Notas u observaciones administrativas de la inscripción']
   motivo_inactivacion_ins text [note: 'Justificación legal/administrativa en caso de anulación total de la inscripción']
 
-  est_id integer [not null, note: 'Alumno que solicita cursar estudios']
+  per_id integer [not null, note: 'Alumno que solicita cursar estudios']
   laa_id integer [not null, note: 'Periodo para el cual se compromete']
   prg_id integer [not null, note: 'Carrera por la que avanza en este periodo']
   tpi_id integer [not null, note: 'Modalidad estandarizada de inscripción (Ref: tipo_inscripcion)']
@@ -856,7 +950,7 @@ Table inscripcion {
   updated_id integer [note: 'Usuario que actualizó por última vez']
 
   indexes {
-    (est_id, laa_id, prg_id) [unique, note: 'Garantiza un solo comprobante de inscripción por estudiante, lapso y carrera']
+    (per_id, laa_id, prg_id) [unique, note: 'Garantiza un solo comprobante de inscripción por estudiante, lapso y carrera']
   }
 }
 
@@ -952,6 +1046,7 @@ Table calificacion_corte {
   nota_corte_100_cco numeric(5,2) [note: 'Nota acumulada en el corte llevada a base 100%']
   porcentaje_acumulado_cco numeric(5,2) [note: 'Porcentaje sumatorio alcanzado sobre el peso del corte']
   observacion_cco text [note: 'Notas u observaciones del docente sobre el desempeño del alumno en este corte']
+  cantidad_modificaciones_cco integer [default: 0, note: 'Contador de veces que el docente ha editado la nota de corte (Límite según configuración institucional, RF-009)']
 
   ind_id integer [not null, note: 'Línea de materia e inscripción del estudiante (Ref: inscripcion_detalle)']
   col_id integer [not null, note: 'Corte evaluativo institucional al que corresponde esta nota (Ref: corte_lapso)']
@@ -1030,7 +1125,7 @@ Table expediente_estudiante {
   observacion_exe text [note: 'Observaciones o condiciones del documento presentado']
   ruta_archivo_exe varchar(500) [note: 'Ruta o URL del soporte digitalizado en almacenamiento']
 
-  est_id integer [not null, note: 'Dueño del expediente (Ref: estudiante)']
+  per_id integer [not null, note: 'Dueño del expediente (Ref: estudiante)']
   dor_id integer [not null, note: 'Papel que está siendo consignado (Ref: documento_requisito)']
   verificado_por_use_id integer [note: 'Auditoría: ID del empleado de control de estudios que revisó el original (Ref: user)']
 
@@ -1042,7 +1137,7 @@ Table expediente_estudiante {
   updated_id integer [note: 'Usuario que actualizó por última vez']
 
   indexes {
-    (est_id, dor_id) [unique, note: 'Impide consignar el mismo requisito múltiples veces para el mismo alumno']
+    (per_id, dor_id) [unique, note: 'Impide consignar el mismo requisito múltiples veces para el mismo alumno']
   }
 }
 
@@ -1054,7 +1149,7 @@ Table tramite_academico {
   observacion_tra text [note: 'Causa de rechazo o notas operativas de taquilla']
   datos_tramite_tra jsonb [note: 'NUEVO: Almacena variables dinámicas (Ej. PNF origen y PNF destino para traslados)']
 
-  est_id integer [not null, note: 'Solicitante del trámite']
+  per_id integer [not null, note: 'Solicitante del trámite']
   car_id integer [note: 'Causa o motivo de retiro si aplica (Ref: causa_retiro)']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
@@ -1218,7 +1313,7 @@ Table promocion_estudiante {
   tipo_graduando_pre varchar(255) [note: 'Regular, Honorífico']
 
   prp_id integer [not null, note: 'Lote al que pertenece el graduando']
-  est_id integer [not null, note: 'Alumno que finaliza estudios']
+  per_id integer [not null, note: 'Alumno que finaliza estudios']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
   created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
@@ -1254,7 +1349,7 @@ Table solicitud_grado {
   aprobado_coordinador_egreso_en_sog timestamptz [note: 'Marca de tiempo en que el Coordinador de Egreso firmó el expediente']
   observacion_sog text [note: 'Observaciones administrativas o motivos de rechazo del expediente']
 
-  est_id integer [not null, note: 'Aspirante a título (Ref: estudiante)']
+  per_id integer [not null, note: 'Aspirante a título (Ref: estudiante)']
   prg_id integer [not null, note: 'Programa académico que culmina (Ref: programa)']
   prm_id integer [not null, note: 'Acto de grado/promoción a la que aspira ingresar (Ref: promocion)']
   tio_id integer [not null, note: 'Título académico al que opta el estudiante (Ref: titulo_obtenido)']
@@ -1283,7 +1378,7 @@ Table historial_estatus_estudiante {
   fecha_cambio_hee timestamptz [note: 'Momento exacto en que el sistema procesó el cambio']
   motivo_hee text [note: 'Justificación legal o administrativa de la modificación']
 
-  est_id integer [not null, note: 'Afectado por el cambio']
+  per_id integer [not null, note: 'Afectado por el cambio']
   laa_id integer [note: 'NULLABLE: Lapso en el que ocurre el evento (si aplica)']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
@@ -1301,7 +1396,7 @@ Table equivalencia_academica {
   fecha_aprobacion_eqa date [note: 'Día del acta de consejo directivo que avala']
   resolucion_oficial_eqa varchar(255) [note: 'Número de oficio o gaceta institucional de aprobación']
 
-  est_id integer [not null, note: 'Beneficiario del reconocimiento']
+  per_id integer [not null, note: 'Beneficiario del reconocimiento']
   unc_id integer [not null, note: 'Materia del PNF que se da por aprobada']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
@@ -1363,7 +1458,7 @@ Table perfil_bienestar {
   estatura_peb numeric(5,2) [note: 'Estatura corporal en metros']
   posee_informe_medico_peb boolean [default: false, note: 'Indica si consignó informe facultativo avalado']
 
-  est_id integer [unique, not null, note: 'Anexo de seguridad 1:1 con el estudiante (Ref: estudiante)']
+  per_id integer [unique, not null, note: 'Anexo de seguridad 1:1 con el estudiante (Ref: estudiante)']
   cor_id integer [note: 'Condición habitacional / residencia (Ref: condicion_residencia)']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
@@ -1387,7 +1482,7 @@ Table proyecto_investigacion {
 
   prg_id integer [not null, note: 'Carrera matriz del proyecto']
   laa_id integer [not null, note: 'Periodo de inscripción o defensa final']
-  tutor_academico_pro_id integer [note: 'Profesor asesor guía de la universidad']
+  tutor_academico_per_id integer [note: 'Profesor asesor guía de la universidad']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
   created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
@@ -1402,7 +1497,7 @@ Table integrante_proyecto {
   rol_inp varchar(255) [note: 'Líder, Desarrollador, Metodólogo (Opcional)']
 
   pri_id integer [not null, note: 'Trabajo al que pertenecen']
-  est_id integer [not null, note: 'Co-autor']
+  per_id integer [not null, note: 'Co-autor']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
   created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
@@ -1412,7 +1507,7 @@ Table integrante_proyecto {
   updated_id integer [note: 'Usuario que actualizó por última vez']
 
   indexes {
-    (pri_id, est_id) [unique, note: 'Evita asignar al mismo estudiante dos veces como co-autor']
+    (pri_id, per_id) [unique, note: 'Evita asignar al mismo estudiante dos veces como co-autor']
   }
 }
 
@@ -1421,7 +1516,7 @@ Table jurado_proyecto {
   rol_jurado_jup varchar(255) [note: 'Presidente, Evaluador Principal, Suplente']
 
   pri_id integer [not null, note: 'Trabajo que evaluarán']
-  pro_id integer [not null, note: 'Miembro del tribunal']
+  docente_per_id integer [not null, note: 'Miembro del tribunal']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
   created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
@@ -1443,7 +1538,7 @@ Table programa_especial_recuperacion {
 
   unc_id integer [not null, note: 'Materia en disputa']
   laa_id integer [not null, note: 'Periodo de apertura del instrumento']
-  pro_id integer [not null, note: 'Docente aplicador y corrector']
+  docente_per_id integer [not null, note: 'Docente aplicador y corrector']
   acc_id integer [note: 'NULLABLE: Acta legal única donde se vaciarán estos resultados atípicos']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
@@ -1461,7 +1556,7 @@ Table inscripcion_per {
   asistio_ipe boolean [note: 'Control de inasistencia al evento (fuerza cero ptos si False)']
 
   pir_id integer [not null, note: 'Evento PER']
-  est_id integer [not null, note: 'Alumno con la materia pendiente']
+  per_id integer [not null, note: 'Alumno con la materia pendiente']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
   created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
@@ -1471,7 +1566,7 @@ Table inscripcion_per {
   updated_id integer [note: 'Usuario que actualizó por última vez']
 
   indexes {
-    (pir_id, est_id) [unique, note: 'Evita inscripciones duplicadas al mismo evento PER']
+    (pir_id, per_id) [unique, note: 'Evita inscripciones duplicadas al mismo evento PER']
   }
 }
 
@@ -1499,7 +1594,7 @@ Table bloqueo_administrativo {
   estatus_bloqueo_bla varchar(255) [note: 'Vigencia (Activo, Solvente, Levantado)']
   fecha_levantamiento_bla timestamptz [note: 'NULLABLE: Cuándo resolvió el inconveniente']
 
-  est_id integer [not null, note: 'Sujeto sancionado o en deuda']
+  per_id integer [not null, note: 'Sujeto sancionado o en deuda']
   levantado_por_use_id integer [note: 'Auditoría: ID del user que validó la solvencia y retiró el bloqueo']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
@@ -1533,15 +1628,17 @@ Table qr_validated_generated_titulo {
   updated_id integer [note: 'Usuario que actualizó por última vez']
 }
 
-Table qr_validated_generated_titulo {
-  id_qvt integer [primary key, increment, note: 'Firma digital QR hiper-segura para pergaminos de grado']
-  qr_payload_qvt text [note: 'Contenido decodificado (Folio, Tomo, Cédula, Fecha)']
-  verification_hash_qvt varchar(255) [note: 'Hash de seguridad criptográfica de grado']
-  status_qvt varchar(255) [note: 'Estado de validez']
+Table qr_validated_generated {
+  id_qvg integer [primary key, increment, note: 'Identificador único del código QR para constancias y trámites académicos']
+  pdf_name_qvg varchar(255) [note: 'Nombre del archivo PDF o documento emitido']
+  unique_id_qvg varchar(255) [unique, note: 'Identificador único público (UUID) para validación web']
+  qr_payload_qvg text [note: 'Carga útil encriptada o firmada del código QR']
+  verification_hash_qvg varchar(255) [note: 'Hash criptográfico para comprobar integridad']
+  status_qvg varchar(50) [default: 'Pendiente', note: 'Estado de la constancia (Pendiente, Emitida, Revocada)']
+  revoked_at timestamptz [note: 'Fecha y hora de revocación del documento']
 
-  pre_id integer [note: 'Registro matriz del graduando']
-  unique_id_qvt varchar(255) [unique, note: 'UUID v4 para portal público de egresados']
-  generado_por_use_id integer [note: 'Autoridad o analista que emitió el lote de diplomas']
+  tra_id integer [note: 'Trámite o solicitud que originó el documento (Ref: tramite_academico)']
+  generado_por_use_id integer [note: 'Usuario que generó o firmó el documento (Ref: user)']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
   created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
@@ -1908,7 +2005,7 @@ Table censo_estudiante {
   fecha_postulacion_cee timestamptz [note: 'Momento de registro en el portal']
 
   ceo_id integer [not null, note: 'Oferta específica deseada']
-  est_id integer [not null, note: 'Alumno comprometido a cursar (y pagar si aplica)']
+  per_id integer [not null, note: 'Alumno comprometido a cursar (y pagar si aplica)']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
   created_at timestamptz [default: \`now()\`, note: 'Fecha de creación del registro']
@@ -1918,7 +2015,7 @@ Table censo_estudiante {
   updated_id integer [note: 'Usuario que actualizó por última vez']
 
   indexes {
-    (ceo_id, est_id) [unique, note: 'Evita postulaciones duplicadas a la misma oferta de censo']
+    (ceo_id, per_id) [unique, note: 'Evita postulaciones duplicadas a la misma oferta de censo']
   }
 }
 
@@ -1927,7 +2024,7 @@ Table censo_estudiante {
 // ==========================================
 
 // Usuarios
-Ref: user.per_id - persona.id_per [delete: restrict, update: cascade]
+Ref: persona.use_id - user.id_use [delete: set null, update: cascade]
 
 // Geografía
 Ref: estado.pai_id > pais.id_pai [delete: restrict, update: cascade]
@@ -1939,7 +2036,7 @@ Ref: localidad.par_id > parroquia.id_par [delete: restrict, update: cascade]
 Ref: sede.uni_id > universidad.id_uni [delete: restrict, update: cascade]
 Ref: sede.loc_id > localidad.id_loc [delete: restrict, update: cascade]
 Ref: sede_pnf.sed_id > sede.id_sed [delete: cascade, update: cascade]
-Ref: sede_pnf.prg_id > pnf.id_pnf [delete: cascade, update: cascade]
+Ref: sede_pnf.prg_id > programa.id_prg [delete: cascade, update: cascade]
 Ref: cohorte.laa_id > lapso_academico.id_laa [delete: restrict, update: cascade]
 Ref: cohorte_sede.coh_id > cohorte.id_coh [delete: cascade, update: cascade]
 Ref: cohorte_sede.sep_id > sede_pnf.id_sep [delete: cascade, update: cascade]
@@ -1953,9 +2050,9 @@ Ref: autoridad.uni_id > universidad.id_uni [delete: restrict, update: cascade]
 // Escalas
 Ref: escala_nota.esm_id > escala_medicion.id_esm [delete: cascade, update: cascade]
 // Académico
-Ref: departamento.jefe_departamento_pro_id > profesor.id_pro [delete: restrict, update: cascade]
+Ref: departamento.jefe_departamento_per_id > persona.id_per [delete: restrict, update: cascade]
 Ref: unidad_curricular.dep_id > departamento.id_dep [delete: restrict, update: cascade]
-Ref: malla_curricular.prg_id > pnf.id_pnf [delete: restrict, update: cascade]
+Ref: malla_curricular.prg_id > programa.id_prg [delete: restrict, update: cascade]
 Ref: trayecto.tpd_id > tipo_periodo.id_tpd [delete: restrict, update: cascade]
 Ref: malla_curricular_detalle.mac_id > malla_curricular.id_mac [delete: cascade, update: cascade]
 Ref: malla_curricular_detalle.unc_id > unidad_curricular.id_unc [delete: restrict, update: cascade]
@@ -1969,31 +2066,29 @@ Ref: lapso_academico.tpd_id > tipo_periodo.id_tpd [delete: restrict, update: cas
 Ref: evento_calendario.laa_id > lapso_academico.id_laa [delete: restrict, update: cascade]
 
 // Personas (1 a 1)
-Ref: estudiante.per_id - persona.id_per [delete: restrict, update: cascade]
-Ref: profesor.per_id - persona.id_per [delete: restrict, update: cascade]
-Ref: profesor.dep_id > departamento.id_dep [delete: restrict, update: cascade]
+Ref: persona.dep_id > departamento.id_dep [delete: restrict, update: cascade]
 
 // Clasificación Docente
-Ref: profesor.cla_id > condicion_laboral.id_cla [delete: restrict, update: cascade]
-Ref: profesor.cad_id > categoria_docente.id_cad [delete: restrict, update: cascade]
-Ref: profesor.ded_id > dedicacion_docente.id_ded [delete: restrict, update: cascade]
-Ref: profesor.prf_id > profesion.id_prf [delete: restrict, update: cascade]
+Ref: persona.cla_id > condicion_laboral.id_cla [delete: restrict, update: cascade]
+Ref: persona.cad_id > categoria_docente.id_cad [delete: restrict, update: cascade]
+Ref: persona.ded_id > dedicacion_docente.id_ded [delete: restrict, update: cascade]
+Ref: persona.prf_id > profesion.id_prf [delete: restrict, update: cascade]
 
 // Gestión / Oferta
 Ref: aula.sed_id > sede.id_sed [delete: restrict, update: cascade]
 Ref: seccion.laa_id > lapso_academico.id_laa [delete: restrict, update: cascade]
-Ref: seccion.prg_id > pnf.id_pnf [delete: restrict, update: cascade]
+Ref: seccion.prg_id > programa.id_prg [delete: restrict, update: cascade]
 Ref: seccion.sed_id > sede.id_sed [delete: restrict, update: cascade]
 Ref: carga_academica.sec_id > seccion.id_sec [delete: restrict, update: cascade]
 Ref: carga_academica.unc_id > unidad_curricular.id_unc [delete: restrict, update: cascade]
-Ref: carga_academica.pro_id > profesor.id_pro [delete: restrict, update: cascade]
+Ref: carga_academica.docente_per_id > persona.id_per [delete: restrict, update: cascade]
 Ref: horario.caa_id > carga_academica.id_caa [delete: cascade, update: cascade]
 Ref: horario.aul_id > aula.id_aul [delete: cascade, update: cascade]
 
 // Inscripción
-Ref: inscripcion.est_id > estudiante.id_est [delete: restrict, update: cascade]
+Ref: inscripcion.per_id > persona.id_per [delete: restrict, update: cascade]
 Ref: inscripcion.laa_id > lapso_academico.id_laa [delete: restrict, update: cascade]
-Ref: inscripcion.prg_id > pnf.id_pnf [delete: restrict, update: cascade]
+Ref: inscripcion.prg_id > programa.id_prg [delete: restrict, update: cascade]
 Ref: inscripcion.tpi_id > tipo_inscripcion.id_tpi [delete: restrict, update: cascade]
 Ref: inscripcion_detalle.ins_id > inscripcion.id_ins [delete: cascade, update: cascade]
 Ref: inscripcion_detalle.caa_id > carga_academica.id_caa [delete: cascade, update: cascade]
@@ -2010,27 +2105,27 @@ Ref: calificacion_corte.ind_id > inscripcion_detalle.id_ind [delete: cascade, up
 Ref: calificacion_corte.col_id > corte_lapso.id_col [delete: restrict, update: cascade]
 
 // Actas
-Ref: libro_acta.prg_id > pnf.id_pnf [delete: restrict, update: cascade]
+Ref: libro_acta.prg_id > programa.id_prg [delete: restrict, update: cascade]
 Ref: acta_calificacion.lia_id > libro_acta.id_lia [delete: cascade, update: cascade]
 Ref: acta_calificacion.caa_id > carga_academica.id_caa [delete: cascade, update: cascade]
 Ref: acta_calificacion.pir_id > programa_especial_recuperacion.id_pir [delete: cascade, update: cascade]
 Ref: acta_calificacion.cerrada_por_use_id > user.id_use [delete: cascade, update: cascade]
 
 // Trámites
-Ref: expediente_estudiante.est_id > estudiante.id_est [delete: restrict, update: cascade]
+Ref: expediente_estudiante.per_id > persona.id_per [delete: restrict, update: cascade]
 Ref: expediente_estudiante.dor_id > documento_requisito.id_dor [delete: restrict, update: cascade]
 Ref: expediente_estudiante.verificado_por_use_id > user.id_use [delete: restrict, update: cascade]
-Ref: tramite_academico.est_id > estudiante.id_est [delete: restrict, update: cascade]
+Ref: tramite_academico.per_id > persona.id_per [delete: restrict, update: cascade]
 
 // Egresos
-Ref: titulo_obtenido.prg_id > pnf.id_pnf [delete: restrict, update: cascade]
-Ref: salida_intermedia.prg_id > pnf.id_pnf [delete: restrict, update: cascade]
+Ref: titulo_obtenido.prg_id > programa.id_prg [delete: restrict, update: cascade]
+Ref: salida_intermedia.prg_id > programa.id_prg [delete: restrict, update: cascade]
 Ref: promocion_pnf.prm_id > promocion.id_prm [delete: restrict, update: cascade]
 Ref: promocion_pnf.tio_id > titulo_obtenido.id_tio [delete: restrict, update: cascade]
 Ref: promocion_estudiante.prp_id > promocion_pnf.id_prp [delete: restrict, update: cascade]
-Ref: promocion_estudiante.est_id > estudiante.id_est [delete: restrict, update: cascade]
-Ref: solicitud_grado.est_id > estudiante.id_est [delete: restrict, update: cascade]
-Ref: solicitud_grado.prg_id > pnf.id_pnf [delete: restrict, update: cascade]
+Ref: promocion_estudiante.per_id > persona.id_per [delete: restrict, update: cascade]
+Ref: solicitud_grado.per_id > persona.id_per [delete: restrict, update: cascade]
+Ref: solicitud_grado.prg_id > programa.id_prg [delete: restrict, update: cascade]
 Ref: solicitud_grado.prm_id > promocion.id_prm [delete: restrict, update: cascade]
 Ref: solicitud_grado.tio_id > titulo_obtenido.id_tio [delete: restrict, update: cascade]
 Ref: solicitud_grado.sed_id > sede.id_sed [delete: restrict, update: cascade]
@@ -2039,15 +2134,15 @@ Ref: solicitud_grado.esg_id > estatus_solicitud_grado.id_esg [delete: restrict, 
 Ref: solicitud_grado.aprobada_por_use_id > user.id_use [delete: restrict, update: cascade]
 
 // Seguimiento y Equivalencias
-Ref: historial_estatus_estudiante.est_id > estudiante.id_est [delete: restrict, update: cascade]
+Ref: historial_estatus_estudiante.per_id > persona.id_per [delete: restrict, update: cascade]
 Ref: historial_estatus_estudiante.laa_id > lapso_academico.id_laa [delete: restrict, update: cascade]
-Ref: equivalencia_academica.est_id > estudiante.id_est [delete: restrict, update: cascade]
+Ref: equivalencia_academica.per_id > persona.id_per [delete: restrict, update: cascade]
 Ref: equivalencia_academica.unc_id > unidad_curricular.id_unc [delete: restrict, update: cascade]
 
 // Admisión
 Ref: proceso_admision.per_id > persona.id_per [delete: restrict, update: cascade]
 Ref: proceso_admision.laa_id > lapso_academico.id_laa [delete: restrict, update: cascade]
-Ref: proceso_admision.prg_id > pnf.id_pnf [delete: restrict, update: cascade]
+Ref: proceso_admision.prg_id > programa.id_prg [delete: restrict, update: cascade]
 
 // Asistencia
 Ref: asistencia_clase.hor_id > horario.id_hor [delete: cascade, update: cascade]
@@ -2055,29 +2150,29 @@ Ref: asistencia_clase.ind_id > inscripcion_detalle.id_ind [delete: cascade, upda
 Ref: asistencia_clase.registrado_por_use_id > user.id_use [delete: restrict, update: cascade]
 
 // Bienestar
-Ref: perfil_bienestar.est_id - estudiante.id_est [delete: restrict, update: cascade]
+Ref: perfil_bienestar.per_id - persona.id_per [delete: restrict, update: cascade]
 
 // Proyectos PNF
-Ref: proyecto_investigacion.prg_id > pnf.id_pnf [delete: restrict, update: cascade]
+Ref: proyecto_investigacion.prg_id > programa.id_prg [delete: restrict, update: cascade]
 Ref: proyecto_investigacion.laa_id > lapso_academico.id_laa [delete: restrict, update: cascade]
-Ref: proyecto_investigacion.tutor_academico_pro_id > profesor.id_pro [delete: restrict, update: cascade]
+Ref: proyecto_investigacion.tutor_academico_per_id > persona.id_per [delete: restrict, update: cascade]
 Ref: integrante_proyecto.pri_id > proyecto_investigacion.id_pri [delete: cascade, update: cascade]
-Ref: integrante_proyecto.est_id > estudiante.id_est [delete: cascade, update: cascade]
+Ref: integrante_proyecto.per_id > persona.id_per [delete: cascade, update: cascade]
 Ref: jurado_proyecto.pri_id > proyecto_investigacion.id_pri [delete: cascade, update: cascade]
-Ref: jurado_proyecto.pro_id > profesor.id_pro [delete: cascade, update: cascade]
+Ref: jurado_proyecto.docente_per_id > persona.id_per [delete: cascade, update: cascade]
 
 // Programa Especial de Recuperación (PER)
 Ref: programa_especial_recuperacion.unc_id > unidad_curricular.id_unc [delete: restrict, update: cascade]
 Ref: programa_especial_recuperacion.laa_id > lapso_academico.id_laa [delete: restrict, update: cascade]
-Ref: programa_especial_recuperacion.pro_id > profesor.id_pro [delete: restrict, update: cascade]
+Ref: programa_especial_recuperacion.docente_per_id > persona.id_per [delete: restrict, update: cascade]
 Ref: programa_especial_recuperacion.acc_id > acta_calificacion.id_acc [delete: cascade, update: cascade]
 Ref: inscripcion_per.pir_id > programa_especial_recuperacion.id_pir [delete: cascade, update: cascade]
-Ref: inscripcion_per.est_id > estudiante.id_est [delete: cascade, update: cascade]
+Ref: inscripcion_per.per_id > persona.id_per [delete: cascade, update: cascade]
 
 // Prelaciones y Bloqueos
 Ref: regla_prelacion.unc_destino_id > unidad_curricular.id_unc [delete: restrict, update: cascade]
 Ref: regla_prelacion.unc_origen_id > unidad_curricular.id_unc [delete: restrict, update: cascade]
-Ref: bloqueo_administrativo.est_id > estudiante.id_est [delete: restrict, update: cascade]
+Ref: bloqueo_administrativo.per_id > persona.id_per [delete: restrict, update: cascade]
 Ref: bloqueo_administrativo.levantado_por_use_id > user.id_use [delete: restrict, update: cascade]
 
 // Seguridad y API
@@ -2100,9 +2195,9 @@ Ref: usuario_rol.use_id > user.id_use [delete: cascade, update: cascade]
 // Censos e Intensivos
 Ref: censo_oferta.laa_id > lapso_academico.id_laa [delete: restrict, update: cascade]
 Ref: censo_oferta.unc_id > unidad_curricular.id_unc [delete: restrict, update: cascade]
-Ref: censo_oferta.prg_id > pnf.id_pnf [delete: restrict, update: cascade]
+Ref: censo_oferta.prg_id > programa.id_prg [delete: restrict, update: cascade]
 Ref: censo_estudiante.ceo_id > censo_oferta.id_ceo [delete: restrict, update: cascade]
-Ref: censo_estudiante.est_id > estudiante.id_est [delete: restrict, update: cascade]
+Ref: censo_estudiante.per_id > persona.id_per [delete: restrict, update: cascade]
 
 // ==========================================
 // GRUPOS DE TABLAS (Visualización DBDiagram)
@@ -2201,7 +2296,7 @@ Table historico_registro_anual {
   condicion_repitencia_hra varchar(20) [note: 'Condición de repitencia']
   observacion_hra text [note: 'Notas u observaciones históricas']
 
-  est_id integer [not null, note: 'Referencia al estudiante']
+  per_id integer [not null, note: 'Referencia al estudiante']
   sed_id integer [not null, note: 'Referencia a la sede']
   prg_id integer [not null, note: 'Referencia al PNF']
   mac_id integer [not null, note: 'Referencia a la malla curricular']
@@ -2246,7 +2341,7 @@ Table experiencia_laboral_docente {
   horas_semanales_eld integer [note: 'Dedicación semanal expresada en horas']
   sueldo_eld decimal(12,2) [note: 'Remuneración declarada']
 
-  pro_id integer [not null, note: 'Referencia al docente/profesor']
+  docente_per_id integer [not null, note: 'Referencia al docente/profesor']
   laa_id integer [note: 'Lapso en el cual aplica la declaración']
 
   status_id integer [default: 1, note: 'Estado lógico del registro (Ref: status)']
@@ -2299,7 +2394,7 @@ Table censo_intensivo {
   id_cei integer [primary key, increment, note: 'Pre-inscripción o censo para intensivos']
   fecha_inscripcion_cei date [default: \`now()\`, note: 'Fecha de registro en el censo']
 
-  est_id integer [not null, note: 'Referencia al estudiante']
+  per_id integer [not null, note: 'Referencia al estudiante']
   unc_id integer [not null, note: 'Unidad curricular a censar']
   mac_id integer [not null, note: 'Malla curricular correspondiente']
 
@@ -3970,8 +4065,8 @@ Ref: tramite_cambio_sede.sed_origen_id > sede.id_sed
 Ref: tramite_cambio_sede.sed_destino_id > sede.id_sed
 
 Ref: tramite_cambio_pnf.tra_id > tramite_academico.id_tra
-Ref: tramite_cambio_pnf.pnf_origen_id > pnf.id_pnf
-Ref: tramite_cambio_pnf.pnf_destino_id > pnf.id_pnf
+Ref: tramite_cambio_pnf.pnf_origen_id > programa.id_prg
+Ref: tramite_cambio_pnf.pnf_destino_id > programa.id_prg
 Ref: tramite_cambio_pnf.mac_origen_id > malla_curricular.id_mac
 Ref: tramite_cambio_pnf.mac_destino_id > malla_curricular.id_mac
 
@@ -3983,9 +4078,9 @@ Ref: tramite_reingreso.sec_destino_id > seccion.id_sec
 Ref: tramite_reingreso.laa_origen_id > lapso_academico.id_laa
 Ref: tramite_reingreso.mac_id > malla_curricular.id_mac
 
-Ref: historico_registro_anual.est_id > estudiante.id_est
+Ref: historico_registro_anual.per_id > persona.id_per
 Ref: historico_registro_anual.sed_id > sede.id_sed
-Ref: historico_registro_anual.prg_id > pnf.id_pnf
+Ref: historico_registro_anual.prg_id > programa.id_prg
 Ref: historico_registro_anual.mac_id > malla_curricular.id_mac
 Ref: historico_registro_anual.ana_id > ano_academico.id_ana
 Ref: historico_registro_anual.laa_id > lapso_academico.id_laa
@@ -3993,24 +4088,24 @@ Ref: historico_registro_anual.unc_id > unidad_curricular.id_unc
 Ref: historico_registro_anual.esm_id > escala_medicion.id_esm
 
 Ref: promocion_estadistica_pnf.prm_id > promocion.id_prm
-Ref: promocion_estadistica_pnf.prg_id > pnf.id_pnf
+Ref: promocion_estadistica_pnf.prg_id > programa.id_prg
 Ref: promocion_estadistica_pnf.tio_id > titulo_obtenido.id_tio
 
-Ref: experiencia_laboral_docente.pro_id > profesor.id_pro
+Ref: experiencia_laboral_docente.docente_per_id > persona.id_per [delete: restrict, update: cascade]
 Ref: experiencia_laboral_docente.laa_id > lapso_academico.id_laa
 
 Ref: bitacora_sistema.use_id > user.id_use
 
 Ref: rol_mensaje_configuracion.rol_id > rol.id_rol
 
-Ref: censo_intensivo.est_id > estudiante.id_est
+Ref: censo_intensivo.per_id > persona.id_per
 Ref: censo_intensivo.unc_id > unidad_curricular.id_unc
 Ref: censo_intensivo.mac_id > malla_curricular.id_mac
 
-Ref: convalidacion.pnf_origen_id > pnf.id_pnf
+Ref: convalidacion.pnf_origen_id > programa.id_prg
 Ref: convalidacion.mac_origen_id > malla_curricular.id_mac
 Ref: convalidacion.unc_origen_id > unidad_curricular.id_unc
-Ref: convalidacion.pnf_destino_id > pnf.id_pnf
+Ref: convalidacion.pnf_destino_id > programa.id_prg
 Ref: convalidacion.mac_destino_id > malla_curricular.id_mac
 Ref: convalidacion.unc_destino_id > unidad_curricular.id_unc
 
@@ -4036,7 +4131,7 @@ Ref: rama_estudio_bachiller.status_id > status.id_sta
 Ref: sistema_estudio_bachiller.status_id > status.id_sta
 Ref: becado.status_id > status.id_sta
 Ref: departamento.status_id > status.id_sta
-Ref: pnf.status_id > status.id_sta
+Ref: programa.status_id > status.id_sta
 Ref: unidad_curricular.status_id > status.id_sta
 Ref: malla_curricular.status_id > status.id_sta
 Ref: ano_academico.status_id > status.id_sta
@@ -4044,8 +4139,6 @@ Ref: lapso_academico.status_id > status.id_sta
 Ref: evento_calendario.status_id > status.id_sta
 Ref: persona.status_id > status.id_sta
 Ref: user.status_id > status.id_sta
-Ref: estudiante.status_id > status.id_sta
-Ref: profesor.status_id > status.id_sta
 Ref: aula.status_id > status.id_sta
 Ref: seccion.status_id > status.id_sta
 Ref: carga_academica.status_id > status.id_sta
@@ -4131,10 +4224,10 @@ Ref: sede.cdn_id > condicion.id_cdn
 Ref: telefono_persona.per_id > persona.id_per
 Ref: telefono_persona.tte_id > tipo_telefono.id_tte
 
-Ref: estudiante.bachillerato_loc_id > localidad.id_loc
-Ref: estudiante.cos_ingreso_id > cohorte_sede.id_cos
-Ref: estudiante.laa_ingreso_id > lapso_academico.id_laa
-Ref: estudiante.laa_egreso_id > lapso_academico.id_laa
+Ref: persona.bachillerato_loc_id > localidad.id_loc [delete: restrict, update: cascade]
+Ref: persona.cos_ingreso_id > cohorte_sede.id_cos [delete: restrict, update: cascade]
+Ref: persona.laa_ingreso_id > lapso_academico.id_laa [delete: restrict, update: cascade]
+Ref: persona.laa_egreso_id > lapso_academico.id_laa [delete: restrict, update: cascade]
 Ref: unidad_curricular.tuc_id > tipo_unidad_curricular.id_tuc
 Ref: tramite_academico.car_id > causa_retiro.id_car
 Ref: noticia.use_id > user.id_use
@@ -4251,7 +4344,7 @@ Ref: inscripcion_deportiva.use_id > user.id_use [delete: restrict, update: casca
 Ref: torneo_deportivo.hde_id > horario_deportivo.id_hde [delete: restrict, update: cascade]
 Ref: torneo_deportivo.use_id > user.id_use [delete: restrict, update: cascade]
 Ref: equipo_torneo_deportivo.tde_id > torneo_deportivo.id_tde [delete: cascade, update: cascade]
-Ref: equipo_torneo_deportivo.prg_id > pnf.id_pnf [delete: restrict, update: cascade]
+Ref: equipo_torneo_deportivo.prg_id > programa.id_prg [delete: restrict, update: cascade]
 Ref: integrante_equipo_deporte.etd_id > equipo_torneo_deportivo.id_etd [delete: cascade, update: cascade]
 Ref: integrante_equipo_deporte.per_id > persona.id_per [delete: restrict, update: cascade]
 Ref: prestamo_deportivo.pdt_id > producto.id_pdt [delete: restrict, update: cascade]
@@ -4400,7 +4493,7 @@ Ref: permiso.vis_id > vista.id_vis [delete: restrict, update: cascade]
 Ref: rol_usuario_contexto.use_id > user.id_use [delete: cascade, update: cascade]
 Ref: rol_usuario_contexto.rol_id > rol.id_rol [delete: cascade, update: cascade]
 Ref: rol_usuario_contexto.sed_id > sede.id_sed [delete: restrict, update: cascade]
-Ref: rol_usuario_contexto.prg_id > pnf.id_pnf [delete: restrict, update: cascade]
+Ref: rol_usuario_contexto.prg_id > programa.id_prg [delete: restrict, update: cascade]
 
 // Excepciones Directas de Permisos (Overrides)
 Ref: usuario_permiso.use_id > user.id_use [delete: cascade, update: cascade]
@@ -4442,6 +4535,26 @@ Ref: convalidacion.prg_destino_id > programa.id_prg [delete: restrict, update: c
 Ref: equipo_torneo_deportivo.prg_id > programa.id_prg [delete: restrict, update: cascade]
 Ref: rol_usuario_contexto.prg_id > programa.id_prg [delete: restrict, update: cascade]
 Ref: programa.status_id > status.id_sta
+// ==========================================
+// RELACIONES DEL GRUPO 3 (MÓDULOS 2, 3 Y 7)
+// ==========================================
+Ref: programa.uni_id > universidad.id_uni [delete: restrict, update: cascade]
+Ref: programa.ree_id > regimen_estudio.id_ree [delete: restrict, update: cascade]
+Ref: programa.moe_id > modalidad_estudio.id_moe [delete: restrict, update: cascade]
+Ref: programa.esm_id > escala_medicion.id_eme [delete: restrict, update: cascade]
+Ref: seccion.tis_id > tipo_seccion.id_tis [delete: restrict, update: cascade]
+Ref: seccion.tur_id > turno.id_tur [delete: restrict, update: cascade]
+Ref: regimen_estudio.status_id > status.id_sta
+Ref: modalidad_estudio.status_id > status.id_sta
+Ref: tipo_seccion.status_id > status.id_sta
+Ref: turno.status_id > status.id_sta
 
+// ==========================================
+// RELACIONES DEL TIPO PROGRAMA Y OPERADORA
+// ==========================================
+Ref: programa.tpg_id > tipo_programa.id_tpg [delete: restrict, update: cascade]
+Ref: tipo_programa.status_id > status.id_sta
+Ref: telefono_persona.ope_id > operadora.id_ope [delete: restrict, update: cascade]
+Ref: operadora.status_id > status.id_sta
 
-\n`;
+`;

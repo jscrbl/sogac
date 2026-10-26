@@ -2554,11 +2554,11 @@
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">dco_cedula</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">char(12)</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">expediente_estudiante</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">est_id</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">per_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
                   <span class="badge badge-green">🔗 FK Mapeada Directa</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Clave foránea en entidad: est_id</div>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Clave foránea en entidad: per_id</div>
                 </td>
               </tr>
     
@@ -3357,11 +3357,11 @@
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">usu_cedula</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(12)</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">Relaciones M:N / Trámites</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">est_id</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">per_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
                   <span class="badge badge-amber">🔗 Relación Derivada</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia est_id</div>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia per_id</div>
                 </td>
               </tr>
     
@@ -3968,12 +3968,12 @@
         </div>
       </div>
   
-      <div class="table-card" data-table="programa" data-target="pnf">
+      <div class="table-card" data-table="programa" data-target="programa">
         <div class="table-header" onclick="toggleTable('programa')">
           <div class="table-title-group">
             <span class="legacy-tag">ORIGEN: programa</span>
             <span class="target-arrow">➔</span>
-            <span class="table-name">DESTINO: pnf</span>
+            <span class="table-name">DESTINO: programa</span>
             <span style="font-size: 13px; color: var(--text-muted);">(23 atributos legacy)</span>
           </div>
           <div><span style="font-size: 13px; color: var(--text-muted);">▼ Ver Atributos</span></div>
@@ -3995,8 +3995,8 @@
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">pro_codigo</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">pnf</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">id_pnf</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">programa</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">id_prg</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
                   <span class="badge badge-green">✅ PK Mapeada Directa</span>
@@ -4007,120 +4007,120 @@
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">pro_codigo_ministerio</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(10)</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">pnf</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">codigo_pnf</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">programa</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">codigo_prg</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(30)</td>
                 <td>
                   <span class="badge badge-green">✅ Mapeo Directo</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Raíz coincidente: codigo_pnf</div>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Raíz coincidente: codigo_prg</div>
                 </td>
               </tr>
     
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">pro_nombre</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">pnf</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">nombre_pnf</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">programa</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">nombre_prg</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(255)</td>
                 <td>
                   <span class="badge badge-green">✅ Mapeo Directo</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Atributo renombrado: nombre_pnf</div>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Atributo renombrado: nombre_prg</div>
                 </td>
               </tr>
     
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">pro_siglas</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(10)</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">—</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">—</td>
-                <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">various</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">programa</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">siglas_prg</td>
+                <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(20)</td>
                 <td>
-                  <span class="badge badge-rose">⚠️ Absorción Lógica / Migrado 3NF</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Ahora se guarda en una tabla de auditoría, bitácora o configuración dinámica, y se relaciona mediante el contexto del registro</div>
+                  <span class="badge badge-green">✅ Mapeo Directo</span>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Atributo renombrado: siglas_prg</div>
                 </td>
               </tr>
     
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">pro_intermedia</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">char(1)</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">horario</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">dia_hor / bloque_hor</td>
-                <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">various</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">programa</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">tiene_salida_intermedia_prg</td>
+                <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">boolean</td>
                 <td>
-                  <span class="badge badge-rose">⚠️ Absorción Lógica / Migrado 3NF</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Ahora se guarda en la tabla horario, atributo dia_hor / bloque_hor, y se hereda a través de la clave foránea N/A (Tabla horario consolidada)</div>
+                  <span class="badge badge-green">✅ Mapeo Directo</span>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Raíz coincidente: tiene_salida_intermedia_prg</div>
                 </td>
               </tr>
     
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">pro_gaceta</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(20)</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">—</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">—</td>
-                <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">various</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">programa</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">gaceta_prg</td>
+                <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(100)</td>
                 <td>
-                  <span class="badge badge-rose">⚠️ Absorción Lógica / Migrado 3NF</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Ahora se guarda en una tabla de auditoría, bitácora o configuración dinámica, y se relaciona mediante el contexto del registro</div>
+                  <span class="badge badge-green">✅ Mapeo Directo</span>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Atributo renombrado: gaceta_prg</div>
                 </td>
               </tr>
     
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">pro_resolucion</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(20)</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">—</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">—</td>
-                <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">various</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">programa</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">resolucion_prg</td>
+                <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(100)</td>
                 <td>
-                  <span class="badge badge-rose">⚠️ Absorción Lógica / Migrado 3NF</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Ahora se guarda en una tabla de auditoría, bitácora o configuración dinámica, y se relaciona mediante el contexto del registro</div>
+                  <span class="badge badge-green">✅ Mapeo Directo</span>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Atributo renombrado: resolucion_prg</div>
                 </td>
               </tr>
     
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">pro_fecha_gaceta</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">date</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">—</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">—</td>
-                <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">various</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">programa</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">gaceta_prg</td>
+                <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(100)</td>
                 <td>
-                  <span class="badge badge-rose">⚠️ Absorción Lógica / Migrado 3NF</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Ahora se guarda en una tabla de auditoría, bitácora o configuración dinámica, y se relaciona mediante el contexto del registro</div>
+                  <span class="badge badge-green">✅ Mapeo Directo</span>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Raíz coincidente: gaceta_prg</div>
                 </td>
               </tr>
     
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">pro_fecha_resolucion</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">date</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">—</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">—</td>
-                <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">various</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">programa</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">resolucion_prg</td>
+                <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(100)</td>
                 <td>
-                  <span class="badge badge-rose">⚠️ Absorción Lógica / Migrado 3NF</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Ahora se guarda en una tabla de auditoría, bitácora o configuración dinámica, y se relaciona mediante el contexto del registro</div>
+                  <span class="badge badge-green">✅ Mapeo Directo</span>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Raíz coincidente: resolucion_prg</div>
                 </td>
               </tr>
     
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">pro_comentario</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">text</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">—</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">—</td>
-                <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">various</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">programa</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">comentario_prg</td>
+                <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">text</td>
                 <td>
-                  <span class="badge badge-rose">⚠️ Absorción Lógica / Migrado 3NF</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Ahora se guarda en una tabla de auditoría, bitácora o configuración dinámica, y se relaciona mediante el contexto del registro</div>
+                  <span class="badge badge-green">✅ Mapeo Directo</span>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Atributo renombrado: comentario_prg</div>
                 </td>
               </tr>
     
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">pro_arancel</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">double</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">—</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">—</td>
-                <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">various</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">programa</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">arancel_prg</td>
+                <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">numeric(10,2)</td>
                 <td>
-                  <span class="badge badge-rose">⚠️ Absorción Lógica / Migrado 3NF</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Ahora se guarda en una tabla de auditoría, bitácora o configuración dinámica, y se relaciona mediante el contexto del registro</div>
+                  <span class="badge badge-green">✅ Mapeo Directo</span>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Atributo renombrado: arancel_prg</div>
                 </td>
               </tr>
     
@@ -4139,12 +4139,12 @@
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">pro_cod_universidad</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">Relaciones M:N / Trámites</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">programa</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">uni_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
-                  <span class="badge badge-amber">🔗 Relación Derivada</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia uni_id</div>
+                  <span class="badge badge-green">🔗 FK Mapeada Directa</span>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Clave foránea en entidad: uni_id</div>
                 </td>
               </tr>
     
@@ -4223,19 +4223,19 @@
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">pro_nombre_carnet</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(50)</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">pnf</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">nombre_pnf</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">programa</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">nombre_prg</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(255)</td>
                 <td>
                   <span class="badge badge-green">✅ Mapeo Directo</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Raíz coincidente: nombre_pnf</div>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Raíz coincidente: nombre_prg</div>
                 </td>
               </tr>
     
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">pro_color_fondo</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">char(7)</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">pnf</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">programa</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">valor_csi</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">various</td>
                 <td>
@@ -4247,7 +4247,7 @@
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">pro_color_texto</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">char(7)</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">pnf</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">programa</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">valor_csi</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">various</td>
                 <td>
@@ -4259,7 +4259,7 @@
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">pro_estatus</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">char(1)</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">pnf</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">programa</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">status_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
@@ -4324,12 +4324,12 @@
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">mal_cod_programa</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">malla_curricular</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">Relaciones M:N / Trámites</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">pnf_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
-                  <span class="badge badge-green">🔗 FK Mapeada Directa</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Clave foránea en entidad: pnf_id</div>
+                  <span class="badge badge-amber">🔗 Relación Derivada</span>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia pnf_id</div>
                 </td>
               </tr>
     
@@ -4867,12 +4867,12 @@
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">tit_cod_programa</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">titulo_obtenido</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">Relaciones M:N / Trámites</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">pnf_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
-                  <span class="badge badge-green">🔗 FK Mapeada Directa</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Clave foránea en entidad: pnf_id</div>
+                  <span class="badge badge-amber">🔗 Relación Derivada</span>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia pnf_id</div>
                 </td>
               </tr>
     
@@ -5254,12 +5254,12 @@
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">spr_cod_programa</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">sede_pnf</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">Relaciones M:N / Trámites</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">pnf_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
-                  <span class="badge badge-green">🔗 FK Mapeada Directa</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Clave foránea en entidad: pnf_id</div>
+                  <span class="badge badge-amber">🔗 Relación Derivada</span>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia pnf_id</div>
                 </td>
               </tr>
     
@@ -5278,12 +5278,12 @@
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">spr_codigo_ministerio</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">char(5)</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">—</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">—</td>
-                <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">various</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">sede_pnf</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">codigo_ministerio_sep</td>
+                <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(20)</td>
                 <td>
-                  <span class="badge badge-rose">⚠️ Absorción Lógica / Migrado 3NF</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Ahora se guarda en una tabla de auditoría, bitácora o configuración dinámica, y se relaciona mediante el contexto del registro</div>
+                  <span class="badge badge-green">✅ Mapeo Directo</span>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Atributo renombrado: codigo_ministerio_sep</div>
                 </td>
               </tr>
     
@@ -5405,12 +5405,12 @@
         </div>
       </div>
   
-      <div class="table-card" data-table="docente" data-target="profesor">
+      <div class="table-card" data-table="docente" data-target="persona">
         <div class="table-header" onclick="toggleTable('docente')">
           <div class="table-title-group">
             <span class="legacy-tag">ORIGEN: docente</span>
             <span class="target-arrow">➔</span>
-            <span class="table-name">DESTINO: profesor</span>
+            <span class="table-name">DESTINO: persona</span>
             <span style="font-size: 13px; color: var(--text-muted);">(9 atributos legacy)</span>
           </div>
           <div><span style="font-size: 13px; color: var(--text-muted);">▼ Ver Atributos</span></div>
@@ -5432,8 +5432,8 @@
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">doc_cedula</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(12)</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">profesor</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">id_pro</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">persona</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">id_per</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
                   <span class="badge badge-green">✅ PK Mapeada Directa</span>
@@ -5444,19 +5444,19 @@
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">doc_fecha_ingreso</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">date</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">—</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">—</td>
-                <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">various</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">persona</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">fecha_ingreso_est_per</td>
+                <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">date</td>
                 <td>
-                  <span class="badge badge-rose">⚠️ Absorción Lógica / Migrado 3NF</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Ahora se guarda en una tabla de auditoría, bitácora o configuración dinámica, y se relaciona mediante el contexto del registro</div>
+                  <span class="badge badge-green">✅ Mapeo Directo</span>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Raíz coincidente: fecha_ingreso_est_per</div>
                 </td>
               </tr>
     
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">doc_cod_profesion</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">profesor</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">persona</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">prf_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
@@ -5468,19 +5468,19 @@
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">doc_cod_sede</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">Relaciones M:N / Trámites</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">persona</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">sed_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
-                  <span class="badge badge-amber">🔗 Relación Derivada</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia sed_id</div>
+                  <span class="badge badge-green">🔗 FK Mapeada Directa</span>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Clave foránea en entidad: sed_id</div>
                 </td>
               </tr>
     
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">doc_cod_condicion_laboral</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">profesor</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">persona</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">cla_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
@@ -5492,7 +5492,7 @@
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">doc_cod_categoria_actual</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">profesor</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">persona</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">cdo_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">various</td>
                 <td>
@@ -5516,7 +5516,7 @@
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">doc_cod_dedicacion</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">profesor</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">persona</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">ddo_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">various</td>
                 <td>
@@ -5528,7 +5528,7 @@
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">doc_estatus</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">char(1)</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">profesor</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">persona</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">status_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
@@ -5594,11 +5594,11 @@
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">dpr_cedula</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(12)</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">Relaciones M:N / Trámites</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">est_id</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">per_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
                   <span class="badge badge-amber">🔗 Relación Derivada</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia est_id</div>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia per_id</div>
                 </td>
               </tr>
     
@@ -5619,12 +5619,12 @@
         </div>
       </div>
   
-      <div class="table-card" data-table="estudiante" data-target="estudiante">
+      <div class="table-card" data-table="estudiante" data-target="persona">
         <div class="table-header" onclick="toggleTable('estudiante')">
           <div class="table-title-group">
             <span class="legacy-tag">ORIGEN: estudiante</span>
             <span class="target-arrow">➔</span>
-            <span class="table-name">DESTINO: estudiante</span>
+            <span class="table-name">DESTINO: persona</span>
             <span style="font-size: 13px; color: var(--text-muted);">(58 atributos legacy)</span>
           </div>
           <div><span style="font-size: 13px; color: var(--text-muted);">▼ Ver Atributos</span></div>
@@ -5646,8 +5646,8 @@
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">est_cedula</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(12)</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">estudiante</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">id_est</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">persona</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">id_per</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
                   <span class="badge badge-green">✅ PK Mapeada Directa</span>
@@ -5682,12 +5682,12 @@
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">est_cod_localidad_bachillerato</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">Relaciones M:N / Trámites</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">persona</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">loc_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
-                  <span class="badge badge-amber">🔗 Relación Derivada</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia loc_id</div>
+                  <span class="badge badge-green">🔗 FK Mapeada Directa</span>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Clave foránea en entidad: loc_id</div>
                 </td>
               </tr>
     
@@ -5706,12 +5706,12 @@
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">est_cod_sede</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">Relaciones M:N / Trámites</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">persona</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">sed_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
-                  <span class="badge badge-amber">🔗 Relación Derivada</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia sed_id</div>
+                  <span class="badge badge-green">🔗 FK Mapeada Directa</span>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Clave foránea en entidad: sed_id</div>
                 </td>
               </tr>
     
@@ -5754,12 +5754,12 @@
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">est_cod_cohorte_sede_ingreso</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">Relaciones M:N / Trámites</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">persona</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">sed_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
-                  <span class="badge badge-amber">🔗 Relación Derivada</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia sed_id</div>
+                  <span class="badge badge-green">🔗 FK Mapeada Directa</span>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Clave foránea en entidad: sed_id</div>
                 </td>
               </tr>
     
@@ -5910,12 +5910,12 @@
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">est_tsu_cod_dependencia</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">Relaciones M:N / Trámites</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">persona</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">dep_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
-                  <span class="badge badge-amber">🔗 Relación Derivada</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia dep_id</div>
+                  <span class="badge badge-green">🔗 FK Mapeada Directa</span>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Clave foránea en entidad: dep_id</div>
                 </td>
               </tr>
     
@@ -5946,7 +5946,7 @@
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">est_tipo_aspirante</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">char(1)</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">estudiante</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">persona</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">seb_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">various</td>
                 <td>
@@ -5970,7 +5970,7 @@
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">est_becado</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">char(1)</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">estudiante</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">persona</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">bec_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">various</td>
                 <td>
@@ -6066,19 +6066,19 @@
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">est_privado_libertad</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">char(1)</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">estudiante</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">privado_libertad_est</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">persona</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">privado_libertad_per</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">boolean</td>
                 <td>
                   <span class="badge badge-green">✅ Mapeo Directo</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Atributo renombrado: privado_libertad_est</div>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Atributo renombrado: privado_libertad_per</div>
                 </td>
               </tr>
     
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">est_cantidad_sancionado</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">estudiante</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">persona</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">—</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">—</td>
                 <td>
@@ -6090,7 +6090,7 @@
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">est_estatus</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">char(1)</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">estudiante</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">persona</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">status_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
@@ -6102,48 +6102,48 @@
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">est_fecha_ingreso</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">date</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">estudiante</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">fecha_ingreso_est</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">persona</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">fecha_ingreso_est_per</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">date</td>
                 <td>
                   <span class="badge badge-green">✅ Mapeo Directo</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Atributo renombrado: fecha_ingreso_est</div>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Raíz coincidente: fecha_ingreso_est_per</div>
                 </td>
               </tr>
     
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">est_solvencia_adm</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">char(1)</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">solicitud_grado / expediente</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">observacion_sog</td>
-                <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">text</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">persona</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">solvencia_adm_per</td>
+                <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">boolean</td>
                 <td>
-                  <span class="badge badge-blue">🔀 Absorción Contextual</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Las solvencias se chequean de forma dinámica en trámites.</div>
+                  <span class="badge badge-green">✅ Mapeo Directo</span>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Raíz coincidente: solvencia_adm_per</div>
                 </td>
               </tr>
     
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">est_solvencia_aca</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">char(1)</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">solicitud_grado / expediente</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">observacion_sog</td>
-                <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">text</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">persona</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">solvencia_adm_per</td>
+                <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">boolean</td>
                 <td>
-                  <span class="badge badge-blue">🔀 Absorción Contextual</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Las solvencias se chequean de forma dinámica en trámites.</div>
+                  <span class="badge badge-green">✅ Mapeo Directo</span>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Raíz coincidente: solvencia_adm_per</div>
                 </td>
               </tr>
     
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">est_solvencia_bib</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">char(1)</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">solicitud_grado / expediente</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">observacion_sog</td>
-                <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">text</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">persona</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">solvencia_adm_per</td>
+                <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">boolean</td>
                 <td>
-                  <span class="badge badge-blue">🔀 Absorción Contextual</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Las solvencias se chequean de forma dinámica en trámites.</div>
+                  <span class="badge badge-green">✅ Mapeo Directo</span>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Raíz coincidente: solvencia_adm_per</div>
                 </td>
               </tr>
     
@@ -6210,12 +6210,12 @@
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">est_semestre</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">expediente_estudiante</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">various</td>
-                <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">—</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">persona</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">semestre_per</td>
+                <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(50)</td>
                 <td>
-                  <span class="badge badge-purple">🔀 Heredado (Expediente)</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Reubicado en tablas accesorias 3NF para expediente y tracking estudiantil.</div>
+                  <span class="badge badge-green">✅ Mapeo Directo</span>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Atributo renombrado: semestre_per</div>
                 </td>
               </tr>
     
@@ -6258,7 +6258,7 @@
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">est_cerrado</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">char(1)</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">estudiante</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">persona</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">status_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
@@ -6318,12 +6318,12 @@
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">est_fecha_actualizacion</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">timestamp</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">expediente_estudiante</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">various</td>
-                <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">—</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">persona</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">ira_actual_per</td>
+                <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">numeric(4,2)</td>
                 <td>
-                  <span class="badge badge-purple">🔀 Heredado (Expediente)</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Reubicado en tablas accesorias 3NF para expediente y tracking estudiantil.</div>
+                  <span class="badge badge-green">✅ Mapeo Directo</span>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Raíz coincidente: ira_actual_per</div>
                 </td>
               </tr>
     
@@ -6413,11 +6413,11 @@
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">cedula</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(12)</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">Relaciones M:N / Trámites</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">est_id</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">per_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
                   <span class="badge badge-amber">🔗 Relación Derivada</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia est_id</div>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia per_id</div>
                 </td>
               </tr>
     
@@ -7021,11 +7021,11 @@
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">sud_ced_docente</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(12)</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">Relaciones M:N / Trámites</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">pro_id</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">docente_per_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
                   <span class="badge badge-amber">🔗 Relación Derivada</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia pro_id</div>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia docente_per_id</div>
                 </td>
               </tr>
     
@@ -7408,11 +7408,11 @@
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">ins_cedula</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(12)</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">inscripcion</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">est_id</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">per_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
                   <span class="badge badge-green">🔗 FK Mapeada Directa</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Clave foránea en entidad: est_id</div>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Clave foránea en entidad: per_id</div>
                 </td>
               </tr>
     
@@ -7884,11 +7884,11 @@
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">cse_cedula</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(12)</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">Relaciones M:N / Trámites</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">est_id</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">per_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
                   <span class="badge badge-amber">🔗 Relación Derivada</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia est_id</div>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia per_id</div>
                 </td>
               </tr>
     
@@ -7985,11 +7985,11 @@
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">cpr_cedula</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(12)</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">Relaciones M:N / Trámites</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">est_id</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">per_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
                   <span class="badge badge-amber">🔗 Relación Derivada</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia est_id</div>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia per_id</div>
                 </td>
               </tr>
     
@@ -8110,11 +8110,11 @@
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">ctu_cedula</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(12)</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">Relaciones M:N / Trámites</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">est_id</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">per_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
                   <span class="badge badge-amber">🔗 Relación Derivada</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia est_id</div>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia per_id</div>
                 </td>
               </tr>
     
@@ -8223,11 +8223,11 @@
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">cse_cedula</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(12)</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">Relaciones M:N / Trámites</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">est_id</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">per_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
                   <span class="badge badge-amber">🔗 Relación Derivada</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia est_id</div>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia per_id</div>
                 </td>
               </tr>
     
@@ -8396,11 +8396,11 @@
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">cma_cedula</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(12)</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">Relaciones M:N / Trámites</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">est_id</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">per_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
                   <span class="badge badge-amber">🔗 Relación Derivada</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia est_id</div>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia per_id</div>
                 </td>
               </tr>
     
@@ -8461,11 +8461,11 @@
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">cre_cedula</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(12)</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">Relaciones M:N / Trámites</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">est_id</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">per_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
                   <span class="badge badge-amber">🔗 Relación Derivada</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia est_id</div>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia per_id</div>
                 </td>
               </tr>
     
@@ -8562,11 +8562,11 @@
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">sor_cedula</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(12)</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">Relaciones M:N / Trámites</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">est_id</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">per_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
                   <span class="badge badge-amber">🔗 Relación Derivada</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia est_id</div>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia per_id</div>
                 </td>
               </tr>
     
@@ -8843,11 +8843,11 @@
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">src_cedula</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">char(12)</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">Relaciones M:N / Trámites</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">est_id</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">per_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
                   <span class="badge badge-amber">🔗 Relación Derivada</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia est_id</div>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia per_id</div>
                 </td>
               </tr>
     
@@ -8932,11 +8932,11 @@
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">sre_cod_usuario</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(12)</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">Relaciones M:N / Trámites</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">usr_id</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">use_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
                   <span class="badge badge-amber">🔗 Relación Derivada</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia usr_id</div>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia use_id</div>
                 </td>
               </tr>
     
@@ -9069,11 +9069,11 @@
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">sct_cod_usuario</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(12)</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">Relaciones M:N / Trámites</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">usr_id</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">use_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
                   <span class="badge badge-amber">🔗 Relación Derivada</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia usr_id</div>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia use_id</div>
                 </td>
               </tr>
     
@@ -9206,11 +9206,11 @@
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">scs_cod_usuario</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(12)</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">Relaciones M:N / Trámites</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">usr_id</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">use_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
                   <span class="badge badge-amber">🔗 Relación Derivada</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia usr_id</div>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia use_id</div>
                 </td>
               </tr>
     
@@ -9343,11 +9343,11 @@
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">scp_cod_usuario</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(12)</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">Relaciones M:N / Trámites</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">usr_id</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">use_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
                   <span class="badge badge-amber">🔗 Relación Derivada</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia usr_id</div>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia use_id</div>
                 </td>
               </tr>
     
@@ -9778,11 +9778,11 @@
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">pre_cedula</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(12)</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">promocion_estudiante</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">est_id</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">per_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
                   <span class="badge badge-green">🔗 FK Mapeada Directa</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Clave foránea en entidad: est_id</div>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Clave foránea en entidad: per_id</div>
                 </td>
               </tr>
     
@@ -10130,12 +10130,12 @@
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">sgr_cod_programa</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">solicitud_grado</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">Relaciones M:N / Trámites</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">pnf_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
-                  <span class="badge badge-green">🔗 FK Mapeada Directa</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Clave foránea en entidad: pnf_id</div>
+                  <span class="badge badge-amber">🔗 Relación Derivada</span>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia pnf_id</div>
                 </td>
               </tr>
     
@@ -10155,11 +10155,11 @@
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">sgr_cedula</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(12)</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">solicitud_grado</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">est_id</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">per_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
                   <span class="badge badge-green">🔗 FK Mapeada Directa</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Clave foránea en entidad: est_id</div>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Clave foránea en entidad: per_id</div>
                 </td>
               </tr>
     
@@ -10220,11 +10220,11 @@
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">anu_cedula</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(12)</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">historico_registro_anual</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">est_id</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">per_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
                   <span class="badge badge-green">🔗 FK Mapeada Directa</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Clave foránea en entidad: est_id</div>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Clave foránea en entidad: per_id</div>
                 </td>
               </tr>
     
@@ -10243,12 +10243,12 @@
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">anu_cod_programa</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">historico_registro_anual</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">Relaciones M:N / Trámites</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">pnf_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
-                  <span class="badge badge-green">🔗 FK Mapeada Directa</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Clave foránea en entidad: pnf_id</div>
+                  <span class="badge badge-amber">🔗 Relación Derivada</span>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia pnf_id</div>
                 </td>
               </tr>
     
@@ -11805,12 +11805,12 @@
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">pdf_name</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(255)</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">—</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">—</td>
-                <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">various</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">qr_validated_generated</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">pdf_name_qvg</td>
+                <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(255)</td>
                 <td>
-                  <span class="badge badge-rose">⚠️ Absorción Lógica / Migrado 3NF</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Ahora se guarda en una tabla de auditoría, bitácora o configuración dinámica, y se relaciona mediante el contexto del registro</div>
+                  <span class="badge badge-green">✅ Mapeo Directo</span>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Atributo renombrado: pdf_name_qvg</div>
                 </td>
               </tr>
     
@@ -11818,11 +11818,11 @@
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">user_cedula</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(20)</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">Relaciones M:N / Trámites</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">est_id</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">per_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
                   <span class="badge badge-amber">🔗 Relación Derivada</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia est_id</div>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia per_id</div>
                 </td>
               </tr>
     
@@ -11830,11 +11830,11 @@
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">generated_by_cedula</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(20)</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">Relaciones M:N / Trámites</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">est_id</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">per_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
                   <span class="badge badge-amber">🔗 Relación Derivada</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia est_id</div>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia per_id</div>
                 </td>
               </tr>
     
@@ -11879,7 +11879,7 @@
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(20)</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">qr_validated_generated</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">status_qvg</td>
-                <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(255)</td>
+                <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(50)</td>
                 <td>
                   <span class="badge badge-green">✅ Mapeo Directo</span>
                   <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Atributo renombrado: status_qvg</div>
@@ -11979,11 +11979,11 @@
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">user_cedula</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(20)</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">Relaciones M:N / Trámites</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">est_id</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">per_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
                   <span class="badge badge-amber">🔗 Relación Derivada</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia est_id</div>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia per_id</div>
                 </td>
               </tr>
     
@@ -11991,11 +11991,11 @@
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">generated_by_cedula</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(20)</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">Relaciones M:N / Trámites</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">est_id</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">per_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
                   <span class="badge badge-amber">🔗 Relación Derivada</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia est_id</div>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia per_id</div>
                 </td>
               </tr>
     
@@ -12104,11 +12104,11 @@
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">epu_ced_docente</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(12)</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">Relaciones M:N / Trámites</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">pro_id</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">docente_per_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
                   <span class="badge badge-amber">🔗 Relación Derivada</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia pro_id</div>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia docente_per_id</div>
                 </td>
               </tr>
     
@@ -12241,11 +12241,11 @@
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">epr_ced_docente</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(12)</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">Relaciones M:N / Trámites</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">pro_id</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">docente_per_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
                   <span class="badge badge-amber">🔗 Relación Derivada</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia pro_id</div>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia docente_per_id</div>
                 </td>
               </tr>
     
@@ -12495,12 +12495,12 @@
               <tr>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">aut_cedula</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(12)</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">Relaciones M:N / Trámites</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">est_id</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">autoridad</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">per_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
-                  <span class="badge badge-amber">🔗 Relación Derivada</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Se vincula a través de una relación superior hacia est_id</div>
+                  <span class="badge badge-green">🔗 FK Mapeada Directa</span>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Clave foránea en entidad: per_id</div>
                 </td>
               </tr>
     
@@ -12885,11 +12885,11 @@
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #38bdf8;">cedula_estudiante</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">varchar(15)</td>
                 <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #a78bfa;">censo_intensivo</td>
-                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">est_id</td>
+                <td style="font-family: 'Fira Code', monospace; font-weight: 700; color: #34d399;">per_id</td>
                 <td style="font-family: 'Fira Code', monospace; color: #94a3b8; font-size: 12px;">integer</td>
                 <td>
                   <span class="badge badge-green">🔗 FK Mapeada Directa</span>
-                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Clave foránea en entidad: est_id</div>
+                  <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 4px;">Clave foránea en entidad: per_id</div>
                 </td>
               </tr>
     

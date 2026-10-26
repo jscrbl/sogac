@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Modelo Entidad-Relación - SOGAC</title>
-  <script src="Nuevo-SOGAC.js?v=11"></script>
+  <script src="Nuevo-SOGAC.js?v=14"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; }
@@ -348,10 +348,10 @@
     const modulesDef = [
       { name: 'Geográfico', color: '#10b981', tables: ['pais', 'estado', 'municipio', 'parroquia', 'localidad'] },
       { name: 'Institucional', color: '#3b82f6', tables: ['universidad', 'sede', 'departamento', 'dependencia_institucion', 'condicion', 'tipo_condicion'] },
-      { name: 'Personas y Docentes', color: '#8b5cf6', tables: ['persona', 'profesor', 'tipo_telefono', 'telefono_persona', 'etnia', 'discapacidad', 'profesion', 'condicion_laboral', 'cargo', 'categoria_docente', 'dedicacion_docente', 'experiencia_laboral_docente'] },
-      { name: 'Estudiantes e Histórico', color: '#f59e0b', tables: ['estudiante', 'becado', 'perfil_bienestar', 'condicion_residencia', 'sistema_estudio_bachiller', 'rama_estudio_bachiller', 'expediente_estudiante', 'historial_estatus_estudiante', 'historico_registro_anual', 'bloqueo_administrativo', 'proceso_admision'] },
-      { name: 'Estructura Académica', color: '#ef4444', tables: ['pnf', 'malla_curricular', 'malla_curricular_detalle', 'unidad_curricular', 'tipo_unidad_curricular', 'eje_curricular', 'trayecto', 'tipo_periodo', 'ano_academico', 'lapso_academico', 'corte_lapso', 'evento_calendario', 'escala_medicion', 'escala_nota', 'regla_prelacion', 'salida_intermedia', 'titulo_obtenido', 'sede_pnf', 'cohorte', 'cohorte_sede'] },
-      { name: 'Oferta y Horarios', color: '#0ea5e9', tables: ['seccion', 'carga_academica', 'aula', 'tipo_aula', 'horario', 'asistencia_clase'] },
+      { name: 'Personas y Docentes', color: '#8b5cf6', tables: ['persona', 'tipo_telefono', 'telefono_persona', 'etnia', 'discapacidad', 'profesion', 'condicion_laboral', 'cargo', 'categoria_docente', 'dedicacion_docente', 'experiencia_laboral_docente', 'operadora'] },
+      { name: 'Estudiantes e Histórico', color: '#f59e0b', tables: ['becado', 'perfil_bienestar', 'condicion_residencia', 'sistema_estudio_bachiller', 'rama_estudio_bachiller', 'expediente_estudiante', 'historial_estatus_estudiante', 'historico_registro_anual', 'bloqueo_administrativo', 'proceso_admision', 'documento_aspirante'] },
+      { name: 'Estructura Académica', color: '#ef4444', tables: ['programa', 'malla_curricular', 'malla_curricular_detalle', 'unidad_curricular', 'tipo_unidad_curricular', 'eje_curricular', 'trayecto', 'tipo_periodo', 'ano_academico', 'lapso_academico', 'corte_lapso', 'evento_calendario', 'escala_medicion', 'escala_nota', 'regla_prelacion', 'salida_intermedia', 'titulo_obtenido', 'sede_pnf', 'cohorte', 'cohorte_sede', 'modalidad_estudio', 'regimen_estudio', 'tipo_programa'] },
+      { name: 'Oferta y Horarios', color: '#0ea5e9', tables: ['seccion', 'carga_academica', 'aula', 'tipo_aula', 'horario', 'asistencia_clase', 'tipo_seccion', 'turno'] },
       { name: 'Inscripción y Evaluación', color: '#f97316', tables: ['inscripcion', 'inscripcion_detalle', 'tipo_inscripcion', 'plan_evaluacion', 'calificacion', 'calificacion_corte', 'acta_calificacion', 'libro_acta', 'equivalencia_academica', 'convalidacion'] },
       { name: 'Censo y Trámites', color: '#14b8a6', tables: ['censo_estudiante', 'censo_oferta', 'censo_intensivo', 'programa_especial_recuperacion', 'inscripcion_per', 'tramite_academico', 'tipo_tramite', 'causa_retiro', 'tramite_cambio_pnf', 'tramite_cambio_sede', 'tramite_cambio_turno', 'tramite_reingreso'] },
       { name: 'Proyectos', color: '#6366f1', tables: ['proyecto_investigacion', 'integrante_proyecto', 'jurado_proyecto'] },
@@ -378,6 +378,14 @@
     };
 
     const tableGroupMap = {
+      'tipo_programa': groupInfo[3],
+      'operadora': groupInfo[4],
+
+      'modalidad_estudio': groupInfo[3],
+      'regimen_estudio': groupInfo[3],
+      'tipo_seccion': groupInfo[3],
+      'turno': groupInfo[3],
+
       // Grupo 1: Isaac Rosales
       'user': groupInfo[1], 'rol': groupInfo[1], 'usuario_rol': groupInfo[1], 'permiso': groupInfo[1],
       'rol_permiso': groupInfo[1], 'noticia': groupInfo[1], 'bitacora_sistema': groupInfo[1],
@@ -390,7 +398,7 @@
       'rol_usuario_contexto': groupInfo[1], 'usuario_permiso': groupInfo[1],
 
       // Grupo 2: Mauricio Rodríguez
-      'estudiante': groupInfo[2], 'profesor': groupInfo[2], 'persona': groupInfo[2], 'autoridad': groupInfo[2],
+      'persona': groupInfo[2], 'escala_medicion': groupInfo[2], 'escala_nota': groupInfo[2], 'autoridad': groupInfo[2],
       'tipo_autoridad': groupInfo[2], 'cargo': groupInfo[2], 'categoria_docente': groupInfo[2],
       'condicion_residencia': groupInfo[2], 'condicion_laboral': groupInfo[2], 'dedicacion_docente': groupInfo[2],
       'etnia': groupInfo[2], 'profesion': groupInfo[2], 'perfil_bienestar': groupInfo[2],
@@ -402,7 +410,7 @@
 
       // Grupo 3: Ángel Gonzales
       'pais': groupInfo[3], 'estado': groupInfo[3], 'municipio': groupInfo[3], 'parroquia': groupInfo[3],
-      'localidad': groupInfo[3], 'universidad': groupInfo[3], 'sede': groupInfo[3], 'pnf': groupInfo[3],
+      'localidad': groupInfo[3], 'universidad': groupInfo[3], 'sede': groupInfo[3], 'programa': groupInfo[3],
       'malla_curricular': groupInfo[3], 'malla_curricular_detalle': groupInfo[3], 'unidad_curricular': groupInfo[3],
       'tipo_unidad_curricular': groupInfo[3], 'eje_curricular': groupInfo[3], 'trayecto': groupInfo[3],
       'tipo_periodo': groupInfo[3], 'ano_academico': groupInfo[3], 'lapso_academico': groupInfo[3],
@@ -412,7 +420,7 @@
 
       // Grupo 4: Luis Araguren
       'telefono_persona': groupInfo[4], 'tipo_telefono': groupInfo[4], 'sistema_estudio_bachiller': groupInfo[4],
-      'rama_estudio_bachiller': groupInfo[4], 'proceso_admision': groupInfo[4], 'documento_requisito': groupInfo[4],
+      'rama_estudio_bachiller': groupInfo[4], 'proceso_admision': groupInfo[4], 'documento_aspirante': groupInfo[4], 'documento_requisito': groupInfo[4],
       'notificacion_correo': groupInfo[4], 'proyecto_investigacion': groupInfo[4], 'integrante_proyecto': groupInfo[4],
       'jurado_proyecto': groupInfo[4], 'qr_validated_generated_titulo': groupInfo[4], 'configuracion_sistema': groupInfo[4],
 
